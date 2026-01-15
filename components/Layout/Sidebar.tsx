@@ -17,10 +17,22 @@ import { SignOutButton } from "@clerk/nextjs";
 
 const routes = [
     {
-        label: "Dashboard",
+        label: "Manager",
         icon: LayoutDashboard,
-        href: "/",
+        href: "/dashboard/manager",
         color: "text-emerald-500",
+    },
+    {
+        label: "Teacher",
+        icon: GraduationCap,
+        href: "/dashboard/teacher",
+        color: "text-sky-500",
+    },
+    {
+        label: "Parent",
+        icon: Users,
+        href: "/dashboard/parent",
+        color: "text-purple-500",
     },
     {
         label: "My Halaqa",
@@ -56,15 +68,51 @@ const routes = [
 export function Sidebar({ isOpen }: { isOpen: boolean }) {
     const pathname = usePathname();
 
+    // Determine context based on path
+    const isManager = pathname?.startsWith("/dashboard/manager");
+    const isTeacher = pathname?.startsWith("/dashboard/teacher");
+    const isParent = pathname?.startsWith("/dashboard/parent");
+
+    // Filter routes or show specific sets
+    const getRoutes = () => {
+        if (isManager) {
+            return [
+                { label: "Overview", icon: LayoutDashboard, href: "/dashboard/manager", color: "text-emerald-500" },
+                { label: "Staff", icon: GraduationCap, href: "/dashboard/manager/staff", color: "text-sky-500" }, // Placeholder
+                { label: "Students", icon: Users, href: "/dashboard/manager/students", color: "text-indigo-500" }, // Placeholder
+                { label: "Reports", icon: BookOpen, href: "/dashboard/manager/reports", color: "text-amber-500" }, // Placeholder
+            ];
+        } else if (isTeacher) {
+            return [
+                { label: "Class Overview", icon: LayoutDashboard, href: "/dashboard/teacher", color: "text-sky-500" },
+                { label: "Attendance", icon: Calendar, href: "/dashboard/teacher/attendance", color: "text-purple-500" },
+                { label: "Assignments", icon: BookOpen, href: "/dashboard/teacher/assignments", color: "text-orange-500" },
+            ];
+        } else if (isParent) {
+            return [
+                { label: "My Child", icon: Users, href: "/dashboard/parent", color: "text-purple-500" },
+                { label: "Progress", icon: GraduationCap, href: "/dashboard/parent/progress", color: "text-emerald-500" },
+                { label: "Messages", icon: BookOpen, href: "/dashboard/parent/messages", color: "text-blue-500" },
+            ];
+        }
+        // Fallback or "Home" / default sidebar if not in a specific dashboard
+        return routes;
+    };
+
+    const currentRoutes = getRoutes();
+
     return (
         <div className={cn(
-            "fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 -translate-x-full border-r border-border/50 bg-background/60 backdrop-blur-xl transition-transform duration-300 lg:translate-x-0 z-40",
-            isOpen && "translate-x-0"
+            "fixed start-0 top-16 h-[calc(100vh-4rem)] w-64 border-e border-border/50 bg-background/60 backdrop-blur-xl transition-transform duration-300 z-40",
+            isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+            "ltr:left-0 rtl:right-0",
+            "rtl:translate-x-full lg:rtl:translate-x-0",
+            isOpen && "rtl:translate-x-0"
         )}>
             <div className="space-y-4 py-4 flex flex-col h-full">
                 <div className="px-3 py-2 flex-1">
                     <div className="space-y-1">
-                        {routes.map((route) => (
+                        {currentRoutes.map((route) => (
                             <Link
                                 key={route.href}
                                 href={route.href}
@@ -79,6 +127,20 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                                 </div>
                             </Link>
                         ))}
+                    </div>
+
+                    {/* Navigation helper for Demo: Move between roles if needed */}
+                    <div className="mt-8 pt-4 border-t border-border/50">
+                        <p className="px-3 text-xs font-semibold text-muted-foreground mb-2">Switch Dashboard (Demo)</p>
+                        <Link href="/dashboard/manager" className="flex items-center px-3 py-2 text-xs text-muted-foreground hover:text-primary">
+                            <LayoutDashboard className="h-3 w-3 mr-2" /> Manager
+                        </Link>
+                        <Link href="/dashboard/teacher" className="flex items-center px-3 py-2 text-xs text-muted-foreground hover:text-primary">
+                            <GraduationCap className="h-3 w-3 mr-2" /> Teacher
+                        </Link>
+                        <Link href="/dashboard/parent" className="flex items-center px-3 py-2 text-xs text-muted-foreground hover:text-primary">
+                            <Users className="h-3 w-3 mr-2" /> Parent
+                        </Link>
                     </div>
                 </div>
 

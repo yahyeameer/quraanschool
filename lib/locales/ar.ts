@@ -1,0 +1,27 @@
+import { Dictionary } from '../i18n-types';
+
+export const ar: Dictionary = {
+    common: {
+        welcome: "مرحباً",
+        login: "تسجيل الدخول",
+        dashboard: "لوحة التحكم",
+        logout: "تسجيل الخروج",
+        requestDemo: "طلب تجربة",
+    },
+    landing: {
+        hero: {
+            title: "حفظ النور، آية تلو الآية",
+            subtitle: "نظام إدارة مدارس إسلامية متطور مصمم للعصر الحديث. تمكين المديرين والمعلمين وأولياء الأمور من التركيز على ما هو أهم.",
+            ctaPrimary: "ابدأ الآن",
+            ctaSecondary: "شاهد العرض",
+        },
+        features: {
+            title: "لماذا تختار خلف العدول؟",
+            description: "كل ما تحتاجه لإدارة مدرستك بكفاءة.",
+        },
+        pricing: {
+            title: "أسعار بسيطة وشفافة",
+            monthly: "/شهرياً",
+        },
+    },
+};

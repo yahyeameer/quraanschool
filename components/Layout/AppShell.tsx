@@ -18,7 +18,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
             <main className={cn(
                 "bg-background transition-all duration-300 min-h-[calc(100vh-4rem)] p-4 sm:p-6 lg:p-8",
-                "lg:ml-64" // Push content on large screens
+                "lg:ms-64" // Margin Start
             )}>
                 <div className="mx-auto max-w-6xl animate-in fade-in slide-in-from-bottom-5 duration-500">
                     {children}

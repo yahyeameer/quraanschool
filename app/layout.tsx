@@ -3,6 +3,7 @@ import { Inter, Amiri, Noto_Naskh_Arabic } from "next/font/google"; // Updated f
 import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { AppShell } from "@/components/Layout/AppShell";
+import { LanguageProvider } from "@/lib/language-context";
 import "./globals.css";
 
 // Font configurations
@@ -29,15 +30,17 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body
-          className={`${inter.variable} ${amiri.variable} ${notoNaskh.variable} font-sans antialiased`}
-        >
-          <ConvexClientProvider>
-            <AppShell>{children}</AppShell>
-          </ConvexClientProvider>
-        </body>
-      </html>
+      <LanguageProvider>
+        <html lang="en">
+          <body
+            className={`${inter.variable} ${amiri.variable} ${notoNaskh.variable} font-sans antialiased`}
+          >
+            <ConvexClientProvider>
+              <AppShell>{children}</AppShell>
+            </ConvexClientProvider>
+          </body>
+        </html>
+      </LanguageProvider>
     </ClerkProvider>
   );
 }
