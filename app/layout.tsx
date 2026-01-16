@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <LanguageProvider>
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
           <body
             className={`${inter.variable} ${amiri.variable} ${notoNaskh.variable} font-sans antialiased`}
           >

@@ -47,7 +47,6 @@ export default function HalaqaPage() {
                     ) : (
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {classes.map((cls) => (
-                                // @ts-expect-error - Convex types might need stricter mapping, mainly ID
                                 <HalaqaCard key={cls._id} data={cls} />
                             ))}
                         </div>
