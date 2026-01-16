@@ -4,15 +4,27 @@ import React, { useState } from "react";
 import { Navbar } from "./Navbar";
 import { Sidebar } from "./Sidebar";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const pathname = usePathname();
+
+    // Skip dashboard layout for the landing page or onboarding
+    const isLandingPage = pathname === "/";
+    const isOnboarding = pathname === "/onboarding";
+    const isDashboard = !isLandingPage && !isOnboarding;
+
+    if (!isDashboard) {
+        return <div className="min-h-screen bg-background font-sans">{children}</div>;
+    }
 
     return (
         <div className="min-h-screen bg-background font-sans">
             <Navbar
                 onMenuClick={() => setSidebarOpen(!isSidebarOpen)}
                 isSidebarOpen={isSidebarOpen}
+                pathname={pathname}
             />
             <Sidebar isOpen={isSidebarOpen} />
 

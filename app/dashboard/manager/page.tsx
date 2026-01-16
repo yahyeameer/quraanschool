@@ -61,24 +61,18 @@ export default function ManagerDashboard() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="p-4 rounded-lg bg-accent/20 border hover:bg-accent/30 transition cursor-pointer">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="font-medium">Teacher Overview</span>
-                                    <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Active</span>
+                                    <span className="font-medium">System Health</span>
+                                    <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Optimal</span>
                                 </div>
-                                <p className="text-xs text-muted-foreground mb-3">Monitor attendance submission and class performance.</p>
-                                <a href="/dashboard/teacher" className="text-sm font-semibold text-primary hover:underline flex items-center">
-                                    View as Teacher &rarr;
-                                </a>
+                                <p className="text-xs text-muted-foreground mb-3">All services are running smoothly across the platform.</p>
                             </div>
 
                             <div className="p-4 rounded-lg bg-accent/20 border hover:bg-accent/30 transition cursor-pointer">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="font-medium">Parent Communications</span>
-                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">New</span>
+                                    <span className="font-medium">Recent Backups</span>
+                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Secure</span>
                                 </div>
-                                <p className="text-xs text-muted-foreground mb-3">Check recent messages and notifications sent to parents.</p>
-                                <a href="/dashboard/parent" className="text-sm font-semibold text-primary hover:underline flex items-center">
-                                    View as Parent &rarr;
-                                </a>
+                                <p className="text-xs text-muted-foreground mb-3">Database backup completed successfully 2 hours ago.</p>
                             </div>
                         </div>
                     </div>

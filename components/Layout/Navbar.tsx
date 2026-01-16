@@ -4,13 +4,16 @@ import React from "react";
 import { UserButton } from "@clerk/nextjs";
 import { Menu, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export function Navbar({
     onMenuClick,
-    isSidebarOpen
+    isSidebarOpen,
+    pathname
 }: {
     onMenuClick: () => void;
     isSidebarOpen: boolean;
+    pathname: string;
 }) {
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/60 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
@@ -23,9 +26,28 @@ export function Navbar({
                 </button>
 
                 <div className="flex items-center gap-2">
-                    {/* Logo Icon or Bismillah calligraphy could go here */}
-                    <div className="font-amiri text-2xl font-bold tracking-wide text-primary">
+                    {/* Simplified for dashboard - branding is in the sidebar often, but we can keep a subtle Breadcrumb or just a clean look */}
+                    <div className="font-amiri text-xl font-bold text-primary lg:hidden">
                         Khalaf Al-Cuduul
+                    </div>
+                </div>
+
+                <div className="hidden lg:flex flex-1 max-w-md mx-8">
+                    <div className="glass-panel rounded-full p-1 flex w-full relative h-10 items-center">
+                        <Link href="/dashboard/manager" className={cn(
+                            "flex-1 text-[10px] uppercase tracking-wider font-bold text-center z-10 transition-colors py-1.5 rounded-full px-2",
+                            pathname === "/dashboard/manager" ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                        )}>Manager</Link>
+                        <Link href="/dashboard/teacher" className={cn(
+                            "flex-1 text-[10px] uppercase tracking-wider font-bold text-center z-10 transition-colors py-1.5 rounded-full px-2",
+                            pathname === "/dashboard/teacher" ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                        )}>Teacher</Link>
+                        <Link href="/dashboard/parent" className={cn(
+                            "flex-1 text-[10px] uppercase tracking-wider font-bold text-center z-10 transition-colors py-1.5 rounded-full px-2",
+                            pathname === "/dashboard/parent" ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                        )}>Parent</Link>
+
+                        {/* Dynamic Background pill would go here with layoutId if using framer-motion */}
                     </div>
                 </div>
 

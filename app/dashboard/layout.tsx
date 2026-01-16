@@ -1,6 +1,5 @@
 "use client";
 
-import { AppShell } from "@/components/Layout/AppShell";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 
 export default function DashboardLayout({
@@ -10,10 +9,7 @@ export default function DashboardLayout({
 }) {
     return (
         <RoleGuard>
-            {/* AppShell provides the Sidebar and Navbar */}
-            <AppShell>
-                {children}
-            </AppShell>
+            {children}
         </RoleGuard>
     );
 }

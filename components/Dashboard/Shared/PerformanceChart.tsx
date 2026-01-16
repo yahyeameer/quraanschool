@@ -18,7 +18,7 @@ export function PerformanceChart() {
     const { dir } = useLanguage();
 
     return (
-        <Card className="col-span-4">
+        <Card className="col-span-4 glass-panel border-none shadow-2xl">
             <CardHeader>
                 <CardTitle>Performance Overview</CardTitle>
             </CardHeader>

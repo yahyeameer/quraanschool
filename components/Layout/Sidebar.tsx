@@ -110,7 +110,15 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
             isOpen && "rtl:translate-x-0"
         )}>
             <div className="space-y-4 py-4 flex flex-col h-full">
-                <div className="px-3 py-2 flex-1">
+                <div className="px-6 py-4 border-b border-border/50">
+                    <Link href="/" className="flex items-center gap-3 group">
+                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-emerald-500/20 group-hover:border-emerald-500 transition-all duration-300">
+                            <div className="absolute inset-0 bg-primary flex items-center justify-center text-white font-bold">K</div>
+                        </div>
+                        <span className="font-amiri text-xl font-bold text-primary">Khalaf al Cudul</span>
+                    </Link>
+                </div>
+                <div className="px-3 py-2 flex-1 scrollbar-hide overflow-y-auto">
                     <div className="space-y-1">
                         {currentRoutes.map((route) => (
                             <Link
@@ -129,19 +137,6 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                         ))}
                     </div>
 
-                    {/* Navigation helper for Demo: Move between roles if needed */}
-                    <div className="mt-8 pt-4 border-t border-border/50">
-                        <p className="px-3 text-xs font-semibold text-muted-foreground mb-2">Switch Dashboard (Demo)</p>
-                        <Link href="/dashboard/manager" className="flex items-center px-3 py-2 text-xs text-muted-foreground hover:text-primary">
-                            <LayoutDashboard className="h-3 w-3 mr-2" /> Manager
-                        </Link>
-                        <Link href="/dashboard/teacher" className="flex items-center px-3 py-2 text-xs text-muted-foreground hover:text-primary">
-                            <GraduationCap className="h-3 w-3 mr-2" /> Teacher
-                        </Link>
-                        <Link href="/dashboard/parent" className="flex items-center px-3 py-2 text-xs text-muted-foreground hover:text-primary">
-                            <Users className="h-3 w-3 mr-2" /> Parent
-                        </Link>
-                    </div>
                 </div>
 
                 <div className="px-3 py-2 border-t border-border/50">

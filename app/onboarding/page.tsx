@@ -5,6 +5,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { GraduationCap, BookOpen, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function OnboardingPage() {
     const completeOnboarding = useMutation(api.users.completeOnboarding);
@@ -25,63 +26,95 @@ export default function OnboardingPage() {
     };
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 text-center">
-            <div className="mb-12 space-y-2">
-                <h1 className="font-amiri text-4xl font-bold text-foreground">Welcome to Khalaf Al-Cuduul</h1>
-                <p className="text-lg text-muted-foreground">Please tell us who you are to personalize your experience.</p>
-            </div>
+        <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4 relative overflow-hidden">
+            {/* Ambient Background */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/5 blur-[120px] rounded-full" />
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full" />
 
-            <div className="grid w-full max-w-4xl gap-6 md:grid-cols-3">
-                {/* Student Card */}
-                <RoleCard
-                    title="Student"
-                    description="I am here to memorize and learn."
-                    icon={<BookOpen className="h-12 w-12 text-emerald-500" />}
-                    onClick={() => handleSelectRole("student")}
-                    color="emerald"
-                />
+            <div className="relative z-10 max-w-5xl w-full">
+                <div className="mb-20 space-y-4 text-center">
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="font-amiri text-5xl md:text-7xl font-bold text-foreground tracking-tight"
+                    >
+                        Welcome to Al-Maqra'a
+                    </motion.h1>
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-xl text-muted-foreground max-w-2xl mx-auto"
+                    >
+                        Customize your journey by selecting your path.
+                    </motion.p>
+                </div>
 
-                {/* Teacher Card */}
-                <RoleCard
-                    title="Teacher"
-                    description="I lead Halaqas and grade students."
-                    icon={<GraduationCap className="h-12 w-12 text-violet-500" />}
-                    onClick={() => handleSelectRole("teacher")}
-                    color="violet"
-                />
+                <div className="grid w-full gap-8 md:grid-cols-3">
+                    {/* Student Card */}
+                    <RoleCard
+                        title="Student"
+                        description="I am here to memorize and learn from the best."
+                        icon={<BookOpen className="h-10 w-10 text-emerald-500" />}
+                        onClick={() => handleSelectRole("student")}
+                        color="emerald"
+                        delay={0.2}
+                    />
 
-                {/* Manager Card */}
-                <RoleCard
-                    title="Manager"
-                    description="I manage the school and staff."
-                    icon={<ShieldCheck className="h-12 w-12 text-amber-500" />}
-                    onClick={() => handleSelectRole("admin")}
-                    color="amber"
-                />
+                    {/* Teacher Card */}
+                    <RoleCard
+                        title="Teacher"
+                        description="I lead Halaqas and guide seekers of knowledge."
+                        icon={<GraduationCap className="h-10 w-10 text-violet-500" />}
+                        onClick={() => handleSelectRole("teacher")}
+                        color="violet"
+                        delay={0.3}
+                    />
+
+                    {/* Manager Card */}
+                    <RoleCard
+                        title="Manager"
+                        description="I oversee the school operations and staff."
+                        icon={<ShieldCheck className="h-10 w-10 text-amber-500" />}
+                        onClick={() => handleSelectRole("admin")}
+                        color="amber"
+                        delay={0.4}
+                    />
+                </div>
             </div>
         </div>
     );
 }
 
-function RoleCard({ title, description, icon, onClick, color }: any) {
+function RoleCard({ title, description, icon, onClick, color, delay }: any) {
     const colorClasses = {
-        emerald: "hover:border-emerald-500 hover:shadow-emerald-500/10",
-        violet: "hover:border-violet-500 hover:shadow-violet-500/10",
-        amber: "hover:border-amber-500 hover:shadow-amber-500/10",
+        emerald: "hover:border-emerald-500/50 hover:shadow-emerald-500/10 group-hover:bg-emerald-500/10",
+        violet: "hover:border-violet-500/50 hover:shadow-violet-500/10 group-hover:bg-violet-500/10",
+        amber: "hover:border-amber-500/50 hover:shadow-amber-500/10 group-hover:bg-amber-500/10",
+    };
+
+    const iconBgClasses = {
+        emerald: "bg-emerald-500/10",
+        violet: "bg-violet-500/10",
+        amber: "bg-amber-500/10",
     };
 
     return (
-        <button
+        <motion.button
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            whileHover={{ y: -8, transition: { duration: 0.4 } }}
             onClick={onClick}
-            className={`group flex flex-col items-center justify-center gap-4 rounded-xl border border-border bg-card p-8 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl ${colorClasses[color as keyof typeof colorClasses]}`}
+            className={`group flex flex-col items-center justify-center gap-6 rounded-[2.5rem] border border-white/20 glass-panel p-10 shadow-2xl transition-all duration-500 ${colorClasses[color as keyof typeof colorClasses]}`}
         >
-            <div className="rounded-full bg-accent/50 p-6 transition-colors group-hover:bg-accent">
+            <div className={`rounded-3xl p-6 transition-all duration-500 shadow-inner ${iconBgClasses[color as keyof typeof iconBgClasses]}`}>
                 {icon}
             </div>
-            <div>
-                <h3 className="text-xl font-bold">{title}</h3>
-                <p className="text-sm text-muted-foreground">{description}</p>
+            <div className="text-center">
+                <h3 className="text-2xl font-bold mb-2 tracking-tight">{title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed px-2">{description}</p>
             </div>
-        </button>
+        </motion.button>
     )
 }
