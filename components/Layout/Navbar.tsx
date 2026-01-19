@@ -5,6 +5,8 @@ import { UserButton } from "@clerk/nextjs";
 import { Menu, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { NotificationCenter } from "./NotificationCenter";
+import { useLanguage } from "@/lib/language-context";
 
 export function Navbar({
     onMenuClick,
@@ -15,6 +17,8 @@ export function Navbar({
     isSidebarOpen: boolean;
     pathname: string;
 }) {
+    const { locale, setLocale, dir } = useLanguage();
+
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/60 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
             <div className="flex h-16 items-center px-4 sm:px-6 lg:px-8">
@@ -52,9 +56,18 @@ export function Navbar({
                 </div>
 
                 <div className="ml-auto flex items-center gap-4">
-                    <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
-                        <span className="font-amiri">Hijri: 14 Rajab 1446</span>
+                    <button
+                        onClick={() => setLocale(locale === 'en' ? 'ar' : 'en')}
+                        className="text-[10px] font-bold px-2 py-1 bg-accent/50 rounded-md hover:bg-accent transition-colors"
+                    >
+                        {locale === 'en' ? 'AR' : 'EN'}
+                    </button>
+
+                    <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground mr-2">
+                        <span className="font-amiri">{dir === 'rtl' ? '١٤ رجب ١٤٤٦' : 'Hijri: 14 Rajab 1446'}</span>
                     </div>
+
+                    <NotificationCenter />
 
                     <UserButton
                         afterSignOutUrl="/"

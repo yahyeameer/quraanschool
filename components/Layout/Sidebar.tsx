@@ -14,25 +14,15 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 const routes = [
     {
-        label: "Manager",
+        label: "Dashboard",
         icon: LayoutDashboard,
-        href: "/dashboard/manager",
+        href: "/", // Home/Overview
         color: "text-emerald-500",
-    },
-    {
-        label: "Teacher",
-        icon: GraduationCap,
-        href: "/dashboard/teacher",
-        color: "text-sky-500",
-    },
-    {
-        label: "Parent",
-        icon: Users,
-        href: "/dashboard/parent",
-        color: "text-purple-500",
     },
     {
         label: "My Halaqa",
@@ -67,36 +57,42 @@ const routes = [
 
 export function Sidebar({ isOpen }: { isOpen: boolean }) {
     const pathname = usePathname();
-
-    // Determine context based on path
-    const isManager = pathname?.startsWith("/dashboard/manager");
-    const isTeacher = pathname?.startsWith("/dashboard/teacher");
-    const isParent = pathname?.startsWith("/dashboard/parent");
+    const user = useQuery(api.users.currentUser);
 
     // Filter routes or show specific sets
     const getRoutes = () => {
-        if (isManager) {
-            return [
-                { label: "Overview", icon: LayoutDashboard, href: "/dashboard/manager", color: "text-emerald-500" },
-                { label: "Staff", icon: GraduationCap, href: "/dashboard/manager/staff", color: "text-sky-500" }, // Placeholder
-                { label: "Students", icon: Users, href: "/dashboard/manager/students", color: "text-indigo-500" }, // Placeholder
-                { label: "Reports", icon: BookOpen, href: "/dashboard/manager/reports", color: "text-amber-500" }, // Placeholder
+        if (!user) return [];
+
+        if (user.role === "admin" || user.role === "manager") {
+            const adminBase = [
+                { label: "Admin Console", icon: LayoutDashboard, href: "/admin", color: "text-red-500" },
+                { label: "Manager Home", icon: LayoutDashboard, href: "/dashboard/manager", color: "text-emerald-500" },
+                { label: "Applications", icon: BookOpen, href: "/dashboard/manager/applications", color: "text-amber-600" },
+                { label: "Staff", icon: GraduationCap, href: "/dashboard/manager/staff", color: "text-sky-500" },
+                { label: "Students", icon: Users, href: "/dashboard/manager/students", color: "text-indigo-500" },
+                { label: "Reports", icon: BookOpen, href: "/dashboard/manager/reports", color: "text-amber-500" },
             ];
-        } else if (isTeacher) {
+            return user.role === "admin" ? adminBase : adminBase.slice(1);
+        }
+
+        if (user.role === "teacher") {
             return [
                 { label: "Class Overview", icon: LayoutDashboard, href: "/dashboard/teacher", color: "text-sky-500" },
                 { label: "Attendance", icon: Calendar, href: "/dashboard/teacher/attendance", color: "text-purple-500" },
                 { label: "Assignments", icon: BookOpen, href: "/dashboard/teacher/assignments", color: "text-orange-500" },
-            ];
-        } else if (isParent) {
-            return [
-                { label: "My Child", icon: Users, href: "/dashboard/parent", color: "text-purple-500" },
-                { label: "Progress", icon: GraduationCap, href: "/dashboard/parent/progress", color: "text-emerald-500" },
-                { label: "Messages", icon: BookOpen, href: "/dashboard/parent/messages", color: "text-blue-500" },
+                { label: "My Classes", icon: Users, href: "/halaqa", color: "text-violet-500" },
             ];
         }
-        // Fallback or "Home" / default sidebar if not in a specific dashboard
-        return routes;
+
+        if (user.role === "parent") {
+            return [
+                { label: "Parent View", icon: LayoutDashboard, href: "/dashboard/parent", color: "text-purple-500" },
+                { label: "My Child", icon: Users, href: "/dashboard/parent/child", color: "text-emerald-500" },
+                { label: "Payments", icon: GraduationCap, href: "/dashboard/parent/payments", color: "text-blue-500" },
+            ];
+        }
+
+        return routes; // Student / Default
     };
 
     const currentRoutes = getRoutes();

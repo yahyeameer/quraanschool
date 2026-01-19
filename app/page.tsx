@@ -1,8 +1,8 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Navbar } from "@/components/Landing/Shared/Navbar";
 import { Footer } from "@/components/Landing/Shared/Footer";
-import { HeroSection } from "@/components/Landing/HeroSection";
 import { FeatureGrid } from "@/components/Landing/FeatureGrid";
 import { Pricing } from "@/components/Landing/PricingSection";
 import { SignedIn, UserButton } from "@clerk/nextjs";
@@ -10,9 +10,16 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+// Lazy Load Heavy Visual Components
+const RetroGrid = dynamic(() => import("@/components/magicui/retro-grid"), { ssr: false });
+const HeroSection = dynamic(() => import("@/components/Landing/HeroSection").then(mod => mod.HeroSection), {
+  loading: () => <div className="h-[800px] w-full bg-emerald-950 animate-pulse" />
+});
+
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
+      <RetroGrid />
       <Navbar />
 
       <main>

@@ -6,15 +6,22 @@ import { api } from "@/convex/_generated/api";
 import { Shield, Users, BookOpen, Crown } from "lucide-react";
 import { PaymentManager } from "@/components/Admin/PaymentManager";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
+import { CreateHalaqaForm } from "@/components/Halaqa/CreateHalaqaForm";
+import { HalaqaCard } from "@/components/Halaqa/HalaqaCard";
 
 export default function AdminPage() {
     const stats = useQuery(api.admin.getStats);
     const users = useQuery(api.admin.listUsers);
+    const halaqas = useQuery(api.classes.list);
     const updateRole = useMutation(api.admin.updateUserRole);
+    const linkParent = useMutation(api.admin.linkStudentToParent);
 
     const handleRoleChange = async (userId: string, newRole: string) => {
-        // @ts-expect-error - casting ID
-        await updateRole({ userId, role: newRole });
+        await updateRole({ userId: userId as any, role: newRole });
+    };
+
+    const handleParentLink = async (studentId: string, parentId: string) => {
+        await linkParent({ studentId: studentId as any, parentId });
     };
 
     if (!stats) return <div className="p-8">Loading dashboard...</div>;
@@ -72,16 +79,30 @@ export default function AdminPage() {
                                                 {user.role}
                                             </span>
                                         </td>
-                                        <td className="px-4 py-3">
+                                        <td className="px-4 py-3 flex gap-2">
                                             <select
                                                 value={user.role}
                                                 onChange={(e) => handleRoleChange(user._id, e.target.value)}
                                                 className="rounded border border-input bg-background px-2 py-1 text-xs"
                                             >
                                                 <option value="student">Student</option>
+                                                <option value="parent">Parent</option>
                                                 <option value="teacher">Teacher</option>
                                                 <option value="admin">Admin</option>
                                             </select>
+
+                                            {user.role === "student" && (
+                                                <select
+                                                    value={user.parentId || ""}
+                                                    onChange={(e) => handleParentLink(user._id, e.target.value)}
+                                                    className="rounded border border-input bg-background px-2 py-1 text-xs"
+                                                >
+                                                    <option value="">No Parent</option>
+                                                    {users?.filter(u => u.role === "parent").map(p => (
+                                                        <option key={p._id} value={p._id}>P: {p.name}</option>
+                                                    ))}
+                                                </select>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
@@ -91,6 +112,27 @@ export default function AdminPage() {
                 </div>
 
                 <PaymentManager />
+
+                {/* Halaqa Management */}
+                <div className="grid gap-8 lg:grid-cols-2">
+                    <div className="space-y-6">
+                        <div>
+                            <h3 className="font-amiri text-2xl font-bold">Academic Structure</h3>
+                            <p className="text-sm text-muted-foreground">Manage your circles and classes.</p>
+                        </div>
+                        <div className="grid gap-4">
+                            {halaqas?.map((halaqa) => (
+                                <HalaqaCard key={halaqa._id} data={halaqa as any} />
+                            ))}
+                            {halaqas?.length === 0 && (
+                                <p className="py-10 text-center text-sm text-muted-foreground">No halaqas created yet.</p>
+                            )}
+                        </div>
+                    </div>
+                    <div>
+                        <CreateHalaqaForm onSuccess={() => { }} />
+                    </div>
+                </div>
             </div>
         </RoleGuard>
     );

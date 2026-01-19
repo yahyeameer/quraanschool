@@ -11,7 +11,7 @@ export function RoleGuard({
     requiredRole
 }: {
     children: React.ReactNode,
-    requiredRole?: "admin" | "teacher"
+    requiredRole?: "admin" | "manager" | "teacher" | "staff" | "parent"
 }) {
     const user = useQuery(api.users.currentUser);
     const router = useRouter();
@@ -28,10 +28,17 @@ export function RoleGuard({
 
         // 2. Specific Page Guard
         if (requiredRole) {
-            if (!user || (user.role !== requiredRole && user.role !== "admin")) {
-                // Determine redirect
-                if (user?.role === "teacher") router.push("/teacher");
-                else router.push("/");
+            // Admin can access everything
+            if (user?.role === "admin") return;
+
+            if (!user || user.role !== requiredRole) {
+                // Determine redirect based on role
+                if (user?.role === "admin") router.push("/admin");
+                else if (user?.role === "manager") router.push("/dashboard/manager");
+                else if (user?.role === "teacher") router.push("/dashboard/teacher");
+                else if (user?.role === "parent") router.push("/dashboard/parent");
+                else if (user?.role === "staff") router.push("/dashboard/staff");
+                else router.push("/"); // Default
             }
         }
 

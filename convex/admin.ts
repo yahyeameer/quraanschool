@@ -41,3 +41,12 @@ export const updateUserRole = mutation({
         await ctx.db.patch(args.userId, { role: args.role as any });
     }
 });
+
+export const linkStudentToParent = mutation({
+    args: { studentId: v.id("users"), parentId: v.string() }, // parentId can be empty string to unlink
+    handler: async (ctx, args) => {
+        await requireRole(ctx, "admin");
+        const parentId = args.parentId === "" ? undefined : args.parentId as any;
+        await ctx.db.patch(args.studentId, { parentId });
+    }
+});

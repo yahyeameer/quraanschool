@@ -4,6 +4,7 @@ import { StatCard } from "@/components/Dashboard/Shared/StatCard";
 import { PerformanceChart } from "@/components/Dashboard/Shared/PerformanceChart";
 import { Users, GraduationCap, CheckCircle, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function ManagerDashboard() {
     return (
@@ -83,27 +84,27 @@ export default function ManagerDashboard() {
                     <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6 h-full">
                         <h3 className="font-semibold mb-4">Quick Actions</h3>
                         <div className="space-y-3">
-                            <button className="w-full text-left px-4 py-3 rounded-lg border hover:bg-muted transition text-sm flex items-center gap-3">
+                            <Link href="/dashboard/manager/staff" className="w-full text-left px-4 py-3 rounded-lg border hover:bg-muted transition text-sm flex items-center gap-3">
                                 <span className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">+</span>
                                 <div>
-                                    <span className="block font-medium">Create New Class</span>
-                                    <span className="text-xs text-muted-foreground">Assign teacher and schedule</span>
+                                    <span className="block font-medium">Manage Staff</span>
+                                    <span className="text-xs text-muted-foreground">View teachers and assistants</span>
                                 </div>
-                            </button>
-                            <button className="w-full text-left px-4 py-3 rounded-lg border hover:bg-muted transition text-sm flex items-center gap-3">
+                            </Link>
+                            <Link href="/dashboard/manager/students" className="w-full text-left px-4 py-3 rounded-lg border hover:bg-muted transition text-sm flex items-center gap-3">
                                 <span className="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold">+</span>
                                 <div>
-                                    <span className="block font-medium">Add New Student</span>
-                                    <span className="text-xs text-muted-foreground">Enroll and assign guardian</span>
+                                    <span className="block font-medium">Student Directory</span>
+                                    <span className="text-xs text-muted-foreground">Enroll and view students</span>
                                 </div>
-                            </button>
-                            <button className="w-full text-left px-4 py-3 rounded-lg border hover:bg-muted transition text-sm flex items-center gap-3">
+                            </Link>
+                            <Link href="/dashboard/manager/reports" className="w-full text-left px-4 py-3 rounded-lg border hover:bg-muted transition text-sm flex items-center gap-3">
                                 <span className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold">↓</span>
                                 <div>
-                                    <span className="block font-medium">Generate Reports</span>
-                                    <span className="text-xs text-muted-foreground">Monthly performance export</span>
+                                    <span className="block font-medium">Academic Reports</span>
+                                    <span className="text-xs text-muted-foreground">Performance analytics</span>
                                 </div>
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
