@@ -23,10 +23,8 @@ export function CreateAssignmentForm({ onSuccess }: { onSuccess?: () => void }) 
 
         setLoading(true);
         try {
-            // @ts-expect-error - ID casting
             await createAssignment({
-                // @ts-expect-error - ID casting
-                classId: formData.classId,
+                classId: formData.classId as any,
                 title: formData.title,
                 description: formData.description,
                 dueDate: formData.dueDate,

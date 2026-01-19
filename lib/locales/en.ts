@@ -1,4 +1,4 @@
-import { Dictionary } from './i18n-types';
+import { Dictionary } from '../i18n-types';
 
 export const en: Dictionary = {
     common: {
