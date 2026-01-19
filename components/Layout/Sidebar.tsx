@@ -79,7 +79,7 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
             return [
                 { label: "Class Overview", icon: LayoutDashboard, href: "/dashboard/teacher", color: "text-sky-500" },
                 { label: "Attendance", icon: Calendar, href: "/dashboard/teacher/attendance", color: "text-purple-500" },
-                { label: "Assignments", icon: BookOpen, href: "/dashboard/teacher/assignments", color: "text-orange-500" },
+                { label: "Assignments", icon: BookOpen, href: "/assignments", color: "text-orange-500" },
                 { label: "My Classes", icon: Users, href: "/halaqa", color: "text-violet-500" },
             ];
         }

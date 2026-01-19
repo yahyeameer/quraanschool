@@ -28,6 +28,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     else if (pathname.startsWith("/dashboard/parent")) requiredRole = "parent";
     else if (pathname.startsWith("/dashboard/staff")) requiredRole = "staff";
 
+    // Allow multi-role access to shared features if needed
+    if (pathname === "/assignments") {
+        // Shared between teacher and admin/manager
+        requiredRole = ["admin", "manager", "teacher"];
+    }
+
     return (
         <RoleGuard requiredRole={requiredRole}>
             <div className="min-h-screen bg-background font-sans">

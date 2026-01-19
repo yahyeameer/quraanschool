@@ -11,7 +11,7 @@ export function RoleGuard({
     requiredRole
 }: {
     children: React.ReactNode,
-    requiredRole?: "admin" | "manager" | "teacher" | "staff" | "parent"
+    requiredRole?: ("admin" | "manager" | "teacher" | "staff" | "parent") | ("admin" | "manager" | "teacher" | "staff" | "parent")[]
 }) {
     const user = useQuery(api.users.currentUser);
     const router = useRouter();
@@ -28,10 +28,12 @@ export function RoleGuard({
 
         // 2. Specific Page Guard
         if (requiredRole) {
+            const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+
             // Admin can access everything
             if (user?.role === "admin") return;
 
-            if (!user || user.role !== requiredRole) {
+            if (!user || !allowedRoles.includes(user.role as any)) {
                 // Determine redirect based on role
                 if (user?.role === "admin") router.push("/admin");
                 else if (user?.role === "manager") router.push("/dashboard/manager");
@@ -53,7 +55,11 @@ export function RoleGuard({
     }
 
     // Role mismatch? Return null while redirect happens
-    if (requiredRole && user?.role !== requiredRole && user?.role !== "admin") return null;
+    if (requiredRole) {
+        const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+        if (!user || (!allowedRoles.includes(user.role as any) && user.role !== "admin")) return null;
+    }
+
     if (user?.role === "guest" && pathname !== "/onboarding") return null;
 
     return <>{children}</>;
