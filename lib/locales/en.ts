@@ -24,4 +24,38 @@ export const en: Dictionary = {
             monthly: "/month",
         },
     },
+    dashboard: {
+        title: "Dashboard",
+        welcome: "Welcome back,",
+        stats: {
+            students: "Total Students",
+            attendance: "Attendance Rate",
+            progress: "Average Progress",
+        },
+    },
+    teacher: {
+        attendance: {
+            title: "Attendance Log",
+            markAttendance: "Mark Daily Attendance",
+            present: "Present",
+            absent: "Absent",
+            late: "Late",
+            submit: "Submit Attendance",
+            selectClass: "Select Halaqa Circle",
+        },
+        logbook: {
+            title: "Progress Logbook",
+            student: "Student Name",
+            topic: "Topic / Chapter",
+            score: "Score (%)",
+            rating: "Overall Rating",
+            notes: "Guiding Notes",
+            save: "Save Log Entry",
+        },
+        classes: {
+            title: "My Quran Circles",
+            newHalaqa: "New Halaqa",
+            manage: "Manage",
+        },
+    },
 };

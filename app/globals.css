@@ -8,6 +8,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
   --font-amiri: var(--font-amiri);
+  --font-noto: var(--font-noto);
   --font-mono: var(--font-geist-mono);
 
   --color-primary-foreground: var(--primary-foreground);
@@ -166,6 +167,28 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased transition-all duration-500;
+  }
+
+  html[dir="rtl"] {
+    font-family: var(--font-noto), var(--font-amiri), ui-sans-serif, system-ui;
+  }
+
+  html[dir="rtl"] * {
+    letter-spacing: 0 !important;
+  }
+
+  /* Optimize Arabic Typography */
+  h1:lang(ar),
+  h2:lang(ar),
+  h3:lang(ar) {
+    line-height: 1.4;
+    font-weight: 700;
+  }
+
+  p:lang(ar),
+  span:lang(ar),
+  label:lang(ar) {
+    line-height: 1.8;
   }
 }

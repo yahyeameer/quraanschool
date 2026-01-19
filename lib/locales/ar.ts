@@ -24,4 +24,38 @@ export const ar: Dictionary = {
             monthly: "/شهرياً",
         },
     },
+    dashboard: {
+        title: "لوحة التحكم",
+        welcome: "أهلاً بك مجدداً يا",
+        stats: {
+            students: "إجمالي الطلاب",
+            attendance: "نسبة الحضور",
+            progress: "معدل الإنجاز",
+        },
+    },
+    teacher: {
+        attendance: {
+            title: "سجل الحضور",
+            markAttendance: "تسجيل الحضور اليومي",
+            present: "حاضر",
+            absent: "غائب",
+            late: "متأخر",
+            submit: "اعتماد الحضور",
+            selectClass: "اختر الحلقة القرآنية",
+        },
+        logbook: {
+            title: "خطة المتابعة",
+            student: "اسم الطالب",
+            topic: "السورة / الجزء",
+            score: "الدرجة",
+            rating: "التقييم العام",
+            notes: "ملاحظات وتوجيهات",
+            save: "حفظ التقرير",
+        },
+        classes: {
+            title: "حلقاتي القرآنية",
+            newHalaqa: "إنشاء حلقة جديدة",
+            manage: "إدارة الحلقة",
+        },
+    },
 };

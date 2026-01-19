@@ -25,6 +25,40 @@ export type Dictionary = {
             monthly: string;
         };
     };
+    dashboard: {
+        title: string;
+        welcome: string;
+        stats: {
+            students: string;
+            attendance: string;
+            progress: string;
+        };
+    };
+    teacher: {
+        attendance: {
+            title: string;
+            markAttendance: string;
+            present: string;
+            absent: string;
+            late: string;
+            submit: string;
+            selectClass: string;
+        };
+        logbook: {
+            title: string;
+            student: string;
+            topic: string;
+            score: string;
+            rating: string;
+            notes: string;
+            save: string;
+        };
+        classes: {
+            title: string;
+            newHalaqa: string;
+            manage: string;
+        };
+    };
 };
 
 export const defaultLocale: Locale = 'en';
