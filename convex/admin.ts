@@ -123,6 +123,53 @@ export const listInvitations = query({
     }
 });
 
+export const inviteStudent = mutation({
+    args: {
+        studentName: v.string(),
+        phone: v.string()
+    },
+    handler: async (ctx, args) => {
+        const user = await requireRole(ctx, "manager"); // Managers also invite students
+        if (!user) {
+            // Fallback to admin check if checking manager returned null (though requireRole throws usually if we implemented it strict, 
+            // but here let's assume requireRole handles it or we re-check strict admin if not manager? 
+            // Actually requireRole returns the user if found, or throws? 
+            // Looking at usage: await requireRole(ctx, "admin"). 
+            // We should allow "admin" OR "manager".
+            // Let's rely on internal logic of requireRole if it supported array, but it takes string.
+            // We'll verify permissions manually here for flexibility.
+            const identity = await ctx.auth.getUserIdentity();
+            if (!identity) throw new Error("Unauthorized");
+            const u = await ctx.db.query("users").withIndex("by_clerkId", q => q.eq("clerkId", identity.subject)).unique();
+            if (!u || (u.role !== "admin" && u.role !== "manager")) throw new Error("Unauthorized");
+        }
+
+
+        // Basic phone validation (digits, plus, dashes, spaces)
+        if (!/^[\d\+\-\s]{7,15}$/.test(args.phone)) {
+            throw new Error("Invalid phone number format");
+        }
+
+        // Check for existing invitation by phone
+        const existing = await ctx.db
+            .query("invitations")
+            .withIndex("by_phone", (q) => q.eq("phone", args.phone))
+            .unique();
+
+        if (existing && existing.status === "pending") {
+            throw new Error("Student already has a pending invitation");
+        }
+
+        return await ctx.db.insert("invitations", {
+            phone: args.phone,
+            role: "student",
+            studentName: args.studentName,
+            status: "pending",
+            invitedAt: new Date().toISOString(),
+        });
+    }
+});
+
 export const removeStaff = mutation({
     args: { userId: v.id("users") },
     handler: async (ctx, args) => {

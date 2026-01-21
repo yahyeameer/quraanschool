@@ -19,12 +19,25 @@ export const store = mutation({
             return user._id;
         }
 
-        // Check for pending invitation
-        const email = identity.email || "";
-        const invitation = await ctx.db
-            .query("invitations")
-            .withIndex("by_email", (q) => q.eq("email", email))
-            .unique();
+        const email = identity.email;
+        const phone = identity.phoneNumber; // Get phone from Clerk
+
+        // Check for pending invitation (Email OR Phone)
+        let invitation = null;
+
+        if (email) {
+            invitation = await ctx.db
+                .query("invitations")
+                .withIndex("by_email", (q) => q.eq("email", email))
+                .unique();
+        }
+
+        if (!invitation && phone) {
+            invitation = await ctx.db
+                .query("invitations")
+                .withIndex("by_phone", (q) => q.eq("phone", phone))
+                .unique();
+        }
 
         let role = "guest";
 
@@ -37,8 +50,9 @@ export const store = mutation({
         // Create new user
         const newUserId = await ctx.db.insert("users", {
             clerkId: identity.subject,
-            name: identity.name || "Anonymous",
-            email: email,
+            name: identity.name || invitation?.studentName || "Anonymous", // Use name from invitation if available
+            email: email, // Can be undefined
+            phone: phone,
             role: role as any,
             avatarUrl: identity.pictureUrl,
         });

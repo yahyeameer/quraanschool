@@ -11,6 +11,7 @@ import { toast } from "sonner";
 
 export default function ManagerReportsPage() {
     const data = useQuery(api.reports.getSummary);
+    const chartData = data || [];
 
     const handleExport = () => {
         if (!data || data.length === 0) {
@@ -64,7 +65,7 @@ export default function ManagerReportsPage() {
                     </Button>
                 </div>
 
-                {data.length === 0 ? (
+                {chartData.length === 0 ? (
                     <div className="flex flex-col items-center justify-center p-12 border border-dashed border-white/10 rounded-2xl bg-zinc-900/20 text-center">
                         <div className="h-12 w-12 rounded-full bg-white/5 flex items-center justify-center mb-4">
                             <FileText className="h-6 w-6 text-zinc-500" />
@@ -80,7 +81,7 @@ export default function ManagerReportsPage() {
                             </CardHeader>
                             <CardContent className="h-[300px]">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={data}>
+                                    <BarChart data={chartData}>
                                         <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
                                         <XAxis
                                             dataKey="name"
@@ -113,7 +114,7 @@ export default function ManagerReportsPage() {
                             </CardHeader>
                             <CardContent className="h-[300px]">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={data}>
+                                    <BarChart data={chartData}>
                                         <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
                                         <XAxis
                                             dataKey="name"

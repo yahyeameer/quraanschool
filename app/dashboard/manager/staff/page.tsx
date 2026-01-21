@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { AddStaffModal } from "@/components/Staff/AddStaffModal";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { EditStaffModal } from "@/components/Staff/EditStaffModal";
+import { Loader2 } from "lucide-react";
 
 export default function ManagerStaffPage() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -170,5 +172,4 @@ export default function ManagerStaffPage() {
     );
 }
 
-import { EditStaffModal } from "@/components/Staff/EditStaffModal";
-import { Loader2 } from "lucide-react";
+

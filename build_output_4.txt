@@ -1,0 +1,24 @@
+
+> quraanschool@0.1.0 build
+> next build
+
+▲ Next.js 16.1.1 (Turbopack)
+- Environments: .env.local
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 34.6s
+  Running TypeScript ...
+Failed to compile.
+
+./app/dashboard/teacher/attendance/page.tsx:25:43
+Type error: Property 'getStudents' does not exist on type '{ list: FunctionReference<"query", "public", {}, { _id: Id<"classes">; _creationTime: number; subject?: string | undefined; description?: string | undefined; name: string; teacherId: Id<"users">; schedule: { ...; }[]; category: string; }[], string | undefined>; ... 6 more ...; update: FunctionReference<...>; }'.
+
+[0m [90m 23 |[39m
+ [90m 24 |[39m     [90m// Fetch students for selected class[39m
+[31m[1m>[22m[39m[90m 25 |[39m     [36mconst[39m students [33m=[39m useQuery(api[33m.[39mclasses[33m.[39mgetStudents[33m,[39m
+ [90m    |[39m                                           [31m[1m^[22m[39m
+ [90m 26 |[39m         selectedClassId [33m?[39m { classId[33m:[39m selectedClassId [36mas[39m any } [33m:[39m [32m"skip"[39m
+ [90m 27 |[39m     )[33m;[39m
+ [90m 28 |[39m[0m
+Next.js build worker exited with code: 1 and signal: null

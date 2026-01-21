@@ -16,7 +16,8 @@ export default defineSchema({
   users: defineTable({
     clerkId: v.string(),
     name: v.string(),
-    email: v.string(),
+    email: v.optional(v.string()), // Email might be optional if using phone
+    phone: v.optional(v.string()), // Added phone
     role: UserRole,
     avatarUrl: v.optional(v.string()),
     streak: v.optional(v.number()), // Gamification
@@ -24,7 +25,8 @@ export default defineSchema({
   })
     .index("by_clerkId", ["clerkId"])
     .index("by_parent", ["parentId"])
-    .index("by_role", ["role"]), // Add role index for performance
+    .index("by_role", ["role"])
+    .index("by_phone", ["phone"]), // Added phone index
 
   // Group/Class Management
   classes: defineTable({
@@ -143,11 +145,15 @@ export default defineSchema({
   }).index("by_status", ["status"]),
 
   invitations: defineTable({
-    email: v.string(),
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()), // Added phone
     role: v.string(), // "teacher" | "staff"
     status: v.string(), // "pending" | "accepted"
     invitedAt: v.string(),
-  }).index("by_email", ["email"]),
+    studentName: v.optional(v.string()), // To track who this invitation is for
+  })
+    .index("by_email", ["email"])
+    .index("by_phone", ["phone"]), // Added phone index
 
   // Staff Salaries
   salaries: defineTable({

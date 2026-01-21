@@ -1,13 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Mail, User } from "lucide-react";
+import { Users, Mail, User, Phone, UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AddStudentModal } from "@/components/Students/AddStudentModal";
 
 export default function ManagerStudentsPage() {
     const users = useQuery(api.admin.listUsers);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
     const students = users?.filter(u => u.role === "student") || [];
     const parents = users?.filter(u => u.role === "parent") || [];
 
@@ -19,11 +24,18 @@ export default function ManagerStudentsPage() {
     return (
         <RoleGuard requiredRole="manager">
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h2 className="text-3xl font-bold tracking-tight">Student Directory</h2>
                         <p className="text-muted-foreground">Manage currently enrolled students.</p>
                     </div>
+                    <Button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/20"
+                    >
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Add New Student
+                    </Button>
                 </div>
 
                 <div className="rounded-md border bg-card">
@@ -32,7 +44,7 @@ export default function ManagerStudentsPage() {
                             <thead>
                                 <tr className="border-b border-border text-muted-foreground">
                                     <th className="px-4 py-3 font-medium">Student Name</th>
-                                    <th className="px-4 py-3 font-medium">Email</th>
+                                    <th className="px-4 py-3 font-medium">Contact</th>
                                     <th className="px-4 py-3 font-medium">Guardian</th>
                                     <th className="px-4 py-3 font-medium">Status</th>
                                 </tr>
@@ -46,7 +58,23 @@ export default function ManagerStudentsPage() {
                                             </div>
                                             {student.name}
                                         </td>
-                                        <td className="px-4 py-3 text-muted-foreground">{student.email}</td>
+                                        <td className="px-4 py-3 text-muted-foreground">
+                                            <div className="flex flex-col gap-1">
+                                                {student.email && (
+                                                    <div className="flex items-center gap-1">
+                                                        <Mail className="h-3 w-3" />
+                                                        <span>{student.email}</span>
+                                                    </div>
+                                                )}
+                                                {student.phone && (
+                                                    <div className="flex items-center gap-1">
+                                                        <Phone className="h-3 w-3" />
+                                                        <span>{student.phone}</span>
+                                                    </div>
+                                                )}
+                                                {!student.email && !student.phone && <span className="text-xs italic">No contact info</span>}
+                                            </div>
+                                        </td>
                                         <td className="px-4 py-3">
                                             <span className={`text-xs ${student.parentId ? 'text-foreground font-medium' : 'text-muted-foreground italic'}`}>
                                                 {getParentName(student.parentId)}
@@ -70,6 +98,11 @@ export default function ManagerStudentsPage() {
                         </table>
                     </div>
                 </div>
+
+                <AddStudentModal
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                />
             </div>
         </RoleGuard>
     );
