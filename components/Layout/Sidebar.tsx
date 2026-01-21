@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLanguage } from "@/lib/language-context";
 import {
     LayoutDashboard,
     BookOpen,
@@ -10,7 +11,9 @@ import {
     Settings,
     Users,
     Calendar,
-    LogOut
+    LogOut,
+    DollarSign,
+    Wallet
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/nextjs";
@@ -58,6 +61,7 @@ const routes = [
 export function Sidebar({ isOpen }: { isOpen: boolean }) {
     const pathname = usePathname();
     const user = useQuery(api.users.currentUser);
+    const { t } = useLanguage();
 
     // Filter routes or show specific sets
     const getRoutes = () => {
@@ -65,34 +69,45 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
 
         if (user.role === "admin" || user.role === "manager") {
             const adminBase = [
-                { label: "Admin Console", icon: LayoutDashboard, href: "/admin", color: "text-red-500" },
-                { label: "Manager Home", icon: LayoutDashboard, href: "/dashboard/manager", color: "text-emerald-500" },
-                { label: "Applications", icon: BookOpen, href: "/dashboard/manager/applications", color: "text-amber-600" },
-                { label: "Staff", icon: GraduationCap, href: "/dashboard/manager/staff", color: "text-sky-500" },
-                { label: "Students", icon: Users, href: "/dashboard/manager/students", color: "text-indigo-500" },
-                { label: "Reports", icon: BookOpen, href: "/dashboard/manager/reports", color: "text-amber-500" },
+                { label: t.sidebar.adminConsole, icon: LayoutDashboard, href: "/admin", color: "text-red-500" },
+                { label: t.sidebar.managerHome, icon: LayoutDashboard, href: "/dashboard/manager", color: "text-emerald-500" },
+                { label: t.sidebar.applications, icon: BookOpen, href: "/dashboard/manager/applications", color: "text-amber-600" },
+                { label: t.sidebar.staff, icon: GraduationCap, href: "/dashboard/manager/staff", color: "text-sky-500" },
+                { label: t.sidebar.students, icon: Users, href: "/dashboard/manager/students", color: "text-indigo-500" },
+                { label: t.sidebar.fees, icon: DollarSign, href: "/dashboard/manager/fees", color: "text-emerald-600" },
+                { label: t.sidebar.salaries, icon: Wallet, href: "/dashboard/manager/salaries", color: "text-blue-600" },
+                { label: t.sidebar.academic, icon: GraduationCap, href: "/dashboard/manager/academic", color: "text-orange-500" },
+                { label: t.sidebar.reports, icon: BookOpen, href: "/dashboard/manager/reports", color: "text-amber-500" },
             ];
             return user.role === "admin" ? adminBase : adminBase.slice(1);
         }
 
         if (user.role === "teacher") {
             return [
-                { label: "Class Overview", icon: LayoutDashboard, href: "/dashboard/teacher", color: "text-sky-500" },
-                { label: "Attendance", icon: Calendar, href: "/dashboard/teacher/attendance", color: "text-purple-500" },
-                { label: "Assignments", icon: BookOpen, href: "/assignments", color: "text-orange-500" },
-                { label: "My Classes", icon: Users, href: "/halaqa", color: "text-violet-500" },
+                { label: t.sidebar.classOverview, icon: LayoutDashboard, href: "/dashboard/teacher", color: "text-sky-500" },
+                { label: t.sidebar.attendance, icon: Calendar, href: "/dashboard/teacher/attendance", color: "text-purple-500" },
+                { label: t.sidebar.exams, icon: FileText, href: "/dashboard/teacher/exams", color: "text-pink-500" },
+                { label: t.sidebar.myClasses, icon: Users, href: "/halaqa", color: "text-violet-500" },
             ];
         }
 
         if (user.role === "parent") {
             return [
-                { label: "Parent View", icon: LayoutDashboard, href: "/dashboard/parent", color: "text-purple-500" },
-                { label: "My Child", icon: Users, href: "/dashboard/parent/child", color: "text-emerald-500" },
-                { label: "Payments", icon: GraduationCap, href: "/dashboard/parent/payments", color: "text-blue-500" },
+                { label: t.sidebar.parentView, icon: LayoutDashboard, href: "/dashboard/parent", color: "text-purple-500" },
+                { label: t.sidebar.myChild, icon: Users, href: "/dashboard/parent/child", color: "text-emerald-500" },
+                { label: t.sidebar.payments, icon: GraduationCap, href: "/dashboard/parent/payments", color: "text-blue-500" },
             ];
         }
 
-        return routes; // Student / Default
+        // Student / Default
+        return [
+            { label: t.sidebar.dashboard, icon: LayoutDashboard, href: "/", color: "text-emerald-500" },
+            { label: t.sidebar.myHalaqa, icon: Users, href: "/halaqa", color: "text-violet-500" },
+            { label: t.sidebar.quranTracker, icon: BookOpen, href: "/tracker", color: "text-amber-500" },
+            { label: t.sidebar.assignments, icon: GraduationCap, href: "/assignments", color: "text-sky-500" },
+            { label: t.sidebar.schedule, icon: Calendar, href: "/schedule", color: "text-pink-700" },
+            { label: t.sidebar.settings, icon: Settings, href: "/settings" },
+        ];
     };
 
     const currentRoutes = getRoutes();
@@ -100,10 +115,11 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
     return (
         <div className={cn(
             "fixed start-0 top-16 h-[calc(100vh-4rem)] w-64 border-e border-border/50 bg-background/60 backdrop-blur-xl transition-transform duration-300 z-40",
-            isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
-            "ltr:left-0 rtl:right-0",
-            "rtl:translate-x-full lg:rtl:translate-x-0",
-            isOpen && "rtl:translate-x-0"
+            isOpen ? "translate-x-0" : "ltr:-translate-x-full rtl:translate-x-full lg:translate-x-0",
+            // Helper classes for RTL sidebar logic were missing or confusing, simplifying:
+            // "ltr:left-0 rtl:right-0",
+            // "rtl:translate-x-full lg:rtl:translate-x-0",
+            // isOpen && "rtl:translate-x-0"
         )}>
             <div className="space-y-4 py-4 flex flex-col h-full">
                 <div className="px-6 py-4 border-b border-border/50">
@@ -126,7 +142,7 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                                 )}
                             >
                                 <div className="flex items-center flex-1">
-                                    <route.icon className={cn("mr-3 h-5 w-5", route.color)} />
+                                    <route.icon className={cn("mr-3 h-5 w-5 rtl:ml-3 rtl:mr-0", route.color)} />
                                     {route.label}
                                 </div>
                             </Link>
@@ -138,8 +154,8 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                 <div className="px-3 py-2 border-t border-border/50">
                     <SignOutButton>
                         <button className="flex w-full items-center justify-start rounded-lg p-3 text-sm font-medium text-destructive transition-all hover:bg-destructive/10">
-                            <LogOut className="mr-3 h-5 w-5" />
-                            Sign Out
+                            <LogOut className="mr-3 h-5 w-5 rtl:ml-3 rtl:mr-0" />
+                            {t.sidebar.signOut}
                         </button>
                     </SignOutButton>
                 </div>

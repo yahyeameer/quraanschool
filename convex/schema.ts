@@ -148,4 +148,38 @@ export default defineSchema({
     status: v.string(), // "pending" | "accepted"
     invitedAt: v.string(),
   }).index("by_email", ["email"]),
+
+  // Staff Salaries
+  salaries: defineTable({
+    staffId: v.id("users"),
+    amount: v.number(),
+    month: v.string(), // e.g. "February 2026"
+    status: v.string(), // "paid", "pending"
+    paymentDate: v.string(),
+    notes: v.optional(v.string())
+  })
+    .index("by_staff", ["staffId"])
+    .index("by_month", ["month"])
+    .index("by_status", ["status"]),
+
+  // Exams
+  exams: defineTable({
+    classId: v.id("classes"),
+    subject: v.string(), // "Quran", "Tajweed", etc.
+    date: v.string(),
+    totalMarks: v.number(),
+    title: v.string(), // "Midterm", "Final", "Quiz 1"
+    description: v.optional(v.string()),
+    status: v.string(), // "scheduled", "completed", "released"
+  }).index("by_class", ["classId"]),
+
+  // Exam Results
+  exam_results: defineTable({
+    examId: v.id("exams"),
+    studentId: v.id("users"),
+    marksObtained: v.number(),
+    notes: v.optional(v.string()),
+  })
+    .index("by_exam", ["examId"])
+    .index("by_student", ["studentId"]),
 });

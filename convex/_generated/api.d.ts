@@ -8,16 +8,19 @@
  * @module
  */
 
+import type * as academic from "../academic.js";
 import type * as admin from "../admin.js";
 import type * as assignments from "../assignments.js";
 import type * as attendance from "../attendance.js";
 import type * as classes from "../classes.js";
 import type * as dailyProgress from "../dailyProgress.js";
+import type * as finance from "../finance.js";
 import type * as notifications from "../notifications.js";
 import type * as parent from "../parent.js";
 import type * as payments from "../payments.js";
 import type * as permissions from "../permissions.js";
 import type * as registrations from "../registrations.js";
+import type * as reports from "../reports.js";
 import type * as schedule from "../schedule.js";
 import type * as tasks from "../tasks.js";
 import type * as teacher from "../teacher.js";
@@ -31,16 +34,19 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  academic: typeof academic;
   admin: typeof admin;
   assignments: typeof assignments;
   attendance: typeof attendance;
   classes: typeof classes;
   dailyProgress: typeof dailyProgress;
+  finance: typeof finance;
   notifications: typeof notifications;
   parent: typeof parent;
   payments: typeof payments;
   permissions: typeof permissions;
   registrations: typeof registrations;
+  reports: typeof reports;
   schedule: typeof schedule;
   tasks: typeof tasks;
   teacher: typeof teacher;

@@ -34,6 +34,7 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
           <body
             className={`${inter.variable} ${amiri.variable} ${notoNaskh.variable} font-sans antialiased`}
+            suppressHydrationWarning
           >
             <ConvexClientProvider>
               <AppShell>{children}</AppShell>

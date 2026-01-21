@@ -8,7 +8,16 @@ import { HalaqaCard } from "@/components/Halaqa/HalaqaCard";
 import { Plus } from "lucide-react";
 
 export default function HalaqaPage() {
-    const classes = useQuery(api.classes.list);
+    const user = useQuery(api.users.currentUser);
+    // If teacher, show only their classes. If admin/manager query all. If student... they probably shouldn't see 'all' but for now list all or filtered
+    // Assuming 'list' returns all.
+    // Better logic:
+    const allClasses = useQuery(api.classes.list);
+    const teacherClasses = useQuery(api.classes.getTeacherClasses);
+
+    // Choose which list to show based on role
+    const classes = user?.role === "teacher" ? teacherClasses : allClasses;
+
     const [showForm, setShowForm] = useState(false);
 
     return (

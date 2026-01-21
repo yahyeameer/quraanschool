@@ -14,6 +14,8 @@ import { Badge } from "@/components/ui/badge";
 export default function ManagerStaffPage() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const users = useQuery(api.admin.listUsers);
+    const invitations = useQuery(api.admin.listInvitations);
+    const removeStaff = useMutation(api.admin.removeStaff);
     const [editingUser, setEditingUser] = useState<any>(null);
 
     // Show loading state while data is fetching

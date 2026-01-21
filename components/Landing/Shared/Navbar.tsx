@@ -68,7 +68,6 @@ export function Navbar() {
                 <nav className="hidden md:flex items-center gap-1 relative z-10">
                     {[
                         { label: t.landing.features.title, href: "#features" },
-                        { label: t.landing.pricing.title, href: "#pricing" },
                         { label: "About", href: "#about" }
                     ].map((link) => (
                         <Link
@@ -151,7 +150,6 @@ export function Navbar() {
                                 <nav className="grid gap-2">
                                     {[
                                         { label: t.landing.features.title, href: "#features" },
-                                        { label: t.landing.pricing.title, href: "#pricing" },
                                         { label: "About", href: "#about" }
                                     ].map((link, i) => (
                                         <motion.div
