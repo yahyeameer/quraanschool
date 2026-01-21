@@ -22,7 +22,7 @@ export default function TeacherAttendancePage() {
     const classes = useQuery(api.classes.getTeacherClasses) || [];
 
     // Fetch students for selected class
-    const students = useQuery(api.classes.getStudents,
+    const students = useQuery(api.classes.getClassStudents,
         selectedClassId ? { classId: selectedClassId as any } : "skip"
     );
 

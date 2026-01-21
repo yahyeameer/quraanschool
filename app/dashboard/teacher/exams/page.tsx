@@ -38,7 +38,7 @@ export default function TeacherExamsPage() {
 
     // Fetch students for grading
     const selectedExam = (exams || []).find(e => e._id === selectedExamId);
-    const studentsForGrading = useQuery(api.classes.getStudents,
+    const studentsForGrading = useQuery(api.classes.getClassStudents,
         selectedExam ? { classId: selectedExam.classId } : "skip"
     );
 

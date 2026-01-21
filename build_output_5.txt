@@ -1,0 +1,24 @@
+
+> quraanschool@0.1.0 build
+> next build
+
+▲ Next.js 16.1.1 (Turbopack)
+- Environments: .env.local
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 32.2s
+  Running TypeScript ...
+Failed to compile.
+
+./components/Layout/Sidebar.tsx:89:49
+Type error: Cannot find name 'FileText'.
+
+[0m [90m 87 |[39m                 { label[33m:[39m t[33m.[39msidebar[33m.[39mclassOverview[33m,[39m icon[33m:[39m [33mLayoutDashboard[39m[33m,[39m href[33m:[39m [32m"/dashboard/teacher"[39m[33m,[39m color[33m:[39m [32m"text-sky-500"[39m }[33m,[39m
+ [90m 88 |[39m                 { label[33m:[39m t[33m.[39msidebar[33m.[39mattendance[33m,[39m icon[33m:[39m [33mCalendar[39m[33m,[39m href[33m:[39m [32m"/dashboard/teacher/attendance"[39m[33m,[39m color[33m:[39m [32m"text-purple-500"[39m }[33m,[39m
+[31m[1m>[22m[39m[90m 89 |[39m                 { label[33m:[39m t[33m.[39msidebar[33m.[39mexams[33m,[39m icon[33m:[39m [33mFileText[39m[33m,[39m href[33m:[39m [32m"/dashboard/teacher/exams"[39m[33m,[39m color[33m:[39m [32m"text-pink-500"[39m }[33m,[39m
+ [90m    |[39m                                                 [31m[1m^[22m[39m
+ [90m 90 |[39m                 { label[33m:[39m t[33m.[39msidebar[33m.[39mmyClasses[33m,[39m icon[33m:[39m [33mUsers[39m[33m,[39m href[33m:[39m [32m"/halaqa"[39m[33m,[39m color[33m:[39m [32m"text-violet-500"[39m }[33m,[39m
+ [90m 91 |[39m             ][33m;[39m
+ [90m 92 |[39m         }[0m
+Next.js build worker exited with code: 1 and signal: null
