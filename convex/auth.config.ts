@@ -1,7 +1,7 @@
 import { AuthConfig } from "convex/server";
 
-// For now, hardcoding the dev domain to avoid env var issues during local dev
-const clerkDomain = "https://leading-lamb-78.clerk.accounts.dev";
+// Use env var for production, fallback to dev domain for local
+const clerkDomain = process.env.CLERK_JWT_ISSUER_DOMAIN || "https://leading-lamb-78.clerk.accounts.dev";
 
 export default {
   providers: [
