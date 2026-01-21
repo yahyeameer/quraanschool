@@ -7,6 +7,7 @@ import { Check, X, Clock, Loader2, Users, CalendarDays, Sparkles, ChevronRight, 
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useLanguage } from "@/lib/language-context";
 
 export function AttendanceMarker() {
     const { t, locale, dir } = useLanguage();

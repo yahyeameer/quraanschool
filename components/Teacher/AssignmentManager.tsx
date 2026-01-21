@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Plus, FileText, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function AssignmentManager() {
     const classes = useQuery(api.teacher.getMyClasses);
@@ -19,9 +20,12 @@ export function AssignmentManager() {
         dueDate: new Date().toISOString().split('T')[0]
     });
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedClassId) return;
+        setIsSubmitting(true);
         try {
             await createAssignment({
                 classId: selectedClassId as any,
@@ -29,10 +33,13 @@ export function AssignmentManager() {
                 description: form.description,
                 dueDate: form.dueDate
             });
-            alert("Assignment created!");
+            toast.success("Assignment created successfully");
             setForm({ title: "", description: "", dueDate: new Date().toISOString().split('T')[0] });
         } catch (error) {
             console.error(error);
+            toast.error("Failed to create assignment");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -81,8 +88,9 @@ export function AssignmentManager() {
                                 required
                             />
                         </div>
-                        <Button type="submit" className="w-full" disabled={!selectedClassId}>
-                            Post Assignment
+                        <Button type="submit" className="w-full" disabled={!selectedClassId || isSubmitting}>
+                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                            {isSubmitting ? "Posting..." : "Post Assignment"}
                         </Button>
                     </form>
 

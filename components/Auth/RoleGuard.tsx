@@ -6,12 +6,15 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
+// Define proper role type
+type UserRole = "admin" | "manager" | "teacher" | "staff" | "parent" | "student" | "guest";
+
 export function RoleGuard({
     children,
     requiredRole
 }: {
     children: React.ReactNode,
-    requiredRole?: ("admin" | "manager" | "teacher" | "staff" | "parent") | ("admin" | "manager" | "teacher" | "staff" | "parent")[]
+    requiredRole?: UserRole | UserRole[]
 }) {
     const user = useQuery(api.users.currentUser);
     const router = useRouter();
@@ -26,21 +29,27 @@ export function RoleGuard({
             return;
         }
 
-        // 2. Specific Page Guard
+// 2. Specific Page Guard
         if (requiredRole) {
             const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
 
             // Admin can access everything
             if (user?.role === "admin") return;
 
-            if (!user || !allowedRoles.includes(user.role as any)) {
-                // Determine redirect based on role
-                if (user?.role === "admin") router.push("/admin");
-                else if (user?.role === "manager") router.push("/dashboard/manager");
-                else if (user?.role === "teacher") router.push("/dashboard/teacher");
-                else if (user?.role === "parent") router.push("/dashboard/parent");
-                else if (user?.role === "staff") router.push("/dashboard/staff");
-                else router.push("/"); // Default
+            if (!user || !allowedRoles.includes(user.role)) {
+                // Determine redirect based on role (admin is already handled above)
+                if (user) {
+                    const userRole = user.role;
+                    if (userRole === "manager") router.push("/dashboard/manager");
+                    else if (userRole === "teacher") router.push("/dashboard/teacher");
+                    else if (userRole === "parent") router.push("/dashboard/parent");
+                    else if (userRole === "staff") router.push("/dashboard/staff");
+                    else if (userRole === "student") router.push("/tracker");
+                    else router.push("/"); // Default
+                } else {
+                    router.push("/");
+                }
+                return;
             }
         }
 
@@ -54,10 +63,10 @@ export function RoleGuard({
         );
     }
 
-    // Role mismatch? Return null while redirect happens
+// Role mismatch? Return null while redirect happens
     if (requiredRole) {
         const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
-        if (!user || (!allowedRoles.includes(user.role as any) && user.role !== "admin")) return null;
+        if (!user || (!allowedRoles.includes(user.role) && user.role !== "admin")) return null;
     }
 
     if (user?.role === "guest" && pathname !== "/onboarding") return null;

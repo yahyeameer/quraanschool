@@ -68,10 +68,10 @@ export function HalaqaCard({ data }: { data: ClassData }) {
                         +8
                     </div>
                 </div>
-                <button className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/5 text-[10px] font-bold text-white hover:bg-emerald-500 hover:text-black transition-all">
-                    <span>Manage</span>
-                    <ArrowUpRight className="h-3 w-3" />
-                </button>
+
+                <div className="flex gap-2">
+                    <HalaqaActions classData={data} />
+                </div>
             </div>
 
             {/* Hover Sparkle */}
@@ -79,5 +79,89 @@ export function HalaqaCard({ data }: { data: ClassData }) {
                 <Sparkles className="h-4 w-4 text-emerald-500/40 animate-pulse" />
             </div>
         </motion.div>
+    );
+}
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVertical, Trash2, Pencil } from "lucide-react";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+
+function HalaqaActions({ classData }: { classData: ClassData }) {
+    const deleteClass = useMutation(api.classes.deleteClass);
+
+    // Check if user has permission (optional: could be part of a hook or context)
+    // For now we rely on backend auth checks, frontend just shows button for everyone but error if unauthorized
+    // Ideally we pass current user role to this component
+
+    const handleDelete = async () => {
+        try {
+            await deleteClass({ classId: classData._id as any });
+            toast.success("Halaqa deleted successfully");
+        } catch (error) {
+            toast.error("Failed to delete Halaqa");
+            console.error(error);
+        }
+    };
+
+    return (
+        <AlertDialog>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <button className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/5 text-[10px] font-bold text-white hover:bg-emerald-500 hover:text-black transition-all">
+                        <span>Manage</span>
+                        <ArrowUpRight className="h-3 w-3" />
+                    </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-800 text-white">
+                    <DropdownMenuItem className="focus:bg-zinc-800 cursor-pointer text-xs font-medium">
+                        <Pencil className="mr-2 h-3 w-3" /> Edit Details
+                    </DropdownMenuItem>
+                    <AlertDialogTrigger asChild>
+                        <DropdownMenuItem className="focus:bg-red-900/20 text-red-400 focus:text-red-400 cursor-pointer text-xs font-medium">
+                            <Trash2 className="mr-2 h-3 w-3" /> Delete Halaqa
+                        </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+            <AlertDialogContent className="bg-zinc-950 border-zinc-800 text-white">
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-zinc-400">
+                        This action cannot be undone. This will permanently delete the class
+                        <span className="font-bold text-emerald-400"> "{classData.name}" </span>
+                        and remove all student enrollments.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-white hover:text-white">Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                        onClick={handleDelete}
+                        className="bg-red-600 hover:bg-red-700 text-white border-0"
+                    >
+                        Delete Class
+                    </AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
     );
 }

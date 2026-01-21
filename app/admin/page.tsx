@@ -8,6 +8,10 @@ import { PaymentManager } from "@/components/Admin/PaymentManager";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import { CreateHalaqaForm } from "@/components/Halaqa/CreateHalaqaForm";
 import { HalaqaCard } from "@/components/Halaqa/HalaqaCard";
+import { Id } from "@/convex/_generated/dataModel";
+
+// Define proper types
+type UserRole = "admin" | "manager" | "teacher" | "staff" | "parent" | "student" | "guest";
 
 export default function AdminPage() {
     const stats = useQuery(api.admin.getStats);
@@ -17,11 +21,17 @@ export default function AdminPage() {
     const linkParent = useMutation(api.admin.linkStudentToParent);
 
     const handleRoleChange = async (userId: string, newRole: string) => {
-        await updateRole({ userId: userId as any, role: newRole });
+        await updateRole({ 
+            userId: userId as Id<"users">, 
+            role: newRole as UserRole 
+        });
     };
 
     const handleParentLink = async (studentId: string, parentId: string) => {
-        await linkParent({ studentId: studentId as any, parentId });
+        await linkParent({ 
+            studentId: studentId as Id<"users">, 
+            parentId: parentId === "" ? undefined : parentId as Id<"users"> 
+        });
     };
 
     if (!stats) return <div className="p-8">Loading dashboard...</div>;
@@ -82,7 +92,7 @@ export default function AdminPage() {
                                         <td className="px-4 py-3 flex gap-2">
                                             <select
                                                 value={user.role}
-                                                onChange={(e) => handleRoleChange(user._id, e.target.value)}
+                                                onChange={(e) => handleRoleChange(user._id, e.target.value as UserRole)}
                                                 className="rounded border border-input bg-background px-2 py-1 text-xs"
                                             >
                                                 <option value="student">Student</option>

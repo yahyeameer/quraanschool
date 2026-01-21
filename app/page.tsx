@@ -34,7 +34,7 @@ export default function Home() {
                 <p className="text-sm text-muted-foreground">You are currently logged in.</p>
               </div>
               <div className="flex gap-4 items-center">
-                <Link href="/dashboard/manager">
+                <Link href="/dashboard">
                   <Button>
                     Go to Dashboard <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>

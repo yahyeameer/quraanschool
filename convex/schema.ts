@@ -1,18 +1,30 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
+// Define role enum for type safety
+const UserRole = v.union(
+  v.literal("admin"),
+  v.literal("manager"),
+  v.literal("teacher"),
+  v.literal("staff"),
+  v.literal("parent"),
+  v.literal("student"),
+  v.literal("guest")
+);
+
 export default defineSchema({
   users: defineTable({
     clerkId: v.string(),
     name: v.string(),
     email: v.string(),
-    role: v.string(), // "admin" | "teacher" | "student" | "parent"
+    role: UserRole,
     avatarUrl: v.optional(v.string()),
     streak: v.optional(v.number()), // Gamification
     parentId: v.optional(v.id("users")), // For students
   })
     .index("by_clerkId", ["clerkId"])
-    .index("by_parent", ["parentId"]),
+    .index("by_parent", ["parentId"])
+    .index("by_role", ["role"]), // Add role index for performance
 
   // Group/Class Management
   classes: defineTable({
@@ -22,7 +34,8 @@ export default defineSchema({
     category: v.string(), // "Hifz", "Nazra", "Tajweed" -> Can be legacy or specific to Quran
     subject: v.optional(v.string()), // "Quran", "Fiqh", "Seerah", "Arabic", "Math"
     description: v.optional(v.string()),
-  }),
+  })
+    .index("by_teacher", ["teacherId"]), // Add teacher index for performance
 
   // Connecting Students to Classes
   enrollments: defineTable({
@@ -89,7 +102,10 @@ export default defineSchema({
     classId: v.id("classes"),
     date: v.string(), // YYYY-MM-DD
     status: v.string(), // "present" | "absent" | "late"
-  }).index("by_class_date", ["classId", "date"]),
+  })
+    .index("by_class_date", ["classId", "date"])
+    .index("by_student", ["studentId"])
+    .index("by_date", ["date"]),
 
   // Payments
   payments: defineTable({
@@ -98,7 +114,10 @@ export default defineSchema({
     month: v.string(), // "January 2026"
     date: v.string(), // Transaction date
     status: v.string(), // "paid" | "pending"
-  }).index("by_student", ["studentId"]),
+  })
+    .index("by_student", ["studentId"])
+    .index("by_date", ["date"])
+    .index("by_status", ["status"]),
 
   notifications: defineTable({
     userId: v.id("users"),
@@ -122,4 +141,11 @@ export default defineSchema({
     notes: v.optional(v.string()),
     submittedAt: v.string(),
   }).index("by_status", ["status"]),
+
+  invitations: defineTable({
+    email: v.string(),
+    role: v.string(), // "teacher" | "staff"
+    status: v.string(), // "pending" | "accepted"
+    invitedAt: v.string(),
+  }).index("by_email", ["email"]),
 });

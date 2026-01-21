@@ -30,6 +30,9 @@ export const get = query({
     },
 });
 
+// Alias for API consistency
+export const list = get;
+
 // Admin mutation to update status
 export const updateStatus = mutation({
     args: {

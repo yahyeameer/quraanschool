@@ -16,33 +16,48 @@ export const store = mutation({
             .unique();
 
         if (user !== null) {
-            // If user exists, update if needed, otherwise return their ID
-            // For now, let's just return.
-            // Optionally update name/email/avatar if changed
             return user._id;
         }
 
-        // Capture explicit role from token if present, otherwise default to "student"
-        // Ideally this comes from Clerk's public metadata, but for now we default.
-        // If you add Roles in Clerk, they will be in identity.tokenIdentifier or similar claims.
+        // Check for pending invitation
+        const email = identity.email || "";
+        const invitation = await ctx.db
+            .query("invitations")
+            .withIndex("by_email", (q) => q.eq("email", email))
+            .unique();
+
+        let role = "guest";
+
+        // If valid invitation exists, assign role and mark accepted
+        if (invitation && invitation.status === "pending") {
+            role = invitation.role;
+            await ctx.db.patch(invitation._id, { status: "accepted" });
+        }
 
         // Create new user
         const newUserId = await ctx.db.insert("users", {
             clerkId: identity.subject,
             name: identity.name || "Anonymous",
-            email: identity.email || "no-email@example.com",
-            role: "guest", // Default to guest for onboarding
+            email: email,
+            role: role as any,
             avatarUrl: identity.pictureUrl,
         });
+
         return newUserId;
     },
 });
 
 export const completeOnboarding = mutation({
-    args: { role: v.string() }, // "student" | "teacher" | "admin"
+    args: { role: v.string() }, // "student" | "teacher" | "parent"
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity();
         if (!identity) throw new Error("Unauthorized");
+
+        // SECURITY FIX: Only allow safe roles during self-onboarding
+        const allowedRoles = ["student", "teacher", "parent"];
+        if (!allowedRoles.includes(args.role)) {
+            throw new Error("Invalid role. Please select Student, Teacher, or Parent.");
+        }
 
         const user = await ctx.db
             .query("users")

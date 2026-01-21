@@ -39,11 +39,51 @@ export const getClassStudents = query({
         const students = await Promise.all(
             enrollments.map(async (e) => {
                 const student = await ctx.db.get(e.studentId);
-                return student;
+                return student ? { ...student, enrollmentId: e._id, enrollmentStatus: e.status } : null;
             })
         );
 
         return students.filter((s) => s !== null);
+    },
+});
+
+// Remove a student from a class
+export const unenroll = mutation({
+    args: {
+        studentId: v.id("users"),
+        classId: v.id("classes"),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Unauthorized");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+
+        // Only allow admin, manager, or the class teacher
+        const classData = await ctx.db.get(args.classId);
+        if (!classData) throw new Error("Class not found");
+
+        const isAdmin = user.role === "admin" || user.role === "manager";
+        const isTeacher = classData.teacherId === user._id;
+
+        if (!isAdmin && !isTeacher) {
+            throw new Error("Only admins or the class teacher can unenroll students");
+        }
+
+        const enrollment = await ctx.db
+            .query("enrollments")
+            .withIndex("by_student", (q) => q.eq("studentId", args.studentId))
+            .filter((q) => q.eq(q.field("classId"), args.classId))
+            .unique();
+
+        if (enrollment) {
+            await ctx.db.delete(enrollment._id);
+        }
     },
 });
 
@@ -105,3 +145,88 @@ export const enroll = mutation({
         });
     },
 });
+
+// Delete a class (admin/teacher only)
+export const deleteClass = mutation({
+    args: { classId: v.id("classes") },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Unauthorized");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+
+        // Only allow admin, manager, or the teacher who owns the class
+        const classData = await ctx.db.get(args.classId);
+        if (!classData) throw new Error("Class not found");
+
+        const isAdmin = user.role === "admin" || user.role === "manager";
+        const isOwner = classData.teacherId === user._id;
+
+        if (!isAdmin && !isOwner) {
+            throw new Error("Only admins or the class teacher can delete this class");
+        }
+
+        // Delete related enrollments first
+        const enrollments = await ctx.db
+            .query("enrollments")
+            .withIndex("by_class", (q) => q.eq("classId", args.classId))
+            .collect();
+
+        for (const enrollment of enrollments) {
+            await ctx.db.delete(enrollment._id);
+        }
+
+        // Delete the class
+        await ctx.db.delete(args.classId);
+    },
+});
+
+// Update class details
+export const update = mutation({
+    args: {
+        classId: v.id("classes"),
+        name: v.optional(v.string()),
+        category: v.optional(v.string()),
+        subject: v.optional(v.string()),
+        description: v.optional(v.string()),
+        schedule: v.optional(v.array(v.object({ day: v.string(), time: v.string() }))),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Unauthorized");
+
+        const user = await ctx.db
+            .query("users")
+            .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+            .unique();
+
+        if (!user) throw new Error("User not found");
+
+        const classData = await ctx.db.get(args.classId);
+        if (!classData) throw new Error("Class not found");
+
+        const isAdmin = user.role === "admin" || user.role === "manager";
+        const isOwner = classData.teacherId === user._id;
+
+        if (!isAdmin && !isOwner) {
+            throw new Error("Only admins or the class teacher can update this class");
+        }
+
+        const { classId, ...updates } = args;
+        // Filter out undefined values
+        const patchData: Record<string, any> = {};
+        if (updates.name !== undefined) patchData.name = updates.name;
+        if (updates.category !== undefined) patchData.category = updates.category;
+        if (updates.subject !== undefined) patchData.subject = updates.subject;
+        if (updates.description !== undefined) patchData.description = updates.description;
+        if (updates.schedule !== undefined) patchData.schedule = updates.schedule;
+
+        await ctx.db.patch(classId, patchData);
+    },
+});
+
