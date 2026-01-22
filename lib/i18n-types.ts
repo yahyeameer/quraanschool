@@ -1,5 +1,5 @@
 
-export type Locale = 'en' | 'ar';
+export type Locale = 'en' | 'ar' | 'so';
 
 export type Dictionary = {
     common: {
@@ -53,6 +53,8 @@ export type Dictionary = {
         parentView: string;
         myChild: string;
         payments: string;
+        messages: string;
+        analytics: string;
         signOut: string;
     };
     finance: {
@@ -124,3 +126,4 @@ export type Dictionary = {
 };
 
 export const defaultLocale: Locale = 'en';
+export const locales: Locale[] = ['en', 'ar', 'so'];

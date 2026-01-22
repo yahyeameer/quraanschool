@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🕌 Al-Maqra'a - Quran School Management System
 
-## Getting Started
+A next-generation Islamic school management system that connects students, teachers, and parents to the Quran through a premium, distraction-free, and motivating interface.
 
-First, run the development server:
+## ✨ Vision
 
+Al-Maqra'a (المقرأة) is a spiritual yet deeply technological ecosystem designed with the **"Digital Noor"** design philosophy - combining modern web technology with the reverence and beauty befitting Quranic education.
+
+## 🛠 Tech Stack
+
+- **Framework**: [Next.js 15](https://nextjs.org) with App Router
+- **Backend**: [Convex](https://convex.dev) - Real-time database and serverless functions
+- **Authentication**: [Clerk](https://clerk.com) - User management with role-based access
+- **Styling**: Tailwind CSS with custom design system
+- **UI Components**: shadcn/ui, Radix UI primitives
+- **Animation**: Framer Motion
+- **Language**: TypeScript
+
+## 🎯 Key Features
+
+### Multi-Role Dashboard System
+- **👨‍🎓 Student Dashboard**: Progress tracking, assignments, and gamified learning
+- **👨‍🏫 Teacher Dashboard**: Class management, attendance, grading, and analytics
+- **👪 Parent Dashboard**: Monitor child's progress and communication
+- **⚙️ Admin Dashboard**: Staff management, financial oversight, and system administration
+
+### Core Functionality
+- 📚 **Halaqa Management**: Create and manage Quran study circles
+- ✅ **Attendance Tracking**: Real-time attendance with analytics
+- 📊 **Progress Monitoring**: Track Hifz and Nazra progress
+- 💰 **Payment System**: Student fee management and tracking
+- 📝 **Assignment System**: Create and grade assignments
+- 🌙 **RTL Support**: Full Arabic and Somali language support
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ installed
+- Convex account ([sign up](https://convex.dev))
+- Clerk account ([sign up](https://clerk.com))
+
+### Installation
+
+1. **Clone and install dependencies**:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Set up environment variables**:
+Create a `.env.local` file with:
+```env
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Convex Backend
+NEXT_PUBLIC_CONVEX_URL=your_convex_deployment_url
+CONVEX_DEPLOYMENT=your_convex_deployment_name
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. **Run Convex setup**:
+```bash
+npx convex dev
+```
 
-## Learn More
+4. **Start the development server**:
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000) to see the application.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📖 Design Documentation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+For detailed design philosophy, UI/UX specifications, and feature roadmap, see [quraan.md](./quraan.md).
 
-## Deploy on Vercel
+## 🔐 Role-Based Access
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The system implements secure role-based routing:
+- `/dashboard/student` - Student interface
+- `/dashboard/teacher` - Teacher management tools
+- `/dashboard/parent` - Parent monitoring dashboard
+- `/dashboard/admin` - Administrative controls
+- `/onboarding` - New user role selection
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🌐 Deployment
+
+The easiest way to deploy is using [Vercel](https://vercel.com):
+
+```bash
+# Connect to Vercel
+vercel
+
+# Deploy to production
+vercel --prod
+```
+
+Make sure to configure environment variables in your Vercel project settings.
+
+## 📝 License
+
+This project is private and proprietary.
+
+---
+
+**Built with love for the Muslim community** 🤲

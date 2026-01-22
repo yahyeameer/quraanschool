@@ -188,4 +188,65 @@ export default defineSchema({
   })
     .index("by_exam", ["examId"])
     .index("by_student", ["studentId"]),
+
+  // Messages    // Communication
+  messages: defineTable({
+    senderId: v.id("users"),
+    recipientId: v.id("users"),
+    subject: v.optional(v.string()),
+    message: v.string(),
+    isRead: v.boolean(),
+    createdAt: v.string(),
+    type: v.string(), // "direct", "announcement", "class_notice"
+    classId: v.optional(v.id("classes")),
+  })
+    .index("by_recipient", ["recipientId"])
+    .index("by_sender", ["senderId"]),
+
+  // Gamification
+  student_stats: defineTable({
+    studentId: v.id("users"),
+    currentStreak: v.number(),
+    longestStreak: v.number(),
+    lastLoginDate: v.string(),
+    totalAyahs: v.number(),
+    points: v.number(),
+    level: v.number(),
+  })
+    .index("by_student", ["studentId"])
+    .index("by_points", ["points"]),
+
+  achievements: defineTable({
+    studentId: v.id("users"),
+    type: v.string(), // "badge", "milestone"
+    title: v.string(),
+    description: v.string(),
+    icon: v.string(),
+    earnedAt: v.string(),
+  })
+    .index("by_student", ["studentId"]),
+
+  // Fee structures for billing
+  fee_structures: defineTable({
+    studentId: v.id("users"),
+    monthlyAmount: v.number(),
+    discount: v.optional(v.number()),
+    dueDay: v.number(), // day of month (1-28)
+    status: v.string(), // "active", "paused"
+    notes: v.optional(v.string()),
+  })
+    .index("by_student", ["studentId"])
+    .index("by_status", ["status"]),
+
+  // Expenses
+  expenses: defineTable({
+    title: v.string(),
+    amount: v.number(),
+    category: v.string(), // "salary", "maintenance", "utility", "other"
+    date: v.string(),
+    description: v.optional(v.string()),
+    recordedBy: v.id("users"),
+  })
+    .index("by_date", ["date"])
+    .index("by_category", ["category"]),
 });

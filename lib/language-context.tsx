@@ -1,32 +1,40 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Locale, Dictionary, defaultLocale } from './i18n-types';
 import { en } from './locales/en';
 import { ar } from './locales/ar';
+import { so } from './locales/so';
+import { Dictionary, Locale } from './i18n-types';
 
-type LanguageContextType = {
+const dictionaries: Record<Locale, Dictionary> = {
+    en,
+    ar,
+    so
+};
+
+interface LanguageContextType {
     locale: Locale;
-    setLocale: (locale: Locale) => void;
+    setLocale: (lang: Locale) => void;
     t: Dictionary;
     dir: 'ltr' | 'rtl';
-};
+}
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-    const [locale, setLocale] = useState<Locale>(defaultLocale);
+    const [locale, setLocale] = useState<Locale>('en');
     const [t, setT] = useState<Dictionary>(en);
     const [dir, setDir] = useState<'ltr' | 'rtl'>('ltr');
 
     useEffect(() => {
-        // Load dictionary based on locale
-        const dictionary = locale === 'ar' ? ar : en;
-        setT(dictionary);
+        // Update dict
+        setT(dictionaries[locale]);
+
+        // Update direction
         const direction = locale === 'ar' ? 'rtl' : 'ltr';
         setDir(direction);
 
-        // Update HTML attribute
+        // Update document
         document.documentElement.dir = direction;
         document.documentElement.lang = locale;
     }, [locale]);

@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, DollarSign, CheckCircle, XCircle, Search, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { PaymentReminders } from "@/components/Finance/PaymentReminders";
 
 export default function FeesPage() {
     const currentMonthStr = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
@@ -22,6 +23,20 @@ export default function FeesPage() {
     const [isIdModalOpen, setIsIdModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<any>(null);
     const [amount, setAmount] = useState("30");
+    const generateInvoices = useMutation(api.billing.generateMonthlyPayments);
+    const [isGenerating, setIsGenerating] = useState(false);
+
+    const handleGenerateInvoices = async () => {
+        setIsGenerating(true);
+        try {
+            const result = await generateInvoices({ month: selectedMonth });
+            toast.success(`Generated ${result.generated} invoices for ${selectedMonth}`);
+        } catch (error) {
+            toast.error("Failed to generate invoices");
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
     const handleLogPayment = async () => {
         if (!selectedStudent) return;
@@ -50,7 +65,7 @@ export default function FeesPage() {
     const pendingCount = feesData.filter(item => item.status === 'unpaid').length;
 
     return (
-        <RoleGuard requiredRole="manager">
+        <RoleGuard requiredRole={["manager", "staff"]}>
             <div className="space-y-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -60,11 +75,24 @@ export default function FeesPage() {
                         <p className="text-muted-foreground mt-1">Manage tuition collection and payment records.</p>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-bold text-white">{selectedMonth}</span>
-                        {/* Month selector could go here */}
+                        <Button
+                            variant="outline"
+                            className="gap-2"
+                            onClick={handleGenerateInvoices}
+                            disabled={isGenerating}
+                        >
+                            {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                            Generate Invoices
+                        </Button>
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-muted/50 border border-white/10">
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm font-bold text-white">{selectedMonth}</span>
+                        </div>
                     </div>
                 </div>
+
+                {/* Overdue Payments Section */}
+                <PaymentReminders />
 
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <Card className="glass-panel bg-emerald-900/10 border-emerald-500/20">
@@ -121,8 +149,8 @@ export default function FeesPage() {
                                                 </td>
                                                 <td className="p-4">
                                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${record.status === 'paid'
-                                                            ? 'bg-emerald-500/20 text-emerald-500'
-                                                            : 'bg-red-500/20 text-red-500'
+                                                        ? 'bg-emerald-500/20 text-emerald-500'
+                                                        : 'bg-red-500/20 text-red-500'
                                                         }`}>
                                                         {record.status === 'paid' ? 'Paid' : 'Unpaid'}
                                                     </span>

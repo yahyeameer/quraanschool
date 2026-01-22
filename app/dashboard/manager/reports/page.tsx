@@ -9,32 +9,13 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
+import { ExportButtons } from "@/components/Reporting/ExportButtons";
+
 export default function ManagerReportsPage() {
     const data = useQuery(api.reports.getSummary);
     const chartData = data || [];
 
-    const handleExport = () => {
-        if (!data || data.length === 0) {
-            toast.error("No data available to export");
-            return;
-        }
-
-        const headers = ["Month", "Attendance Rate (%)", "Tuition Collected ($)"];
-        const csvContent = [
-            headers.join(","),
-            ...data.map(row => `${row.name},${row.attendance},${row.payments}`)
-        ].join("\n");
-
-        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", `academic_report_${new Date().toISOString().slice(0, 10)}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        toast.success("Report downloaded successfully");
-    };
+    // handleExport removed in favor of ExportButtons
 
     if (data === undefined) {
         return (
@@ -56,13 +37,7 @@ export default function ManagerReportsPage() {
                         </h2>
                         <p className="text-muted-foreground mt-1">Performance analytics and financial summaries.</p>
                     </div>
-                    <Button
-                        onClick={handleExport}
-                        className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl shadow-lg shadow-emerald-600/20 font-bold transition-all hover:scale-[1.02]"
-                    >
-                        <Download className="h-4 w-4" />
-                        Export All
-                    </Button>
+                    <ExportButtons />
                 </div>
 
                 {chartData.length === 0 ? (

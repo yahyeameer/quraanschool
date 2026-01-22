@@ -45,6 +45,7 @@ export const en: Dictionary = {
         salaries: "Salaries",
         academic: "Academic",
         reports: "Reports",
+        analytics: "Analytics",
         classOverview: "Class Overview",
         attendance: "Attendance",
         exams: "Exams",
@@ -52,6 +53,7 @@ export const en: Dictionary = {
         parentView: "Parent View",
         myChild: "My Child",
         payments: "Payments",
+        messages: "Messages",
         signOut: "Sign Out",
     },
     finance: {

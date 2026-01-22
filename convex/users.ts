@@ -10,50 +10,75 @@ export const store = mutation({
         }
 
         // Check if we already have this user
-        const user = await ctx.db
+        let user = await ctx.db
             .query("users")
             .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
             .unique();
+
+        const email = identity.email;
+        const phone = identity.phoneNumber; // Get phone from Clerk
+
+        // Check for pending invitation (Email OR Phone) if user is new OR is a guest
+        // This ensures if someone signed up before invitation, or sync failed, we retry
+        if (user === null || user.role === "guest") {
+            let invitation = null;
+
+            if (email) {
+                invitation = await ctx.db
+                    .query("invitations")
+                    .withIndex("by_email", (q) => q.eq("email", email))
+                    .unique();
+            }
+
+            if (!invitation && phone) {
+                invitation = await ctx.db
+                    .query("invitations")
+                    .withIndex("by_phone", (q) => q.eq("phone", phone))
+                    .unique();
+            }
+
+            // If valid invitation exists, assign role and mark accepted
+            if (invitation && invitation.status === "pending") {
+                const newRole = invitation.role;
+                await ctx.db.patch(invitation._id, { status: "accepted" });
+
+                if (user) {
+                    // Update existing guest
+                    await ctx.db.patch(user._id, {
+                        role: newRole as any,
+                        name: identity.name || invitation.studentName || user.name
+                    });
+                    return user._id;
+                } else {
+                    // Will create new user with this role below
+                    // Just pass the role to the insert
+                    // We need to refactor the insert flow slightly
+
+                    // Create new user
+                    const newUserId = await ctx.db.insert("users", {
+                        clerkId: identity.subject,
+                        name: identity.name || invitation?.studentName || "Anonymous",
+                        email: email,
+                        phone: phone,
+                        role: newRole as any,
+                        avatarUrl: identity.pictureUrl,
+                    });
+                    return newUserId;
+                }
+            }
+        }
 
         if (user !== null) {
             return user._id;
         }
 
-        const email = identity.email;
-        const phone = identity.phoneNumber; // Get phone from Clerk
-
-        // Check for pending invitation (Email OR Phone)
-        let invitation = null;
-
-        if (email) {
-            invitation = await ctx.db
-                .query("invitations")
-                .withIndex("by_email", (q) => q.eq("email", email))
-                .unique();
-        }
-
-        if (!invitation && phone) {
-            invitation = await ctx.db
-                .query("invitations")
-                .withIndex("by_phone", (q) => q.eq("phone", phone))
-                .unique();
-        }
-
-        let role = "guest";
-
-        // If valid invitation exists, assign role and mark accepted
-        if (invitation && invitation.status === "pending") {
-            role = invitation.role;
-            await ctx.db.patch(invitation._id, { status: "accepted" });
-        }
-
-        // Create new user
+        // Create new user (default guest)
         const newUserId = await ctx.db.insert("users", {
             clerkId: identity.subject,
-            name: identity.name || invitation?.studentName || "Anonymous", // Use name from invitation if available
-            email: email, // Can be undefined
+            name: identity.name || "Anonymous",
+            email: email,
             phone: phone,
-            role: role as any,
+            role: "guest",
             avatarUrl: identity.pictureUrl,
         });
 
@@ -95,5 +120,13 @@ export const currentUser = query({
             .query("users")
             .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
             .unique();
+    },
+});
+
+export const getAllStudents = query({
+    args: {},
+    handler: async (ctx) => {
+        const users = await ctx.db.query("users").withIndex("by_role", q => q.eq("role", "student")).collect();
+        return users;
     },
 });

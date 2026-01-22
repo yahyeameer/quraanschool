@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { GraduationCap, BookOpen, ShieldCheck, Users } from "lucide-react";
@@ -9,7 +9,30 @@ import { motion } from "framer-motion";
 
 export default function OnboardingPage() {
     const completeOnboarding = useMutation(api.users.completeOnboarding);
+    const user = useQuery(api.users.currentUser);
     const router = useRouter();
+
+    React.useEffect(() => {
+        if (user && user.role !== "guest") {
+            // Already has a role, redirect
+            switch (user.role) {
+                case "admin":
+                case "manager":
+                    router.push("/dashboard/manager");
+                    break;
+                case "teacher":
+                    router.push("/dashboard/teacher");
+                    break;
+                case "parent":
+                    router.push("/dashboard/parent");
+                    break;
+                case "student":
+                    router.push("/tracker");
+                    break;
+            }
+        }
+    }, [user, router]);
+
 
     const handleSelectRole = async (role: string) => {
         try {

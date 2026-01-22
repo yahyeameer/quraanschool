@@ -88,7 +88,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Trash2, Pencil } from "lucide-react";
+import { MoreVertical, Trash2, Pencil, Video } from "lucide-react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
@@ -132,6 +132,9 @@ function HalaqaActions({ classData }: { classData: ClassData }) {
                     </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-zinc-900 border-zinc-800 text-white">
+                    <DropdownMenuItem className="focus:bg-zinc-800 cursor-pointer text-xs font-medium" onClick={() => window.location.href = `/halaqa/${classData._id}/live`}>
+                        <Video className="mr-2 h-3 w-3 text-red-500" /> Go Live
+                    </DropdownMenuItem>
                     <DropdownMenuItem className="focus:bg-zinc-800 cursor-pointer text-xs font-medium">
                         <Pencil className="mr-2 h-3 w-3" /> Edit Details
                     </DropdownMenuItem>

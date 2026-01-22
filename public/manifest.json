@@ -1,0 +1,21 @@
+{
+    "name": "Al-Maqra'a Qatar School",
+    "short_name": "Al-Maqra'a",
+    "description": "Premium Islamic School Management System",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#09090b",
+    "theme_color": "#10b981",
+    "icons": [
+        {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

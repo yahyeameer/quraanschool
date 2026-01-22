@@ -14,10 +14,13 @@ import {
     LogOut,
     DollarSign,
     Wallet,
-    FileText
+    FileText,
+    MessageSquare,
+    Activity
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/nextjs";
+import { LanguageSwitcher } from "@/components/Layout/LanguageSwitcher";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
@@ -62,6 +65,7 @@ const routes = [
 export function Sidebar({ isOpen }: { isOpen: boolean }) {
     const pathname = usePathname();
     const user = useQuery(api.users.currentUser);
+    const unreadCount = useQuery(api.messages.getUnreadCount);
     const { t } = useLanguage();
 
     // Filter routes or show specific sets
@@ -76,9 +80,13 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                 { label: t.sidebar.staff, icon: GraduationCap, href: "/dashboard/manager/staff", color: "text-sky-500" },
                 { label: t.sidebar.students, icon: Users, href: "/dashboard/manager/students", color: "text-indigo-500" },
                 { label: t.sidebar.fees, icon: DollarSign, href: "/dashboard/manager/fees", color: "text-emerald-600" },
+                { label: "Expenses", icon: Wallet, href: "/dashboard/manager/finance/expenses", color: "text-red-500" },
                 { label: t.sidebar.salaries, icon: Wallet, href: "/dashboard/manager/salaries", color: "text-blue-600" },
                 { label: t.sidebar.academic, icon: GraduationCap, href: "/dashboard/manager/academic", color: "text-orange-500" },
+                { label: t.sidebar.analytics || "Analytics", icon: Activity, href: "/dashboard/manager/analytics", color: "text-indigo-600" },
                 { label: t.sidebar.reports, icon: BookOpen, href: "/dashboard/manager/reports", color: "text-amber-500" },
+                { label: t.sidebar.settings, icon: Settings, href: "/dashboard/manager/settings", color: "text-zinc-500" },
+                { label: t.sidebar.messages || "Messages", icon: MessageSquare, href: "/messages", color: "text-blue-500", badge: unreadCount || 0 },
             ];
             return user.role === "admin" ? adminBase : adminBase.slice(1);
         }
@@ -87,8 +95,19 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
             return [
                 { label: t.sidebar.classOverview, icon: LayoutDashboard, href: "/dashboard/teacher", color: "text-sky-500" },
                 { label: t.sidebar.attendance, icon: Calendar, href: "/dashboard/teacher/attendance", color: "text-purple-500" },
+                { label: t.sidebar.schedule || "Schedule", icon: Calendar, href: "/dashboard/teacher/calendar", color: "text-pink-700" },
                 { label: t.sidebar.exams, icon: FileText, href: "/dashboard/teacher/exams", color: "text-pink-500" },
                 { label: t.sidebar.myClasses, icon: Users, href: "/halaqa", color: "text-violet-500" },
+                { label: t.sidebar.messages || "Messages", icon: MessageSquare, href: "/messages", color: "text-blue-500", badge: unreadCount || 0 },
+            ];
+        }
+
+        if (user.role === "staff") {
+            return [
+                { label: t.sidebar.dashboard || "Dashboard", icon: LayoutDashboard, href: "/dashboard/staff", color: "text-sky-500" },
+                { label: t.sidebar.students, icon: Users, href: "/dashboard/manager/students", color: "text-indigo-500" },
+                { label: t.sidebar.fees, icon: DollarSign, href: "/dashboard/manager/fees", color: "text-emerald-600" },
+                { label: t.sidebar.messages || "Messages", icon: MessageSquare, href: "/messages", color: "text-blue-500", badge: unreadCount || 0 },
             ];
         }
 
@@ -97,6 +116,7 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                 { label: t.sidebar.parentView, icon: LayoutDashboard, href: "/dashboard/parent", color: "text-purple-500" },
                 { label: t.sidebar.myChild, icon: Users, href: "/dashboard/parent/child", color: "text-emerald-500" },
                 { label: t.sidebar.payments, icon: GraduationCap, href: "/dashboard/parent/payments", color: "text-blue-500" },
+                { label: t.sidebar.messages || "Messages", icon: MessageSquare, href: "/messages", color: "text-blue-500", badge: unreadCount || 0 },
             ];
         }
 
@@ -146,16 +166,31 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                                     <route.icon className={cn("mr-3 h-5 w-5 rtl:ml-3 rtl:mr-0", route.color)} />
                                     {route.label}
                                 </div>
+                                {(route as any).badge > 0 && (
+                                    <span className="ml-auto h-5 min-w-5 px-1 rounded-full bg-primary text-[10px] text-primary-foreground flex items-center justify-center font-bold">
+                                        {(route as any).badge > 9 ? "9+" : (route as any).badge}
+                                    </span>
+                                )}
                             </Link>
                         ))}
                     </div>
 
                 </div>
 
-                <div className="px-3 py-2 border-t border-border/50">
+                {/* Footer */}
+                <div className="p-4 border-t border-border/50 space-y-2">
+                    <div className="flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground/50 px-2">
+                            Ver. 1.0.0 (Beta)
+                        </p>
+                        <LanguageSwitcher />
+                    </div>
                     <SignOutButton>
-                        <button className="flex w-full items-center justify-start rounded-lg p-3 text-sm font-medium text-destructive transition-all hover:bg-destructive/10">
-                            <LogOut className="mr-3 h-5 w-5 rtl:ml-3 rtl:mr-0" />
+                        <button className={cn(
+                            "w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                            "text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                        )}>
+                            <LogOut className="w-5 h-5" />
                             {t.sidebar.signOut}
                         </button>
                     </SignOutButton>
