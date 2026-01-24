@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 // Define proper role type
-type UserRole = "admin" | "manager" | "teacher" | "staff" | "parent" | "student" | "guest";
+type UserRole = "admin" | "manager" | "teacher" | "staff" | "accountant" | "librarian" | "receptionist" | "parent" | "student" | "guest";
 
 export function RoleGuard({
     children,
@@ -29,7 +29,7 @@ export function RoleGuard({
             return;
         }
 
-// 2. Specific Page Guard
+        // 2. Specific Page Guard
         if (requiredRole) {
             const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
 
@@ -63,7 +63,7 @@ export function RoleGuard({
         );
     }
 
-// Role mismatch? Return null while redirect happens
+    // Role mismatch? Return null while redirect happens
     if (requiredRole) {
         const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
         if (!user || (!allowedRoles.includes(user.role) && user.role !== "admin")) return null;

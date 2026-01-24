@@ -19,7 +19,7 @@ interface EditStaffModalProps {
     user: {
         _id: Id<"users">;
         name: string;
-        email: string;
+        email?: string; // Optional to match schema
         role: string;
     } | null;
 }
@@ -88,7 +88,7 @@ export function EditStaffModal({ isOpen, onClose, user }: EditStaffModalProps) {
                         <div className="bg-black/20 rounded-xl p-4 border border-white/5 space-y-1">
                             <p className="text-xs text-zinc-500 uppercase tracking-widest font-bold">Staff Member</p>
                             <p className="text-white font-bold">{user.name}</p>
-                            <p className="text-xs text-zinc-400">{user.email}</p>
+                            <p className="text-xs text-zinc-400">{user.email || "No email provided"}</p>
                         </div>
 
                         <div className="space-y-3">

@@ -10,7 +10,12 @@ const withPWA = require("next-pwa")({
 */
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  turbopack: {}, // Silence Turbopack warning
+  typescript: {
+    // Dangerously allow production builds even if there are type errors (for gradual fixes)
+    // REMOVE THIS once all type errors are resolved
+    ignoreBuildErrors: false,
+  },
 };
 
 // PWA DISABLED temporarily for debugging build/dev errors
