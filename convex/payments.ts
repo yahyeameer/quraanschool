@@ -71,8 +71,7 @@ export const deletePayment = mutation({
 export const getPaymentSummary = query({
     args: {},
     handler: async (ctx) => {
-        const { hasRole } = await hasAnyRole(ctx, ["admin", "manager"]);
-        if (!hasRole) return null;
+        await requireRole(ctx, "admin");
 
         const payments = await ctx.db.query("payments").collect();
 
@@ -105,8 +104,7 @@ export const getPaymentSummary = query({
 export const getPendingPayments = query({
     args: {},
     handler: async (ctx) => {
-        const { hasRole } = await hasAnyRole(ctx, ["admin", "manager"]);
-        if (!hasRole) return [];
+        await requireRole(ctx, "admin");
 
         return await ctx.db
             .query("payments")

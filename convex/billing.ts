@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireRole } from "./permissions";
 
 // Create or update a fee structure for a student
 export const manageFeeStructure = mutation({
@@ -12,18 +13,7 @@ export const manageFeeStructure = mutation({
         status: v.optional(v.string()), // "active", "paused"
     },
     handler: async (ctx, args) => {
-        // Auth check - should be manager/admin
-        const identity = await ctx.auth.getUserIdentity();
-        if (!identity) throw new Error("Unauthorized");
-
-        const user = await ctx.db
-            .query("users")
-            .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
-            .unique();
-
-        if (!user || (user.role !== "admin" && user.role !== "manager")) {
-            throw new Error("Only admins/managers can manage fees");
-        }
+        await requireRole(ctx, "admin");
 
         // Check if structure exists
         const existing = await ctx.db

@@ -33,8 +33,8 @@ export function RoleGuard({
         if (requiredRole) {
             const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
 
-            // Admin can access everything
-            if (user?.role === "admin") return;
+            // Admin and Manager can access everything
+            if (user?.role === "admin" || user?.role === "manager") return;
 
             if (!user || !allowedRoles.includes(user.role)) {
                 // Determine redirect based on role (admin is already handled above)
@@ -66,7 +66,7 @@ export function RoleGuard({
     // Role mismatch? Return null while redirect happens
     if (requiredRole) {
         const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
-        if (!user || (!allowedRoles.includes(user.role) && user.role !== "admin")) return null;
+        if (!user || (!allowedRoles.includes(user.role) && user.role !== "admin" && user.role !== "manager")) return null;
     }
 
     if (user?.role === "guest" && pathname !== "/onboarding") return null;

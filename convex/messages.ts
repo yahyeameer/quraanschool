@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireRole } from "./permissions";
 
 // Send a new message
 export const send = mutation({
@@ -320,14 +321,7 @@ export const sendAnnouncement = mutation({
         const identity = await ctx.auth.getUserIdentity();
         if (!identity) throw new Error("Unauthorized");
 
-        const user = await ctx.db
-            .query("users")
-            .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
-            .unique();
-
-        if (!user || (user.role !== "manager" && user.role !== "admin")) {
-            throw new Error("Only managers can send announcements");
-        }
+        const user = await requireRole(ctx, "admin");
 
         // Get all parents
         const parents = await ctx.db

@@ -20,11 +20,8 @@ export async function hasRole(ctx: QueryCtx | MutationCtx, role: UserRole) {
         return { hasRole: false, user: null };
     }
 
-    // Admin has access to everything
-    if (user.role === "admin") return { hasRole: true, user };
-
-    // Manager has most access except admin-only functions
-    if (user.role === "manager" && role !== "admin") return { hasRole: true, user };
+    // Admin and Manager have access to everything
+    if (user.role === "admin" || user.role === "manager") return { hasRole: true, user };
 
     // Role-specific checks
     if (user.role === role) return { hasRole: true, user };

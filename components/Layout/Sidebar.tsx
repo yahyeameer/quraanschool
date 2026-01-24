@@ -90,7 +90,7 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                 { label: t.sidebar.settings, icon: Settings, href: "/dashboard/manager/settings", color: "text-zinc-500" },
                 { label: t.sidebar.messages || "Messages", icon: MessageSquare, href: "/messages", color: "text-blue-500", badge: unreadCount || 0 },
             ];
-            return user.role === "admin" ? adminBase : adminBase.slice(1);
+            return adminBase;
         }
 
         if (user.role === "teacher") {

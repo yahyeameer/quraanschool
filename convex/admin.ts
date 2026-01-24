@@ -30,10 +30,7 @@ export const getStats = query({
             .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
             .unique();
 
-        // Only admin/manager can see full stats
-        if (!user || (user.role !== "admin" && user.role !== "manager")) {
-            return null;
-        }
+        await requireRole(ctx, "admin");
 
         // Count users by role
         const allUsers = await ctx.db.query("users").collect();
