@@ -107,17 +107,18 @@
 
 ## 📸 Screenshots
 
-### Manager Dashboard
-![Manager Dashboard](C:/Users/THINKPAD/.gemini/antigravity/brain/6c446f07-941c-467f-bc01-75f348688766/manager_dashboard_preview_1769244520435.png)
-*Modern glass-morphism dashboard with real-time analytics and beautiful charts*
+### 💎 Premium Interface
 
-### Student Directory
-![Student Directory](C:/Users/THINKPAD/.gemini/antigravity/brain/6c446f07-941c-467f-bc01-75f348688766/student_directory_preview_1769244541452.png)
-*Interactive student cards with parent contact integration and WhatsApp quick actions*
+![Landing Page](/screenshots/landing_page.png)
+*Ultra-modern landing page with liquid glass design and spiritual aesthetics*
 
-### Analytics Dashboard
-![Analytics](C:/Users/THINKPAD/.gemini/antigravity/brain/6c446f07-941c-467f-bc01-75f348688766/analytics_dashboard_preview_1769244559004.png)
-*Beautiful data visualizations showing academic velocity, attendance stats, and class performance*
+### 👨‍💼 Manager Command Center
+![Manager Dashboard](/screenshots/manager_dashboard.png)
+*Real-time operational overview with advanced academic velocity tracking*
+
+### 👨‍🏫 Teacher's Cockpit
+![Teacher Dashboard](/screenshots/teacher_dashboard.png)
+*Streamlined class management with attendance logs and progress logbooks*
 
 ## 🛠 Tech Stack
 
