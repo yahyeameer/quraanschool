@@ -21,6 +21,7 @@ import type * as dailyProgress from "../dailyProgress.js";
 import type * as expenses from "../expenses.js";
 import type * as finance from "../finance.js";
 import type * as gamification from "../gamification.js";
+import type * as library from "../library.js";
 import type * as livekit from "../livekit.js";
 import type * as messages from "../messages.js";
 import type * as notifications from "../notifications.js";
@@ -31,9 +32,11 @@ import type * as registrations from "../registrations.js";
 import type * as reports from "../reports.js";
 import type * as schedule from "../schedule.js";
 import type * as seed from "../seed.js";
+import type * as students from "../students.js";
 import type * as tasks from "../tasks.js";
 import type * as teacher from "../teacher.js";
 import type * as tracker from "../tracker.js";
+import type * as transport from "../transport.js";
 import type * as users from "../users.js";
 
 import type {
@@ -56,6 +59,7 @@ declare const fullApi: ApiFromModules<{
   expenses: typeof expenses;
   finance: typeof finance;
   gamification: typeof gamification;
+  library: typeof library;
   livekit: typeof livekit;
   messages: typeof messages;
   notifications: typeof notifications;
@@ -66,9 +70,11 @@ declare const fullApi: ApiFromModules<{
   reports: typeof reports;
   schedule: typeof schedule;
   seed: typeof seed;
+  students: typeof students;
   tasks: typeof tasks;
   teacher: typeof teacher;
   tracker: typeof tracker;
+  transport: typeof transport;
   users: typeof users;
 }>;
 

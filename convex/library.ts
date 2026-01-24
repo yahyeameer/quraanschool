@@ -10,13 +10,15 @@ export const listBooks = query({
         category: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
-        let q = ctx.db.query("books");
-
+        let books;
         if (args.category) {
-            q = q.withIndex("by_category", (q) => q.eq("category", args.category));
+            const category = args.category;
+            books = await ctx.db.query("books")
+                .withIndex("by_category", (q) => q.eq("category", category))
+                .collect();
+        } else {
+            books = await ctx.db.query("books").collect();
         }
-
-        const books = await q.collect();
 
         if (args.search) {
             const searchLower = args.search.toLowerCase();
