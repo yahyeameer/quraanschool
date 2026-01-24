@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Loader2, Plus } from "lucide-react";
+import { toast } from "sonner";
+import { Id } from "@/convex/_generated/dataModel";
 
 export function CreateAssignmentForm({ onSuccess }: { onSuccess?: () => void }) {
     const createAssignment = useMutation(api.assignments.create);
@@ -19,20 +21,25 @@ export function CreateAssignmentForm({ onSuccess }: { onSuccess?: () => void }) 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!formData.classId) return alert("Please select a class");
+        if (!formData.classId) {
+            toast.error("Please select a class");
+            return;
+        }
 
         setLoading(true);
         try {
             await createAssignment({
-                classId: formData.classId as any,
+                classId: formData.classId as Id<"classes">,
                 title: formData.title,
                 description: formData.description,
                 dueDate: formData.dueDate,
             });
+            toast.success("Assignment created successfully!");
             setFormData({ title: "", description: "", dueDate: "", classId: "" });
             if (onSuccess) onSuccess();
         } catch (error) {
             console.error("Failed to create assignment:", error);
+            toast.error("Failed to create assignment");
         } finally {
             setLoading(false);
         }

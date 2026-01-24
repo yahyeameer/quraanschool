@@ -12,13 +12,14 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { EditStaffModal } from "@/components/Staff/EditStaffModal";
 import { Loader2 } from "lucide-react";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 export default function ManagerStaffPage() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const users = useQuery(api.admin.listUsers);
     const invitations = useQuery(api.admin.listInvitations);
     const removeStaff = useMutation(api.admin.removeStaff);
-    const [editingUser, setEditingUser] = useState<any>(null);
+    const [editingUser, setEditingUser] = useState<Doc<"users"> | null>(null);
 
     // Show loading state while data is fetching
     if (users === undefined || invitations === undefined) {
@@ -35,13 +36,13 @@ export default function ManagerStaffPage() {
     const staff = users?.filter(u => u.role === "teacher" || u.role === "staff" || u.role === "manager") || [];
     const pendingInvitations = invitations?.filter(i => i.status === "pending") || [];
 
-    const handleRemoveStaff = async (userId: any) => {
+    const handleRemoveStaff = async (userId: Id<"users">) => {
         if (!confirm("Are you sure you want to remove this staff member? They will lose their access privileges.")) return;
         try {
             await removeStaff({ userId });
             toast.success("Staff member removed successfully");
         } catch (error: any) {
-            toast.error(error.message || "Failed to remove staff member");
+            toast.error(error instanceof Error ? error.message : "Failed to remove staff member");
         }
     };
 

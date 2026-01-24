@@ -114,11 +114,11 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
         if (user.role === "parent") {
             return [
                 { label: t.sidebar.parentView, icon: LayoutDashboard, href: "/dashboard/parent", color: "text-purple-500" },
-                { label: t.sidebar.myChild, icon: Users, href: "/dashboard/parent/child", color: "text-emerald-500" },
-                { label: t.sidebar.payments, icon: GraduationCap, href: "/dashboard/parent/payments", color: "text-blue-500" },
+                { label: t.sidebar.schedule || "Schedule", icon: Calendar, href: "/schedule", color: "text-pink-500" },
                 { label: t.sidebar.messages || "Messages", icon: MessageSquare, href: "/messages", color: "text-blue-500", badge: unreadCount || 0 },
             ];
         }
+
 
         // Student / Default
         return [

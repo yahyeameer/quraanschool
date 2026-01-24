@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 
+type UserRole = "admin" | "manager" | "teacher" | "staff" | "parent" | "student" | "guest";
+
 export function AppShell({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const pathname = usePathname();
@@ -21,7 +23,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
 
     // Determine required role from path
-    let requiredRole: any = undefined;
+    let requiredRole: UserRole | UserRole[] | undefined = undefined;
     if (pathname.startsWith("/admin")) requiredRole = "admin";
     else if (pathname.startsWith("/dashboard/manager")) requiredRole = "manager";
     else if (pathname.startsWith("/dashboard/teacher")) requiredRole = "teacher";

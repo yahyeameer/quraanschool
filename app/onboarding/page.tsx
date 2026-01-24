@@ -131,7 +131,16 @@ export default function OnboardingPage() {
     );
 }
 
-function RoleCard({ title, description, icon, onClick, color, delay }: any) {
+interface RoleCardProps {
+    title: string;
+    description: string;
+    icon: React.ReactNode;
+    onClick: () => void;
+    color: "emerald" | "sky" | "violet" | "amber";
+    delay: number;
+}
+
+function RoleCard({ title, description, icon, onClick, color, delay }: RoleCardProps) {
     const colorClasses: Record<string, string> = {
         emerald: "hover:border-emerald-500/50 hover:shadow-emerald-500/10 group-hover:bg-emerald-500/10",
         sky: "hover:border-sky-500/50 hover:shadow-sky-500/10 group-hover:bg-sky-500/10",

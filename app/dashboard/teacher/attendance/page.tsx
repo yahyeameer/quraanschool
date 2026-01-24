@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CalendarIcon, Check, X, Clock, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
+import { Id } from "@/convex/_generated/dataModel";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function TeacherAttendancePage() {
@@ -23,12 +24,12 @@ export default function TeacherAttendancePage() {
 
     // Fetch students for selected class
     const students = useQuery(api.classes.getClassStudents,
-        selectedClassId ? { classId: selectedClassId as any } : "skip"
+        selectedClassId ? { classId: selectedClassId as Id<"classes"> } : "skip"
     );
 
     // Fetch existing attendance for this date/class
     const existingAttendance = useQuery(api.academic.getAttendanceByDate,
-        selectedClassId ? { classId: selectedClassId as any, date: format(date, "yyyy-MM-dd") } : "skip"
+        selectedClassId ? { classId: selectedClassId as Id<"classes">, date: format(date, "yyyy-MM-dd") } : "skip"
     );
 
     const markAttendance = useMutation(api.academic.markAttendance);
@@ -49,16 +50,16 @@ export default function TeacherAttendancePage() {
         const records = (students || []).map(student => ({
             studentId: student._id,
             status: attendanceState[student._id] ||
-                (existingAttendance?.find((r: any) => r.studentId === student._id)?.status || "present")
+                (existingAttendance?.find((r) => r.studentId === student._id)?.status || "present")
         }));
         try {
             await markAttendance({
-                classId: selectedClassId as any,
+                classId: selectedClassId as Id<"classes">,
                 date: format(date, "yyyy-MM-dd"),
-                records
+                records: records as any // Cast records if schema expectations slightly differ from map result
             });
             toast.success("Attendance saved successfully");
-        } catch (error: any) {
+        } catch (error) {
             toast.error("Failed to save attendance");
         }
     };

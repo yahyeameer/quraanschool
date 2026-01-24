@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Shield, Users, BookOpen, Crown } from "lucide-react";
 import { PaymentManager } from "@/components/Admin/PaymentManager";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
+import { toast } from "sonner";
 import { CreateHalaqaForm } from "@/components/Halaqa/CreateHalaqaForm";
 import { HalaqaCard } from "@/components/Halaqa/HalaqaCard";
 import { Id } from "@/convex/_generated/dataModel";
@@ -20,18 +21,28 @@ export default function AdminPage() {
     const updateRole = useMutation(api.admin.updateUserRole);
     const linkParent = useMutation(api.admin.linkStudentToParent);
 
-    const handleRoleChange = async (userId: string, newRole: string) => {
-        await updateRole({ 
-            userId: userId as Id<"users">, 
-            role: newRole as UserRole 
-        });
+    const handleRoleChange = async (userId: Id<"users">, newRole: UserRole) => {
+        try {
+            await updateRole({
+                userId,
+                role: newRole
+            });
+            toast.success("User role updated");
+        } catch (error) {
+            toast.error("Failed to update role");
+        }
     };
 
-    const handleParentLink = async (studentId: string, parentId: string) => {
-        await linkParent({ 
-            studentId: studentId as Id<"users">, 
-            parentId: parentId === "" ? undefined : parentId as Id<"users"> 
-        });
+    const handleParentLink = async (studentId: Id<"users">, parentId: string) => {
+        try {
+            await linkParent({
+                studentId,
+                parentId: parentId === "" ? undefined : parentId as Id<"users">
+            });
+            toast.success("Parent linked successfully");
+        } catch (error) {
+            toast.error("Failed to link parent");
+        }
     };
 
     if (!stats) return <div className="p-8">Loading dashboard...</div>;

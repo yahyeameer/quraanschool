@@ -3,7 +3,9 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { format } from "date-fns";
 import { DollarSign, Clock, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
 
 export function PaymentManager() {
     const payments = useQuery(api.payments.list);
@@ -12,19 +14,31 @@ export function PaymentManager() {
 
     const [studentId, setStudentId] = useState("");
     const [amount, setAmount] = useState("50");
-    const [month, setMonth] = useState(new Date().toLocaleString('default', { month: 'long', year: 'numeric' }));
+    const [month, setMonth] = useState(() => format(new Date(), "MMMM yyyy"));
 
     const handleLog = async () => {
-        if (!studentId) return;
+        if (!studentId) {
+            toast.error("Please select a student");
+            return;
+        }
+
+        const numericAmount = parseFloat(amount);
+        if (isNaN(numericAmount) || numericAmount <= 0) {
+            toast.error("Please enter a valid amount");
+            return;
+        }
+
         try {
             await logPayment({
                 studentId: studentId as any,
-                amount: parseFloat(amount),
+                amount: numericAmount,
                 month,
             });
-            alert("Payment logged successfully!");
+            toast.success("Payment logged successfully!");
+            setStudentId("");
         } catch (error) {
             console.error(error);
+            toast.error("Failed to log payment");
         }
     };
 

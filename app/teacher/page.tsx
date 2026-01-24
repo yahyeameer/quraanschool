@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Users, BookOpen, Star, Clock } from "lucide-react";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerFooter, DrawerClose } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
+import { toast } from "sonner";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 export default function TeacherPage() {
     const classes = useQuery(api.teacher.getMyClasses);
@@ -28,7 +30,7 @@ export default function TeacherPage() {
     );
 }
 
-function ClassCard({ data }: { data: any }) {
+function ClassCard({ data }: { data: Doc<"classes"> }) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -48,7 +50,7 @@ function ClassCard({ data }: { data: any }) {
     )
 }
 
-function StudentRosterDrawer({ classId, trigger }: { classId: string, trigger: React.ReactNode }) {
+function StudentRosterDrawer({ classId, trigger }: { classId: Id<"classes">, trigger: React.ReactNode }) {
     const data = useQuery(api.teacher.getClassDetails, { classId: classId as any });
     const logProgress = useMutation(api.tracker.logProgress);
     const logAttendance = useMutation(api.attendance.logAttendance);
@@ -59,18 +61,21 @@ function StudentRosterDrawer({ classId, trigger }: { classId: string, trigger: R
     const [surah, setSurah] = useState("Al-Baqarah");
     const [attendanceStatus, setAttendanceStatus] = useState("present");
 
-    const handleLog = async (studentId: string) => {
-        // Log Attendance
-        await logAttendance({
-            studentId: studentId as any,
-            classId: classId as any,
-            date: new Date().toISOString().split("T")[0],
-            status: attendanceStatus
-        });
+    const handleLog = async (studentId: Id<"users">) => {
+        try {
+            // Log Attendance
+            await logAttendance({
+                studentId,
+                classId,
+                date: new Date().toISOString().split("T")[0],
+                status: attendanceStatus as any
+            });
 
-        // Log Progress (Mocking grading for now)
-        // Note: Real app would separate these or confirm before saving
-        alert(`Logged Attendance: ${attendanceStatus}`);
+            toast.success(`Logged Attendance: ${attendanceStatus}`);
+        } catch (error) {
+            console.error("Failed to log attendance:", error);
+            toast.error("Failed to log attendance");
+        }
     };
 
     return (

@@ -136,15 +136,23 @@ export function EditStaffModal({ isOpen, onClose, user }: EditStaffModalProps) {
     );
 }
 
-function RoleOption({ currentRole, value, label, description, onClick }: any) {
+interface RoleOptionProps {
+    currentRole: StaffRole;
+    value: StaffRole;
+    label: string;
+    description: string;
+    onClick: () => void;
+}
+
+function RoleOption({ currentRole, value, label, description, onClick }: RoleOptionProps) {
     const isSelected = currentRole === value;
     return (
         <button
             type="button"
             onClick={onClick}
             className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between group ${isSelected
-                    ? "bg-amber-500/10 border-amber-500/50"
-                    : "bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/10"
+                ? "bg-amber-500/10 border-amber-500/50"
+                : "bg-black/20 border-white/5 hover:bg-white/5 hover:border-white/10"
                 }`}
         >
             <div>
