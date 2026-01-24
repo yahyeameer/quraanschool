@@ -55,6 +55,14 @@ export const ar: Dictionary = {
         payments: "المدفوعات",
         messages: "الرسائل",
         signOut: "تسجيل الخروج",
+        accountantDashboard: "بوابة المحاسب",
+        librarianDashboard: "نظام المكتبة",
+    },
+    accountant: {
+        dashboard: "نظرة عامة مالية",
+        financials: "الماليات",
+        pending: "المدفوعات المعلقة",
+        expenseTracker: "متتبع المصروفات",
     },
     finance: {
         totalCollected: "الإجمالي المحصل",

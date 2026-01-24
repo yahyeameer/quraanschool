@@ -55,6 +55,14 @@ export const so: Dictionary = {
         payments: "Biximaha",
         messages: "Farriimaha",
         signOut: "Ka Bax",
+        accountantDashboard: "Accountant Portal",
+        librarianDashboard: "Library System",
+    },
+    accountant: {
+        dashboard: "Financial Overview",
+        financials: "Financials",
+        pending: "Pending Payments",
+        expenseTracker: "Expense Tracker",
     },
     finance: {
         totalCollected: "Wadarta La Uruuriyay",
