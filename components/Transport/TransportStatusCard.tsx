@@ -33,6 +33,20 @@ export function TransportStatusCard({ studentId }: { studentId: Id<"users"> }) {
     );
 
     const { route, assignment, driverName, driverPhone } = data;
+
+    // Handle case where route might be null
+    if (!route) return (
+        <Card className="border-white/10 bg-white/5 border-dashed">
+            <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-2">
+                <div className="h-12 w-12 rounded-full bg-zinc-800 flex items-center justify-center">
+                    <Bus className="h-6 w-6 text-zinc-500" />
+                </div>
+                <p className="font-medium text-sm">Route Not Found</p>
+                <p className="text-xs text-muted-foreground">Contact admin for assistance.</p>
+            </CardContent>
+        </Card>
+    );
+
     const statusColors = {
         "garage": "bg-zinc-500/20 text-zinc-400 border-zinc-500/30",
         "en-route": "bg-emerald-500/20 text-emerald-400 border-emerald-500/30 animate-pulse",

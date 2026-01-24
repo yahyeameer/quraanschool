@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 
 export function LanguageSwitcher() {
-    const { language, setLanguage } = useLanguage();
+    const { locale, setLocale } = useLanguage();
 
     const languages = [
         { code: "en", label: "English", flag: "🇺🇸" },
@@ -30,8 +30,8 @@ export function LanguageSwitcher() {
                 {languages.map((lang) => (
                     <DropdownMenuItem
                         key={lang.code}
-                        onClick={() => setLanguage(lang.code as any)}
-                        className={`cursor-pointer flex items-center gap-2 ${language === lang.code ? "bg-white/10 text-emerald-400" : "text-white hover:bg-white/5"
+                        onClick={() => setLocale(lang.code as any)}
+                        className={`cursor-pointer flex items-center gap-2 ${locale === lang.code ? "bg-white/10 text-emerald-400" : "text-white hover:bg-white/5"
                             }`}
                     >
                         <span className="text-lg">{lang.flag}</span>
