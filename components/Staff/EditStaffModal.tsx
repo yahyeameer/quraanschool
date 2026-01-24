@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Id } from "@/convex/_generated/dataModel";
 
-type StaffRole = "teacher" | "staff" | "manager";
+// Define proper role type
+type StaffRole = "teacher" | "staff" | "manager" | "accountant" | "librarian" | "receptionist";
 
 interface EditStaffModalProps {
     isOpen: boolean;
@@ -30,7 +31,8 @@ export function EditStaffModal({ isOpen, onClose, user }: EditStaffModalProps) {
 
     useEffect(() => {
         if (user) {
-            if (["teacher", "staff", "manager"].includes(user.role)) {
+            // Check if user role is valid staff role
+            if (["teacher", "staff", "manager", "accountant", "librarian", "receptionist"].includes(user.role)) {
                 setRole(user.role as StaffRole);
             } else {
                 setRole("teacher");
@@ -63,7 +65,7 @@ export function EditStaffModal({ isOpen, onClose, user }: EditStaffModalProps) {
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="relative w-full max-w-md overflow-hidden bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl p-6"
+                    className="relative w-full max-w-md overflow-hidden bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl p-6 h-[80vh] overflow-y-auto"
                 >
                     <button
                         onClick={onClose}
@@ -96,7 +98,7 @@ export function EditStaffModal({ isOpen, onClose, user }: EditStaffModalProps) {
                                     currentRole={role}
                                     value="teacher"
                                     label="Teacher"
-                                    description="Can manage halaqas and log attendance"
+                                    description="Can manage classes and log attendance"
                                     onClick={() => setRole("teacher")}
                                 />
                                 <RoleOption
@@ -112,6 +114,27 @@ export function EditStaffModal({ isOpen, onClose, user }: EditStaffModalProps) {
                                     label="Manager"
                                     description="Full access to staff and students"
                                     onClick={() => setRole("manager")}
+                                />
+                                <RoleOption
+                                    currentRole={role}
+                                    value="accountant"
+                                    label="Accountant"
+                                    description="Manage school finances and fees"
+                                    onClick={() => setRole("accountant")}
+                                />
+                                <RoleOption
+                                    currentRole={role}
+                                    value="librarian"
+                                    label="Librarian"
+                                    description="Manage books and resources"
+                                    onClick={() => setRole("librarian")}
+                                />
+                                <RoleOption
+                                    currentRole={role}
+                                    value="receptionist"
+                                    label="Receptionist"
+                                    description="Manage visitors and calls"
+                                    onClick={() => setRole("receptionist")}
                                 />
                             </div>
                         </div>

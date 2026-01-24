@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 // Define proper role type
-type StaffRole = "teacher" | "staff" | "manager";
+type StaffRole = "teacher" | "staff" | "manager" | "accountant" | "librarian" | "receptionist";
 
 export function AddStaffModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
     const inviteStaff = useMutation(api.admin.inviteStaff);
@@ -43,7 +43,7 @@ export function AddStaffModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="relative w-full max-w-md overflow-hidden bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl p-6"
+                    className="relative w-full max-w-lg overflow-hidden bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl p-6"
                 >
                     <button
                         onClick={onClose}
@@ -82,26 +82,48 @@ export function AddStaffModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                         <div className="space-y-2">
                             <Label className="text-zinc-400">Role</Label>
                             <div className="grid grid-cols-2 gap-2">
-<button
-                                    type="button"
-                                    onClick={() => setRole("teacher" as StaffRole)}
-                                    className={`px-4 py-2 text-sm rounded-xl border transition-all ${role === "teacher"
-                                            ? "bg-primary/20 border-primary text-primary"
-                                            : "bg-black/40 border-white/10 text-zinc-400 hover:border-white/20"
-                                        }`}
-                                >
-                                    Teacher
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setRole("staff" as StaffRole)}
-                                    className={`px-4 py-2 text-sm rounded-xl border transition-all ${role === "staff"
-                                            ? "bg-sky-500/20 border-sky-500 text-sky-400"
-                                            : "bg-black/40 border-white/10 text-zinc-400 hover:border-white/20"
-                                        }`}
-                                >
-                                    Support Staff
-                                </button>
+                                {[
+                                    { value: "teacher", label: "Teacher", color: "primary" },
+                                    { value: "staff", label: "Support Staff", color: "sky" },
+                                    { value: "manager", label: "Manager", color: "amber" },
+                                    { value: "accountant", label: "Accountant", color: "emerald" },
+                                    { value: "librarian", label: "Librarian", color: "violet" },
+                                    { value: "receptionist", label: "Receptionist", color: "orange" },
+                                ].map((option) => {
+                                    const isSelected = role === option.value;
+                                    // Construct class names manually to avoid dynamic Tailwind classes issue if safe list isn't set
+                                    // But user asked for generic beautiful UI, assuming Tailwind is standard.
+                                    // Safer to use conditional logic for classes or basic colors if dynamic `bg-${color}-500` is risky.
+                                    // I'll stick to a simpler approach or standard colors if I'm not sure about safelist.
+                                    // Actually, standard Tailwind classes like bg-emerald-500 should work if they are used elsewhere or JIT is on.
+                                    // To be safe I will use specific classes for each or `cn` if I had it, or just use the logic I had.
+                                    // Let's use a switch/map for style to be safe or just risk it if JIT.
+                                    // Given I don't want to debug Tailwind JIT issues, I'll use specific conditions if needed, 
+                                    // BUT the previous code block used template literals. I'll stick to what I proposed but maybe simpler.
+
+                                    let activeClass = "";
+                                    let inactiveClass = "bg-black/40 border-white/10 text-zinc-400 hover:border-white/20 hover:bg-white/5";
+
+                                    switch (option.color) {
+                                        case 'primary': activeClass = "bg-primary/20 border-primary text-primary"; break;
+                                        case 'sky': activeClass = "bg-sky-500/20 border-sky-500 text-sky-400"; break;
+                                        case 'amber': activeClass = "bg-amber-500/20 border-amber-500 text-amber-400"; break;
+                                        case 'emerald': activeClass = "bg-emerald-500/20 border-emerald-500 text-emerald-400"; break;
+                                        case 'violet': activeClass = "bg-violet-500/20 border-violet-500 text-violet-400"; break;
+                                        case 'orange': activeClass = "bg-orange-500/20 border-orange-500 text-orange-400"; break;
+                                    }
+
+                                    return (
+                                        <button
+                                            key={option.value}
+                                            type="button"
+                                            onClick={() => setRole(option.value as StaffRole)}
+                                            className={`px-3 py-3 text-sm font-medium rounded-xl border transition-all text-left ${isSelected ? activeClass : inactiveClass}`}
+                                        >
+                                            {option.label}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
 

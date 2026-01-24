@@ -46,6 +46,7 @@ export type Dictionary = {
         salaries: string;
         academic: string;
         reports: string;
+        analytics: string;
         classOverview: string;
         attendance: string;
         exams: string;
@@ -54,8 +55,15 @@ export type Dictionary = {
         myChild: string;
         payments: string;
         messages: string;
-        analytics: string;
         signOut: string;
+        accountantDashboard: string;
+        librarianDashboard: string;
+    };
+    accountant: {
+        dashboard: string;
+        financials: string;
+        pending: string;
+        expenseTracker: string;
     };
     finance: {
         totalCollected: string;

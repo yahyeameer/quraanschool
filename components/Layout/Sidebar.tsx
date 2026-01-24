@@ -119,6 +119,17 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
             ];
         }
 
+        if (user.role === "accountant") {
+            return [
+                { label: t.sidebar.accountantDashboard, icon: LayoutDashboard, href: "/dashboard/accountant", color: "text-emerald-600" },
+                { label: t.sidebar.fees, icon: DollarSign, href: "/dashboard/manager/fees", color: "text-emerald-500" },
+                { label: t.sidebar.salaries, icon: Wallet, href: "/dashboard/manager/salaries", color: "text-blue-600" },
+                { label: "Expenses", icon: Wallet, href: "/dashboard/manager/finance/expenses", color: "text-red-500" },
+                { label: t.sidebar.messages || "Messages", icon: MessageSquare, href: "/messages", color: "text-blue-500", badge: unreadCount || 0 },
+            ];
+        }
+
+
 
         // Student / Default
         return [

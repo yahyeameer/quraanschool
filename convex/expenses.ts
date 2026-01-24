@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { hasAnyRole } from "./permissions";
 
 export const addExpense = mutation({
     args: {
@@ -10,21 +11,15 @@ export const addExpense = mutation({
         description: v.optional(v.string()),
     },
     handler: async (ctx, args) => {
-        const user = await ctx.auth.getUserIdentity();
-        if (!user) throw new Error("Unauthorized");
+        const { hasRole, user } = await hasAnyRole(ctx, ["admin", "manager", "accountant"]);
 
-        const recorder = await ctx.db
-            .query("users")
-            .withIndex("by_clerkId", (q) => q.eq("clerkId", user.subject))
-            .first();
-
-        if (!recorder || (recorder.role !== "admin" && recorder.role !== "manager")) {
+        if (!hasRole || !user) {
             throw new Error("Unauthorized");
         }
 
         await ctx.db.insert("expenses", {
             ...args,
-            recordedBy: recorder._id,
+            recordedBy: user._id,
         });
     },
 });

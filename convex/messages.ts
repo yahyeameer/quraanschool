@@ -270,6 +270,29 @@ export const getRecipients = query({
                     }
                 }
             }
+
+            // Also include Admins and Managers for parents to contact
+            const admins = await ctx.db
+                .query("users")
+                .filter(q =>
+                    q.or(
+                        q.eq(q.field("role"), "admin"),
+                        q.eq(q.field("role"), "manager")
+                    )
+                )
+                .collect();
+
+            for (const admin of admins) {
+                if (!recipients.find(r => r._id === admin._id)) {
+                    recipients.push({
+                        _id: admin._id,
+                        name: admin.name,
+                        role: admin.role,
+                        avatarUrl: admin.avatarUrl,
+                        className: "Administration",
+                    });
+                }
+            }
         } else if (user.role === "manager" || user.role === "admin") {
             // Can message all teachers and parents
             const allUsers = await ctx.db.query("users").collect();

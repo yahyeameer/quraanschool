@@ -7,6 +7,9 @@ const UserRole = v.union(
   v.literal("manager"),
   v.literal("teacher"),
   v.literal("staff"),
+  v.literal("accountant"),
+  v.literal("librarian"),
+  v.literal("receptionist"),
   v.literal("parent"),
   v.literal("student"),
   v.literal("guest")

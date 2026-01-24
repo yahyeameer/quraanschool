@@ -7,40 +7,40 @@ import { cn } from "@/lib/utils";
 
 const features = [
     {
-        key: 'manager',
-        title: "Excellence in Administration",
+        key: 'finance',
+        title: "Financial Confidence",
         icon: BarChart3,
-        color: "text-blue-500",
-        bg: "bg-blue-500/10",
-        colSpan: "lg:col-span-2 lg:row-span-2",
-        description: "Khalaf Al Cudul is managed with transparency and precision, ensuring every tuition dollar goes back into your child's education.",
-    },
-    {
-        key: 'curriculum',
-        title: "Balanced Curriculum",
-        icon: Atom,
         color: "text-emerald-500",
         bg: "bg-emerald-500/10",
-        colSpan: "lg:col-span-1",
-        description: "Harmonizing Quranic Hifz with top-tier STEM education for a complete future leader.",
+        colSpan: "lg:col-span-2 lg:row-span-2",
+        description: "Complete financial oversight. Track student fees, staff payroll, and operational expenses in one unified ledger.",
     },
     {
-        key: 'parent',
-        title: "Strong Parent Partnership",
+        key: 'library',
+        title: "Digital Library",
+        icon: Atom, // Using Atom as placeholder for Library/Knowledge
+        color: "text-blue-500",
+        bg: "bg-blue-500/10",
+        colSpan: "lg:col-span-1",
+        description: "Catalog books, track borrowing, and manage digital resources for your institution.",
+    },
+    {
+        key: 'transport',
+        title: "Transport Tracking",
+        icon: Clock,
+        color: "text-orange-500",
+        bg: "bg-orange-500/10",
+        colSpan: "lg:col-span-1",
+        description: "Real-time updates on bus routes and student pickup/drop-off status.",
+    },
+    {
+        key: 'attendance',
+        title: "Smart Attendance",
         icon: ShieldCheck,
         color: "text-purple-500",
         bg: "bg-purple-500/10",
-        colSpan: "lg:col-span-1",
-        description: "We believe in co-education. Stay connected with daily logs and direct teacher messaging.",
-    },
-    {
-        key: 'labs',
-        title: "Modern Facilities",
-        icon: Microscope,
-        color: "text-orange-500",
-        bg: "bg-orange-500/10",
         colSpan: "lg:col-span-2",
-        description: "From our Science Labs to our Hifz Circles, we provide the environment your child needs to thrive.",
+        description: "Automated attendance tracking for students and staff with biometric integration options.",
     }
 ];
 

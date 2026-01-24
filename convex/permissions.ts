@@ -1,7 +1,7 @@
 import { QueryCtx, MutationCtx } from "./_generated/server";
 
 // Define all valid roles for type safety
-export type UserRole = "admin" | "manager" | "teacher" | "staff" | "parent" | "student" | "guest";
+export type UserRole = "admin" | "manager" | "teacher" | "staff" | "accountant" | "librarian" | "receptionist" | "parent" | "student" | "guest";
 
 export async function hasRole(ctx: QueryCtx | MutationCtx, role: UserRole) {
     const identity = await ctx.auth.getUserIdentity();
@@ -42,7 +42,7 @@ export async function requireRole(ctx: QueryCtx | MutationCtx, role: UserRole) {
 
 // Helper function to validate roles
 function isValidRole(role: string): role is UserRole {
-    return ["admin", "manager", "teacher", "staff", "parent", "student", "guest"].includes(role);
+    return ["admin", "manager", "teacher", "staff", "accountant", "librarian", "receptionist", "parent", "student", "guest"].includes(role);
 }
 
 // Check if user has any of the specified roles

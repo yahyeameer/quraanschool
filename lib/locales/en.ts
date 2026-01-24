@@ -10,14 +10,14 @@ export const en: Dictionary = {
     },
     landing: {
         hero: {
-            title: "Preserving the Light, One Ayah at a Time",
-            subtitle: "A premium Islamic School Management System designed for the modern age. Empowering managers, teachers, and parents to focus on what matters most.",
+            title: "Khalaf Al Cudul: The Complete Islamic School System",
+            subtitle: "Empowering the next generation with a comprehensive management system. From Quranic Hifz to advanced STEM, manage every aspect of your institution with precision and grace.",
             ctaPrimary: "Get Started",
             ctaSecondary: "View Demo",
         },
         features: {
-            title: "Why Choose Khalaf al Cudul?",
-            description: "Everything you need to manage your madrasa efficiently.",
+            title: "Beyond Just Management",
+            description: "A holistic ecosystem designed for the modern Islamic institution.",
         },
     },
     dashboard: {
@@ -31,7 +31,7 @@ export const en: Dictionary = {
     },
     sidebar: {
         dashboard: "Dashboard",
-        myHalaqa: "My Halaqa",
+        myHalaqa: "My Classes",
         quranTracker: "Quran Tracker",
         assignments: "Assignments",
         schedule: "Schedule",
@@ -55,6 +55,14 @@ export const en: Dictionary = {
         payments: "Payments",
         messages: "Messages",
         signOut: "Sign Out",
+        accountantDashboard: "Accountant Portal",
+        librarianDashboard: "Library System",
+    },
+    accountant: {
+        dashboard: "Financial Overview",
+        financials: "Financials",
+        pending: "Pending Payments",
+        expenseTracker: "Expense Tracker",
     },
     finance: {
         totalCollected: "Total Collected",
@@ -105,7 +113,7 @@ export const en: Dictionary = {
             absent: "Absent",
             late: "Late",
             submit: "Submit Attendance",
-            selectClass: "Select Halaqa Circle",
+            selectClass: "Select Class/Circle",
         },
         logbook: {
             title: "Progress Logbook",
@@ -117,8 +125,8 @@ export const en: Dictionary = {
             save: "Save Log Entry",
         },
         classes: {
-            title: "My Quran Circles",
-            newHalaqa: "New Halaqa",
+            title: "My Classes",
+            newHalaqa: "New Class",
             manage: "Manage",
         },
     },

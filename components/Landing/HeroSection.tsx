@@ -40,7 +40,14 @@ export function HeroSection() {
                             </ShimmerButton>
                         </Link>
                     </SignedIn>
-                    <Button size="lg" variant="outline" className="text-lg h-12 px-8 rounded-full border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/10 text-white border-transparent hover:border-emerald-500/30 transition-all duration-300 group">
+                    <Button
+                        size="lg"
+                        variant="outline"
+                        className="text-lg h-12 px-8 rounded-full border-white/20 bg-white/5 backdrop-blur-md hover:bg-white/10 text-white border-transparent hover:border-emerald-500/30 transition-all duration-300 group"
+                        onClick={() => {
+                            document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                    >
                         <Play className="mr-3 h-4 w-4 fill-white text-white group-hover:scale-110 transition-transform" />
                         {t.landing.hero.ctaSecondary}
                     </Button>

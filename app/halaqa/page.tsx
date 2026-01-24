@@ -24,15 +24,15 @@ export default function HalaqaPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="font-amiri text-3xl font-bold text-foreground">Halaqa Management</h1>
-                    <p className="text-muted-foreground">Manage your Quran circles and assignments.</p>
+                    <h1 className="font-amiri text-3xl font-bold text-foreground">Class Management</h1>
+                    <p className="text-muted-foreground">Manage your educational circles and assignments.</p>
                 </div>
                 <button
                     onClick={() => setShowForm(!showForm)}
                     className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-md transition-all hover:bg-primary/90"
                 >
                     <Plus className="h-4 w-4" />
-                    {showForm ? "Cancel" : "New Halaqa"}
+                    {showForm ? "Cancel" : "New Class"}
                 </button>
             </div>
 
@@ -50,7 +50,7 @@ export default function HalaqaPage() {
                         <div className="flex h-40 items-center justify-center text-muted-foreground">Loading...</div>
                     ) : classes.length === 0 ? (
                         <div className="flex h-40 flex-col items-center justify-center rounded-xl border border-dashed border-border text-muted-foreground">
-                            <p>No Halaqas found.</p>
+                            <p>No Classes found.</p>
                             <p className="text-sm">Create one to get started.</p>
                         </div>
                     ) : (

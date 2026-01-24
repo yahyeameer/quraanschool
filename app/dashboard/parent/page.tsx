@@ -29,11 +29,15 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/language-context";
 
+import { ContactAdminModal } from "@/components/Dashboard/ContactAdminModal";
+import { Id } from "@/convex/_generated/dataModel";
+
 export default function ParentDashboard() {
     const { t, locale, dir } = useLanguage();
     // @ts-ignore
     const children = useQuery(api.parent.getChildren);
-    const [selectedChildId, setSelectedChildId] = useState<string>("");
+    const [selectedChildId, setSelectedChildId] = useState<Id<"users"> | null>(null);
+    const [showContactModal, setShowContactModal] = useState(false);
     const user = useQuery(api.users.currentUser);
 
     // Automatically select first child if none selected
@@ -151,7 +155,7 @@ export default function ParentDashboard() {
                                 : 'Please contact administration to link your child\'s account to your profile.'
                             }
                         </p>
-                        <Button className="mt-6 rounded-xl" variant="outline">
+                        <Button onClick={() => setShowContactModal(true)} className="mt-6 rounded-xl" variant="outline">
                             <MessageSquare className="h-4 w-4 ltr:mr-2 rtl:ml-2" />
                             {locale === 'ar' ? 'تواصل مع الإدارة' : 'Contact Admin'}
                         </Button>
@@ -522,6 +526,7 @@ export default function ParentDashboard() {
                     </AnimatePresence>
                 )}
             </div>
+            <ContactAdminModal isOpen={showContactModal} onClose={() => setShowContactModal(false)} />
         </RoleGuard>
     );
 }

@@ -6,7 +6,7 @@ import { requireRole, UserRole } from "./permissions";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Valid staff roles
-const VALID_STAFF_ROLES = ["teacher", "staff", "manager"];
+const VALID_STAFF_ROLES = ["teacher", "staff", "manager", "accountant", "librarian", "receptionist"];
 
 // Helper function to validate email
 function validateEmail(email: string): boolean {
@@ -15,7 +15,7 @@ function validateEmail(email: string): boolean {
 
 // Helper function to validate role
 function validateRole(role: string): role is UserRole {
-    return ["admin", "manager", "teacher", "staff", "parent", "student", "guest"].includes(role);
+    return ["admin", "manager", "teacher", "staff", "accountant", "librarian", "receptionist", "parent", "student", "guest"].includes(role);
 }
 
 // Enhanced stats query with comprehensive metrics
@@ -81,7 +81,14 @@ export const listUsers = query({
 export const inviteStaff = mutation({
     args: {
         email: v.string(),
-        role: v.union(v.literal("teacher"), v.literal("staff"), v.literal("manager"))
+        role: v.union(
+            v.literal("teacher"),
+            v.literal("staff"),
+            v.literal("manager"),
+            v.literal("accountant"),
+            v.literal("librarian"),
+            v.literal("receptionist")
+        )
     },
     handler: async (ctx, args) => {
         await requireRole(ctx, "admin");
@@ -187,6 +194,9 @@ export const updateUserRole = mutation({
             v.literal("manager"),
             v.literal("teacher"),
             v.literal("staff"),
+            v.literal("accountant"),
+            v.literal("librarian"),
+            v.literal("receptionist"),
             v.literal("parent"),
             v.literal("student"),
             v.literal("guest")

@@ -1,13 +1,14 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireRole } from "./permissions";
+import { requireRole, hasAnyRole } from "./permissions";
 
 // --- Fees Management ---
 
 export const getFees = query({
     args: { month: v.optional(v.string()) },
     handler: async (ctx, args) => {
-        await requireRole(ctx, "manager");
+        const { hasRole } = await hasAnyRole(ctx, ["manager", "admin", "accountant"]);
+        if (!hasRole) throw new Error("Unauthorized");
 
         // Get all students
         const students = await ctx.db
@@ -44,7 +45,8 @@ export const logFeePayment = mutation({
         notes: v.optional(v.string())
     },
     handler: async (ctx, args) => {
-        await requireRole(ctx, "manager");
+        const { hasRole } = await hasAnyRole(ctx, ["manager", "admin", "accountant"]);
+        if (!hasRole) throw new Error("Unauthorized");
 
         // Check if already paid
         const existing = await ctx.db
@@ -72,14 +74,15 @@ export const logFeePayment = mutation({
 export const getSalaries = query({
     args: { month: v.optional(v.string()) },
     handler: async (ctx, args) => {
-        await requireRole(ctx, "manager");
+        const { hasRole } = await hasAnyRole(ctx, ["manager", "admin", "accountant"]);
+        if (!hasRole) throw new Error("Unauthorized");
 
         // Get all staff
         const staff = await ctx.db
             .query("users")
             .collect();
         // Filter in memory for specific roles to avoid complex index logic for now
-        const eligibleStaff = staff.filter(u => ["teacher", "manager", "staff"].includes(u.role));
+        const eligibleStaff = staff.filter(u => ["teacher", "manager", "staff", "accountant", "librarian", "receptionist"].includes(u.role));
 
         const currentMonth = args.month || new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
 
@@ -109,7 +112,8 @@ export const payoutSalary = mutation({
         notes: v.optional(v.string())
     },
     handler: async (ctx, args) => {
-        await requireRole(ctx, "manager");
+        const { hasRole } = await hasAnyRole(ctx, ["manager", "admin", "accountant"]);
+        if (!hasRole) throw new Error("Unauthorized");
 
         const existing = await ctx.db
             .query("salaries")
@@ -137,7 +141,8 @@ export const payoutSalary = mutation({
 export const getFinancialOverview = query({
     args: {},
     handler: async (ctx) => {
-        await requireRole(ctx, "manager");
+        const { hasRole } = await hasAnyRole(ctx, ["manager", "admin", "accountant"]);
+        if (!hasRole) throw new Error("Unauthorized");
 
         const payments = await ctx.db.query("payments").collect();
         const salaries = await ctx.db.query("salaries").collect();
