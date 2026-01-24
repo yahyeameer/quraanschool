@@ -57,15 +57,17 @@ export function AssignmentManager() {
                     <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border bg-accent/10 p-4">
                         <h4 className="font-bold text-sm uppercase text-muted-foreground">New Assignment</h4>
                         <div>
-                            <label className="text-xs font-medium">Target Halaqa</label>
+                            <label className="text-xs font-medium">Target Class</label>
                             <select
                                 value={selectedClassId}
                                 onChange={(e) => setSelectedClassId(e.target.value)}
                                 className="w-full mt-1 rounded border p-2 text-sm bg-background"
                                 required
                             >
-                                <option value="">Select Halaqa</option>
-                                {classes?.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                                <option value="" className="bg-zinc-900">{/* t.academic.selectClass || */ "Select Class"}</option>
+                                {classes?.map(c => (
+                                    <option key={c._id} value={c._id} className="bg-zinc-900">{c.name}</option>
+                                ))}
                             </select>
                         </div>
                         <div>

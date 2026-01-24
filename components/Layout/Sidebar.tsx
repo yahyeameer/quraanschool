@@ -16,7 +16,8 @@ import {
     Wallet,
     FileText,
     MessageSquare,
-    Activity
+    Activity,
+    Bus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/nextjs";
@@ -82,6 +83,7 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                 { label: t.sidebar.fees, icon: DollarSign, href: "/dashboard/manager/fees", color: "text-emerald-600" },
                 { label: "Expenses", icon: Wallet, href: "/dashboard/manager/finance/expenses", color: "text-red-500" },
                 { label: t.sidebar.salaries, icon: Wallet, href: "/dashboard/manager/salaries", color: "text-blue-600" },
+                { label: "Transport", icon: Bus, href: "/dashboard/manager/transport", color: "text-amber-500" },
                 { label: t.sidebar.academic, icon: GraduationCap, href: "/dashboard/manager/academic", color: "text-orange-500" },
                 { label: t.sidebar.analytics || "Analytics", icon: Activity, href: "/dashboard/manager/analytics", color: "text-indigo-600" },
                 { label: t.sidebar.reports, icon: BookOpen, href: "/dashboard/manager/reports", color: "text-amber-500" },
@@ -111,9 +113,18 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
             ];
         }
 
+        if (user.role === "librarian") {
+            return [
+                { label: "Library Dashboard", icon: BookOpen, href: "/dashboard/librarian", color: "text-amber-600" },
+                { label: t.sidebar.messages || "Messages", icon: MessageSquare, href: "/messages", color: "text-blue-500", badge: unreadCount || 0 },
+                { label: t.sidebar.settings, icon: Settings, href: "/settings" },
+            ];
+        }
+
         if (user.role === "parent") {
             return [
                 { label: t.sidebar.parentView, icon: LayoutDashboard, href: "/dashboard/parent", color: "text-purple-500" },
+                { label: "Library", icon: BookOpen, href: "/library", color: "text-amber-600" },
                 { label: t.sidebar.schedule || "Schedule", icon: Calendar, href: "/schedule", color: "text-pink-500" },
                 { label: t.sidebar.messages || "Messages", icon: MessageSquare, href: "/messages", color: "text-blue-500", badge: unreadCount || 0 },
             ];
@@ -129,13 +140,12 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
             ];
         }
 
-
-
         // Student / Default
         return [
             { label: t.sidebar.dashboard, icon: LayoutDashboard, href: "/", color: "text-emerald-500" },
-            { label: t.sidebar.myHalaqa, icon: Users, href: "/halaqa", color: "text-violet-500" },
+            { label: "My Classes", icon: Users, href: "/halaqa", color: "text-violet-500" },
             { label: t.sidebar.quranTracker, icon: BookOpen, href: "/tracker", color: "text-amber-500" },
+            { label: "Library", icon: BookOpen, href: "/library", color: "text-amber-600" },
             { label: t.sidebar.assignments, icon: GraduationCap, href: "/assignments", color: "text-sky-500" },
             { label: t.sidebar.schedule, icon: Calendar, href: "/schedule", color: "text-pink-700" },
             { label: t.sidebar.settings, icon: Settings, href: "/settings" },

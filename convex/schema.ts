@@ -252,4 +252,67 @@ export default defineSchema({
   })
     .index("by_date", ["date"])
     .index("by_category", ["category"]),
+
+  // Library System
+  books: defineTable({
+    title: v.string(),
+    author: v.string(),
+    isbn: v.optional(v.string()), // International Standard Book Number
+    category: v.string(), // "Fiction", "History", "Islamic Studies", "Reference"
+    copiesAvailable: v.number(),
+    copiesTotal: v.number(),
+    coverUrl: v.optional(v.string()),
+    description: v.optional(v.string()),
+    addedBy: v.optional(v.id("users")),
+    location: v.optional(v.string()), // Shelf/Aisle
+  })
+    .index("by_category", ["category"])
+    .index("by_title", ["title"])
+    .searchIndex("search_books", {
+      searchField: "title",
+      filterFields: ["category", "author"],
+    }),
+
+  loans: defineTable({
+    bookId: v.id("books"),
+    userId: v.id("users"), // Student or Staff
+    borrowDate: v.string(),
+    dueDate: v.string(),
+    returnDate: v.optional(v.string()),
+    status: v.string(), // "active", "returned", "overdue", "lost"
+    notes: v.optional(v.string()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_book", ["bookId"])
+    .index("by_status", ["status"]),
+
+  // Transport System
+  transport_routes: defineTable({
+    name: v.string(), // "Route 1 - Downtown"
+    driverId: v.optional(v.id("users")),
+    vehiclePlate: v.optional(v.string()),
+    capacity: v.number(),
+    status: v.string(), // "garage", "en-route", "completed", "maintenance"
+    currentLocation: v.optional(v.object({ lat: v.number(), lng: v.number() })),
+    lastUpdated: v.optional(v.string())
+  })
+    .index("by_driver", ["driverId"])
+    .index("by_status", ["status"]),
+
+  transport_stops: defineTable({
+    routeId: v.id("transport_routes"),
+    name: v.string(), // "Main St & 5th Ave"
+    order: v.number(),
+    expectedTime: v.string(), // "07:30"
+  })
+    .index("by_route", ["routeId"]),
+
+  transport_assignments: defineTable({
+    studentId: v.id("users"),
+    routeId: v.id("transport_routes"),
+    stopId: v.optional(v.id("transport_stops")),
+    type: v.string(), // "pickup", "dropoff", "both"
+  })
+    .index("by_student", ["studentId"])
+    .index("by_route", ["routeId"]),
 });

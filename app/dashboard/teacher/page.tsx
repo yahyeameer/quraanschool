@@ -101,7 +101,7 @@ export default function TeacherDashboard() {
                                     className="bg-white text-emerald-600 hover:bg-emerald-50 rounded-xl font-bold shadow-lg"
                                 >
                                     <BookOpen className="h-4 w-4 ltr:mr-2 rtl:ml-2" />
-                                    {locale === 'ar' ? 'حلقاتي' : 'My Halaqas'}
+                                    {locale === 'ar' ? 'فصولي' : 'My Classes'}
                                 </Button>
                             </Link>
                         </div>
@@ -120,7 +120,7 @@ export default function TeacherDashboard() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm font-medium text-muted-foreground">
-                                            {locale === 'ar' ? 'حلقاتي' : 'My Halaqas'}
+                                            {locale === 'ar' ? 'فصولي' : 'My Classes'}
                                         </p>
                                         <p className="text-3xl font-bold mt-1">
                                             {classes === undefined ? (
@@ -158,7 +158,7 @@ export default function TeacherDashboard() {
                                     </div>
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-2">
-                                    {locale === 'ar' ? `حلقات ${today}` : `${today}'s schedule`}
+                                    {locale === 'ar' ? `فصول ${today}` : `${today}'s schedule`}
                                 </p>
                             </CardContent>
                         </Card>

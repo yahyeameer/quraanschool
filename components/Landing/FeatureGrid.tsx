@@ -4,6 +4,7 @@ import { useLanguage } from "@/lib/language-context";
 import { Users, BarChart3, Clock, Atom, ShieldCheck, Microscope, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 const features = [
     {
@@ -52,6 +53,16 @@ export function FeatureGrid() {
             {/* Background Glow */}
             <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/5 blur-[120px] rounded-full" />
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full" />
+
+            {/* Logo Background Watermark */}
+            <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none">
+                <Image
+                    src="/school-logo.jpg"
+                    alt="Background Pattern"
+                    fill
+                    className="object-cover grayscale"
+                />
+            </div>
 
             <div className="container mx-auto px-4 relative z-10">
                 <div className="text-center max-w-3xl mx-auto mb-20">

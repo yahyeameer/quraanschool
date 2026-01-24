@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/language-context";
 
 import { ContactAdminModal } from "@/components/Dashboard/ContactAdminModal";
+import { TransportStatusCard } from "@/components/Transport/TransportStatusCard";
 import { Id } from "@/convex/_generated/dataModel";
 
 export default function ParentDashboard() {

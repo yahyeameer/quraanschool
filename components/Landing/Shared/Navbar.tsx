@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "@/lib/language-context";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/Landing/LanguageSwitcher";
@@ -47,8 +48,12 @@ export function Navbar() {
                         "relative flex items-center justify-center font-amiri font-bold text-lg rounded-full transition-all duration-500 text-white shadow-lg overflow-hidden",
                         scrolled ? "h-9 w-9 bg-emerald-600" : "h-11 w-11 bg-white/10 border border-white/20 group-hover:bg-white/20"
                     )}>
-                        <span className="relative z-10">K</span>
-                        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-600 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <Image
+                            src="/school-logo.jpg"
+                            alt="Logo"
+                            fill
+                            className="object-cover"
+                        />
                     </div>
                     <AnimatePresence>
                         {(!scrolled || mobileMenuOpen) && (
