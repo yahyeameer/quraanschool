@@ -109,7 +109,8 @@
 
 ### 💎 Premium Interface
 
-![Landing Page](/screenshots/landing_page.png)
+![Landing Page](<img width="936" height="463" alt="image" src="https://github.com/user-attachments/assets/dd7a267b-d409-4c2d-943c-290e7e9e79e4" />
+)
 *Ultra-modern landing page with liquid glass design and spiritual aesthetics*
 
 ### 👨‍💼 Manager Command Center
