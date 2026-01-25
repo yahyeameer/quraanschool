@@ -96,7 +96,7 @@ export const getSalaries = query({
             return {
                 staff: member,
                 status: salary ? salary.status : "pending",
-                amount: salary ? salary.amount : 0,
+                amount: salary ? salary.totalAmount : 0,
                 paymentDate: salary ? salary.paymentDate : null,
                 salaryId: salary ? salary._id : null
             };
@@ -127,11 +127,13 @@ export const payoutSalary = mutation({
 
         await ctx.db.insert("salaries", {
             staffId: args.staffId,
-            amount: args.amount,
+            baseAmount: args.amount,
+            adjustments: 0,
+            totalAmount: args.amount,
             month: args.month,
             status: "paid",
             paymentDate: new Date().toISOString(),
-            notes: args.notes
+            generatedAt: new Date().toISOString(),
         });
     }
 });
@@ -148,7 +150,7 @@ export const getFinancialOverview = query({
         const salaries = await ctx.db.query("salaries").collect();
 
         const totalRevenue = payments.reduce((sum, p) => sum + (p.status === "paid" ? p.amount : 0), 0);
-        const totalExpenses = salaries.reduce((sum, s) => sum + (s.status === "paid" ? s.amount : 0), 0);
+        const totalExpenses = salaries.reduce((sum, s) => sum + (s.status === "paid" ? s.totalAmount : 0), 0);
         const netIncome = totalRevenue - totalExpenses;
 
         return {

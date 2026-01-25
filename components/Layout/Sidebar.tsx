@@ -17,57 +17,22 @@ import {
     FileText,
     MessageSquare,
     Activity,
-    Bus
+    Bus,
+    ChevronRight,
+    Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/nextjs";
 import { LanguageSwitcher } from "@/components/Layout/LanguageSwitcher";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-
-const routes = [
-    {
-        label: "Dashboard",
-        icon: LayoutDashboard,
-        href: "/", // Home/Overview
-        color: "text-emerald-500",
-    },
-    {
-        label: "My Halaqa",
-        icon: Users,
-        href: "/halaqa",
-        color: "text-violet-500",
-    },
-    {
-        label: "Quran Tracker",
-        icon: BookOpen,
-        href: "/tracker",
-        color: "text-amber-500",
-    },
-    {
-        label: "Assignments",
-        icon: GraduationCap,
-        href: "/assignments",
-        color: "text-sky-500",
-    },
-    {
-        label: "Schedule",
-        icon: Calendar,
-        href: "/schedule",
-        color: "text-pink-700",
-    },
-    {
-        label: "Settings",
-        icon: Settings,
-        href: "/settings",
-    },
-];
+import { motion, AnimatePresence } from "framer-motion";
 
 export function Sidebar({ isOpen }: { isOpen: boolean }) {
     const pathname = usePathname();
     const user = useQuery(api.users.currentUser);
     const unreadCount = useQuery(api.messages.getUnreadCount);
-    const { t } = useLanguage();
+    const { t, locale } = useLanguage();
 
     // Filter routes or show specific sets
     const getRoutes = () => {
@@ -155,68 +120,114 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
     const currentRoutes = getRoutes();
 
     return (
-        <div className={cn(
-            "fixed start-0 top-16 h-[calc(100vh-4rem)] w-64 border-e border-border/50 bg-background/60 backdrop-blur-xl transition-transform duration-300 z-40",
-            isOpen ? "translate-x-0" : "ltr:-translate-x-full rtl:translate-x-full lg:translate-x-0",
-            // Helper classes for RTL sidebar logic were missing or confusing, simplifying:
-            // "ltr:left-0 rtl:right-0",
-            // "rtl:translate-x-full lg:rtl:translate-x-0",
-            // isOpen && "rtl:translate-x-0"
-        )}>
-            <div className="space-y-4 py-4 flex flex-col h-full">
-                <div className="px-6 py-4 border-b border-border/50">
+        <motion.div
+            initial={false}
+            animate={{
+                x: isOpen ? 0 : (locale === 'ar' ? 300 : -300),
+                opacity: isOpen ? 1 : 0
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className={cn(
+                "fixed top-24 bottom-6 w-72 z-40 transition-all duration-300",
+                locale === 'ar' ? "right-6" : "left-6"
+            )}
+        >
+            <div className="h-full glass-panel rounded-3xl flex flex-col overflow-hidden shadow-2xl relative">
+                {/* Decorative background blur */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+
+                {/* Header */}
+                <div className="px-6 py-6 border-b border-white/10 relative z-10">
                     <Link href="/" className="flex items-center gap-3 group">
-                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-emerald-500/20 group-hover:border-emerald-500 transition-all duration-300">
-                            <div className="absolute inset-0 bg-primary flex items-center justify-center text-white font-bold">K</div>
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+                            <span className="text-white font-amiri font-bold text-2xl">خ</span>
+                            <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
-                        <span className="font-amiri text-xl font-bold text-primary">Khalaf al Cudul</span>
+                        <div className="flex flex-col">
+                            <span className="font-amiri text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                                Khalaf al Cudul
+                            </span>
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
+                                Quran School
+                            </span>
+                        </div>
                     </Link>
                 </div>
-                <div className="px-3 py-2 flex-1 scrollbar-hide overflow-y-auto">
-                    <div className="space-y-1">
-                        {currentRoutes.map((route) => (
+
+                {/* Navigation */}
+                <div className="px-4 py-4 flex-1 overflow-y-auto no-scrollbar relative z-10 space-y-1">
+                    {currentRoutes.map((route) => {
+                        const isActive = pathname === route.href;
+                        return (
                             <Link
                                 key={route.href}
                                 href={route.href}
                                 className={cn(
-                                    "group flex w-full items-center justify-start rounded-lg p-3 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground",
-                                    pathname === route.href ? "bg-accent text-accent-foreground" : "text-muted-foreground"
+                                    "group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300",
+                                    isActive
+                                        ? "bg-primary/10 text-primary shadow-sm"
+                                        : "hover:bg-accent/50 text-muted-foreground hover:text-foreground"
                                 )}
                             >
-                                <div className="flex items-center flex-1">
-                                    <route.icon className={cn("mr-3 h-5 w-5 rtl:ml-3 rtl:mr-0", route.color)} />
-                                    {route.label}
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="sidebar-active"
+                                        className="absolute inset-0 bg-white/50 dark:bg-white/5 rounded-xl border border-white/20 shadow-sm backdrop-blur-sm"
+                                        initial={false}
+                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                    />
+                                )}
+
+                                <div className={cn(
+                                    "relative z-10 flex items-center justify-center h-8 w-8 rounded-lg transition-colors",
+                                    isActive ? "bg-white/80 dark:bg-black/20 shadow-sm" : "bg-transparent group-hover:bg-white/40 dark:group-hover:bg-white/10"
+                                )}>
+                                    <route.icon className={cn("h-4 w-4", route.color)} />
                                 </div>
+
+                                <span className="relative z-10 font-medium text-sm flex-1">
+                                    {route.label}
+                                </span>
+
                                 {(route as any).badge > 0 && (
-                                    <span className="ml-auto h-5 min-w-5 px-1 rounded-full bg-primary text-[10px] text-primary-foreground flex items-center justify-center font-bold">
+                                    <span className="relative z-10 flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full bg-red-500 text-[10px] text-white font-bold shadow-sm ring-2 ring-background">
                                         {(route as any).badge > 9 ? "9+" : (route as any).badge}
                                     </span>
                                 )}
-                            </Link>
-                        ))}
-                    </div>
 
+                                {isActive && (
+                                    <ChevronRight className={cn(
+                                        "relative z-10 h-4 w-4 text-primary opacity-50",
+                                        locale === 'ar' && "rotate-180"
+                                    )} />
+                                )}
+                            </Link>
+                        );
+                    })}
                 </div>
 
                 {/* Footer */}
-                <div className="p-4 border-t border-border/50 space-y-2">
-                    <div className="flex items-center justify-between">
-                        <p className="text-xs text-muted-foreground/50 px-2">
-                            Ver. 1.0.0 (Beta)
+                <div className="p-4 border-t border-white/10 relative z-10 bg-gradient-to-t from-background/50 to-transparent">
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-xs font-medium text-muted-foreground">System</span>
+                            <LanguageSwitcher />
+                        </div>
+                        <SignOutButton>
+                            <button className={cn(
+                                "w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all duration-300",
+                                "bg-red-500/10 text-red-600 hover:bg-red-500 hover:text-white border border-red-500/20 hover:border-red-500 hover:shadow-lg hover:shadow-red-500/20"
+                            )}>
+                                <LogOut className="w-4 h-4" />
+                                {t.sidebar.signOut}
+                            </button>
+                        </SignOutButton>
+                        <p className="text-[10px] text-center text-muted-foreground/40 mt-3 font-mono">
+                            v2.0.0 • Project 100x
                         </p>
-                        <LanguageSwitcher />
                     </div>
-                    <SignOutButton>
-                        <button className={cn(
-                            "w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                            "text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                        )}>
-                            <LogOut className="w-5 h-5" />
-                            {t.sidebar.signOut}
-                        </button>
-                    </SignOutButton>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }

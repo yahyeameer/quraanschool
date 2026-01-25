@@ -158,14 +158,35 @@ export default defineSchema({
     .index("by_email", ["email"])
     .index("by_phone", ["phone"]), // Added phone index
 
-  // Staff Salaries
+  // Staff Contracts (Base Salary)
+  staff_contracts: defineTable({
+    staffId: v.id("users"),
+    baseSalary: v.number(),
+    currency: v.string(), // "USD", "KES", etc.
+    startDate: v.string(),
+    type: v.string(), // "Full-time", "Part-time", "Contract"
+    status: v.string(), // "Active", "Terminated"
+  }).index("by_staff", ["staffId"]),
+
+  // Payroll Adjustments (Bonuses/Deductions)
+  payroll_adjustments: defineTable({
+    staffId: v.id("users"),
+    month: v.string(),
+    type: v.string(), // "Bonus", "Deduction", "Reimbursement"
+    amount: v.number(),
+    description: v.string(),
+  }).index("by_staff_month", ["staffId", "month"]),
+
+  // Staff Salary Records (Generated Monthly)
   salaries: defineTable({
     staffId: v.id("users"),
-    amount: v.number(),
+    baseAmount: v.number(),
+    adjustments: v.number(), // Net +/-
+    totalAmount: v.number(),
     month: v.string(), // e.g. "February 2026"
-    status: v.string(), // "paid", "pending"
-    paymentDate: v.string(),
-    notes: v.optional(v.string())
+    status: v.string(), // "draft", "approved", "paid"
+    paymentDate: v.optional(v.string()),
+    generatedAt: v.string(),
   })
     .index("by_staff", ["staffId"])
     .index("by_month", ["month"])

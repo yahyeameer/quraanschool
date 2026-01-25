@@ -3,21 +3,19 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
-import { StatCard } from "@/components/Dashboard/Shared/StatCard";
 import { PerformanceChart } from "@/components/Dashboard/Shared/PerformanceChart";
+import { TiltCard } from "@/components/ui/tilt-card";
 import {
     Users,
     GraduationCap,
     CheckCircle,
     AlertCircle,
     BookOpen,
-    Sparkles,
     Activity,
     ArrowUpRight,
-    Search,
-    Bell,
     Settings,
-    Shield
+    Shield,
+    TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -28,267 +26,232 @@ export default function ManagerDashboard() {
     const registrations = useQuery(api.registrations.list);
     const pendingCount = registrations?.filter(r => r.status === "new").length ?? 0;
 
+    const container = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
+    const item = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0 }
+    };
+
     return (
         <RoleGuard requiredRole="manager">
-            <div className="space-y-8 p-4 md:p-8 min-h-screen">
-                {/* Header Section with Glass Effect */}
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-[32px] bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]"
-                >
-                    <div className="flex items-center gap-4">
-                        <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                            <Shield className="h-7 w-7 text-white" />
-                        </div>
-                        <div>
-                            <h1 className="text-3xl font-bold font-amiri tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">
-                                Manager Command
-                            </h1>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground/80">
-                                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                                System Operational
-                            </div>
-                        </div>
+            <motion.div
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="space-y-6 pb-20"
+            >
+                {/* Executive Header */}
+                <motion.div variants={item} className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <h1 className="text-4xl md:text-5xl font-bold font-amiri tracking-tight text-foreground drop-shadow-sm dark:text-white dark:drop-shadow-md">
+                            Executive Overview
+                        </h1>
+                        <p className="text-muted-foreground mt-2 flex items-center gap-2 font-medium dark:text-white/70">
+                            <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
+                            System Operational • {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                        </p>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <button className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105 active:scale-95">
-                            <Search className="h-5 w-5 text-white/70" />
+                    <div className="flex gap-2">
+                        <button className="glass-pill px-5 py-2.5 text-xs font-bold hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-2 text-foreground dark:text-white border border-border dark:border-white/10 bg-background/50 dark:bg-white/5 backdrop-blur-md">
+                            <Activity className="h-4 w-4" />
+                            Live Reports
                         </button>
-                        <button className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105 active:scale-95 relative">
-                            <Bell className="h-5 w-5 text-white/70" />
-                            {pendingCount > 0 && (
-                                <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-black" />
-                            )}
+                        <button className="glass-pill px-5 py-2.5 text-xs font-bold hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-2 text-foreground dark:text-white border border-border dark:border-white/10 bg-background/50 dark:bg-white/5 backdrop-blur-md">
+                            <Settings className="h-4 w-4" />
+                            Configure
                         </button>
-                        <Link href="/dashboard/manager/settings">
-                            <button className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:scale-105 active:scale-95">
-                                <Settings className="h-5 w-5 text-white/70" />
-                            </button>
-                        </Link>
                     </div>
                 </motion.div>
 
-                {/* Stats Grid - Liquid Glass Cards */}
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                    <LiquidStatCard
+                {/* KPI Bento Grid with Tilt Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <DashboardMetric
                         title="Total Students"
                         value={stats?.totalStudents?.toString() ?? "0"}
                         icon={Users}
                         trend="+12%"
-                        color="blue"
-                        delay={0.1}
+                        trendUp={true}
+                        color="text-blue-600 dark:text-blue-400"
+                        bg="bg-blue-500/10"
+                        border="border-blue-500/20"
                     />
-                    <LiquidStatCard
+                    <DashboardMetric
                         title="Active Classes"
                         value={stats?.activeClasses?.toString() ?? "0"}
                         icon={BookOpen}
                         trend="Stable"
-                        color="violet"
-                        delay={0.2}
+                        trendUp={true}
+                        color="text-violet-600 dark:text-violet-400"
+                        bg="bg-violet-500/10"
+                        border="border-violet-500/20"
                     />
-                    <LiquidStatCard
-                        title="Memorization"
+                    <DashboardMetric
+                        title="Total Ayahs"
                         value={stats?.totalAyahs?.toLocaleString() ?? "0"}
-                        subtitle="Ayahs"
                         icon={CheckCircle}
-                        trend="+5%"
-                        color="emerald"
-                        delay={0.3}
+                        trend="+5.2%"
+                        trendUp={true}
+                        color="text-emerald-600 dark:text-emerald-400"
+                        bg="bg-emerald-500/10"
+                        border="border-emerald-500/20"
                     />
-                    <LiquidStatCard
-                        title="Pending Apps"
-                        value={pendingCount.toString()}
-                        icon={AlertCircle}
-                        trend={pendingCount > 0 ? "Action Needed" : "Clear"}
-                        color={pendingCount > 0 ? "orange" : "zinc"}
-                        delay={0.4}
+                    <DashboardMetric
+                        title="Revenue (Est.)"
+                        value="$12.4k"
+                        icon={TrendingUp}
+                        trend="+8%"
+                        trendUp={true}
+                        color="text-amber-600 dark:text-amber-400"
+                        bg="bg-amber-500/10"
+                        border="border-amber-500/20"
                     />
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-12">
-                    {/* Performance Chart Section */}
-                    <div className="md:col-span-8 space-y-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                            className="p-6 rounded-[32px] bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl"
-                        >
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-xl font-bold flex items-center gap-2">
-                                    <Activity className="h-5 w-5 text-emerald-400" />
-                                    Academic Velocity
-                                </h3>
-                                <div className="flex gap-2">
-                                    {['W', 'M', 'Y'].map(p => (
-                                        <button key={p} className="h-8 w-8 rounded-full text-xs font-bold bg-white/5 hover:bg-white/10 border border-white/5 transition-colors">
-                                            {p}
-                                        </button>
-                                    ))}
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    {/* Charts Section */}
+                    <motion.div variants={item} className="lg:col-span-8">
+                        <div className="glass-card rounded-[32px] p-8 relative overflow-hidden min-h-[450px] border border-border dark:border-white/10 bg-white/40 dark:bg-slate-900/60 backdrop-blur-xl">
+                            <div className="flex items-center justify-between mb-8 relative z-10">
+                                <div>
+                                    <h3 className="text-xl font-bold text-foreground dark:text-white flex items-center gap-2">
+                                        <Activity className="h-5 w-5 text-emerald-500 dark:text-emerald-400" />
+                                        Academic Performance
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground dark:text-white/50">Average score trends over time</p>
                                 </div>
+                                <select className="bg-background/50 dark:bg-white/5 text-sm font-bold border border-border dark:border-white/10 outline-none cursor-pointer text-foreground dark:text-white px-3 py-1.5 rounded-lg hover:bg-accent transition-colors">
+                                    <option className="dark:bg-slate-900">This Week</option>
+                                    <option className="dark:bg-slate-900">This Month</option>
+                                    <option className="dark:bg-slate-900">This Quarter</option>
+                                </select>
                             </div>
-                            <div className="h-[300px] w-full">
+                            <div className="h-[340px] w-full relative z-10">
                                 <PerformanceChart />
                             </div>
+
+                            {/* Ambient Glows */}
+                            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                        </div>
+                    </motion.div>
+
+                    {/* Quick Applications & Actions */}
+                    <div className="lg:col-span-4 space-y-6">
+                        {/* Pending Applications Widget */}
+                        <motion.div variants={item}>
+                            <TiltCard className="glass-card rounded-[32px] p-8 relative overflow-hidden group border border-border dark:border-white/10 bg-white/40 dark:bg-slate-900/60 h-full">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
+                                    <AlertCircle className="h-40 w-40 -rotate-12 transform translate-x-10 -translate-y-10" />
+                                </div>
+
+                                <div className="relative z-10">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className="text-xl font-bold text-foreground dark:text-white">Applications</h3>
+                                        <span className={cn(
+                                            "flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
+                                            pendingCount > 0
+                                                ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20 shadow-[0_0_10px_rgba(249,115,22,0.2)]"
+                                                : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                                        )}>
+                                            <span className={cn("h-1.5 w-1.5 rounded-full animate-pulse", pendingCount > 0 ? "bg-orange-500" : "bg-emerald-500")} />
+                                            {pendingCount > 0 ? "Action Required" : "All Clear"}
+                                        </span>
+                                    </div>
+
+                                    <div className="text-6xl font-bold font-amiri mb-2 text-foreground dark:text-white">{pendingCount}</div>
+                                    <p className="text-sm text-muted-foreground dark:text-white/60 mb-8">Pending approvals waiting review</p>
+
+                                    <Link href="/dashboard/manager/applications">
+                                        <button className="w-full py-4 rounded-xl bg-foreground text-background dark:bg-white dark:text-slate-900 font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,0,0,0.1)] dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                                            Review Applications <ArrowUpRight className="h-4 w-4" />
+                                        </button>
+                                    </Link>
+                                </div>
+                            </TiltCard>
                         </motion.div>
 
-                        {/* Control Center Grid */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <ControlWidget
-                                title="System Health"
-                                status="Optimal"
-                                statusColor="bg-emerald-500"
-                                description="All services running"
-                                delay={0.6}
-                            />
-                            <ControlWidget
-                                title="Data Backup"
-                                status="Secure"
-                                statusColor="bg-blue-500"
-                                description="Last snapshot: 2h ago"
-                                delay={0.7}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Quick Actions Dock */}
-                    <div className="md:col-span-4">
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.6 }}
-                            className="h-full p-6 rounded-[32px] bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col"
-                        >
-                            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                                <Sparkles className="h-5 w-5 text-amber-400" />
-                                Quick Actions
-                            </h3>
-
-                            <div className="space-y-3 flex-1">
-                                <ActionRow href="/dashboard/manager/staff" icon={Users} color="blue" title="Manage Staff" subtitle="Teachers & Ops" />
-                                <ActionRow href="/dashboard/manager/students" icon={GraduationCap} color="emerald" title="Student Directory" subtitle="Profiles & Enrollments" />
-                                <ActionRow href="/dashboard/manager/applications" icon={AlertCircle} color="orange" title="Applications" subtitle={`${pendingCount} Pending Reviews`} />
-                                <ActionRow href="/dashboard/manager/reports" icon={BookOpen} color="violet" title="Academic Reports" subtitle="Generate PDFs" />
-                            </div>
-
-                            <div className="mt-6 pt-6 border-t border-white/10">
-                                <div className="p-4 rounded-2xl bg-black/20 border border-white/5">
-                                    <h4 className="text-sm font-bold text-muted-foreground mb-2 uppercase tracking-wider">Storage</h4>
-                                    <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden mb-2">
-                                        <div className="h-full w-[45%] bg-gradient-to-r from-emerald-500 to-cyan-500" />
-                                    </div>
-                                    <div className="flex justify-between text-xs text-muted-foreground">
-                                        <span>45GB used</span>
-                                        <span>100GB total</span>
-                                    </div>
-                                </div>
+                        {/* Quick Actions List */}
+                        <motion.div variants={item} className="glass-card rounded-[32px] p-6 border border-border dark:border-white/10 bg-white/40 dark:bg-slate-900/60">
+                            <h3 className="text-xs font-bold text-muted-foreground dark:text-white/40 uppercase tracking-widest mb-6 ml-2">Quick Navigation</h3>
+                            <div className="space-y-3">
+                                <QuickActionItem href="/dashboard/manager/staff" icon={Users} label="Manage Staff" color="text-blue-600 dark:text-blue-400" bg="bg-blue-500/10" border="border-blue-500/20" />
+                                <QuickActionItem href="/dashboard/manager/students" icon={GraduationCap} label="Student Directory" color="text-violet-600 dark:text-violet-400" bg="bg-violet-500/10" border="border-violet-500/20" />
+                                <QuickActionItem href="/dashboard/manager/fees" icon={Shield} label="Fee Management" color="text-emerald-600 dark:text-emerald-400" bg="bg-emerald-500/10" border="border-emerald-500/20" />
+                                <QuickActionItem href="/dashboard/manager/reports" icon={BookOpen} label="Academic Reports" color="text-amber-600 dark:text-amber-400" bg="bg-amber-500/10" border="border-amber-500/20" />
                             </div>
                         </motion.div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </RoleGuard>
     );
 }
 
-// Helper Components for that "Liquid Glass" feel
-
-function LiquidStatCard({ title, value, subtitle, icon: Icon, trend, color, delay }: any) {
-    const gradients: Record<string, string> = {
-        blue: "from-blue-500/20 to-cyan-500/20",
-        violet: "from-violet-500/20 to-fuchsia-500/20",
-        emerald: "from-emerald-500/20 to-teal-500/20",
-        orange: "from-amber-500/20 to-orange-500/20",
-        zinc: "from-zinc-500/20 to-zinc-600/20"
-    };
-
-    const textColors: Record<string, string> = {
-        blue: "text-cyan-400",
-        violet: "text-fuchsia-400",
-        emerald: "text-emerald-400",
-        orange: "text-amber-400",
-        zinc: "text-zinc-400"
-    };
-
+// Ultra-Premium Dashboard Metric with Tilt
+function DashboardMetric({ title, value, icon: Icon, trend, trendUp, color, bg, border }: any) {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay }}
-            className={cn(
-                "relative overflow-hidden p-6 rounded-[28px] border border-white/10 backdrop-blur-xl bg-gradient-to-br transition-all hover:scale-[1.02] hover:shadow-2xl group",
-                gradients[color] || gradients.zinc
-            )}
-        >
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Icon className="h-24 w-24 -mr-8 -mt-8 rotate-12" />
-            </div>
-
-            <div className="relative z-10 flex flex-col h-full justify-between">
+        <TiltCard tiltIntensity={10} className="h-full">
+            <div className={cn(
+                "glass-card p-6 rounded-[24px] relative overflow-hidden group h-full border bg-white/40 dark:bg-slate-900/40 backdrop-blur-md transition-colors hover:bg-white/60 dark:hover:bg-slate-900/60 border-border dark:border-white/10",
+                border
+            )}>
                 <div className="flex justify-between items-start mb-4">
-                    <div className={cn("p-3 rounded-2xl bg-black/20 backdrop-blur-md", textColors[color])}>
-                        <Icon className="h-6 w-6" />
+                    <div className={cn("p-3 rounded-xl shadow-lg border border-border dark:border-white/5", bg, color)}>
+                        <Icon className="h-5 w-5" />
                     </div>
                     {trend && (
-                        <div className="px-3 py-1 rounded-full bg-white/10 border border-white/10 text-xs font-bold flex items-center gap-1">
-                            <ArrowUpRight className="h-3 w-3" /> {trend}
+                        <div className={cn(
+                            "flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full border bg-opacity-50",
+                            trendUp
+                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                                : "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20"
+                        )}>
+                            {trend}
+                            <ArrowUpRight className={cn("h-3 w-3", !trendUp && "rotate-180")} />
                         </div>
                     )}
                 </div>
-                <div>
-                    <h3 className="text-4xl font-bold font-amiri tracking-tight text-white mb-1">{value}</h3>
-                    <p className="text-sm text-muted-foreground font-medium flex items-center gap-1">
-                        {title} {subtitle && <span className="opacity-60 font-normal">({subtitle})</span>}
-                    </p>
+
+                <div className="relative z-10">
+                    <h3 className="text-3xl font-bold font-amiri tracking-tight mb-1 text-foreground dark:text-white group-hover:scale-105 transition-transform origin-left drop-shadow-sm">
+                        {value}
+                    </h3>
+                    <p className="text-xs font-medium text-muted-foreground dark:text-white/50 font-sans tracking-wide uppercase">{title}</p>
+                </div>
+
+                {/* Hover Glow */}
+                <div className={cn(
+                    "absolute -bottom-10 -right-10 w-40 h-40 rounded-full blur-[60px] opacity-0 group-hover:opacity-20 transition-opacity duration-500 pointer-events-none",
+                    bg.replace('bg-', 'bg-') // Uses same color family
+                )} />
+            </div>
+        </TiltCard>
+    );
+}
+
+function QuickActionItem({ href, icon: Icon, label, color, bg, border }: any) {
+    return (
+        <Link href={href}>
+            <div className="flex items-center gap-4 p-3 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-all group border border-transparent hover:border-border dark:hover:border-white/5 active:scale-[0.98]">
+                <div className={cn("p-2.5 rounded-xl border group-hover:scale-110 transition-transform shadow-sm", bg, border, color)}>
+                    <Icon className="h-4 w-4" />
+                </div>
+                <span className="font-medium text-sm flex-1 text-foreground/80 dark:text-white/80 group-hover:text-foreground dark:group-hover:text-white transition-colors">{label}</span>
+                <div className="h-8 w-8 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
+                    <ArrowUpRight className="h-4 w-4 text-foreground dark:text-white" />
                 </div>
             </div>
-        </motion.div>
-    );
-}
-
-function ActionRow({ href, icon: Icon, color, title, subtitle }: any) {
-    const textColors: Record<string, string> = {
-        blue: "text-blue-400",
-        emerald: "text-emerald-400",
-        orange: "text-orange-400",
-        violet: "text-violet-400"
-    };
-
-    return (
-        <Link href={href} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 hover:shadow-lg transition-all group">
-            <div className={cn(
-                "h-12 w-12 rounded-xl flex items-center justify-center bg-black/20 group-hover:scale-110 transition-transform",
-                textColors[color]
-            )}>
-                <Icon className="h-6 w-6" />
-            </div>
-            <div className="flex-1">
-                <h4 className="font-bold text-base group-hover:text-white transition-colors">{title}</h4>
-                <p className="text-xs text-muted-foreground">{subtitle}</p>
-            </div>
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0">
-                <ArrowUpRight className="h-4 w-4 text-white/50" />
-            </div>
         </Link>
-    );
-}
-
-function ControlWidget({ title, status, statusColor, description, delay }: any) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay }}
-            className="p-5 rounded-[24px] bg-white/5 border border-white/5 hover:bg-white/10 transition-colors"
-        >
-            <div className="flex items-center justify-between mb-3">
-                <span className="font-bold text-sm text-white/80">{title}</span>
-                <span className={cn("h-2.5 w-2.5 rounded-full shadow-[0_0_10px_currentColor]", statusColor)} />
-            </div>
-            <p className="text-2xl font-bold tracking-tight mb-1">{status}</p>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{description}</p>
-        </motion.div>
     );
 }

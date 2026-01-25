@@ -3,9 +3,8 @@
 import dynamic from "next/dynamic";
 import { Navbar } from "@/components/Landing/Shared/Navbar";
 import { Footer } from "@/components/Landing/Shared/Footer";
-
-
 import { FeatureGrid } from "@/components/Landing/FeatureGrid";
+import { Testimonials } from "@/components/Landing/Testimonials";
 import { SignedIn, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -47,6 +46,8 @@ export default function Home() {
         </div>
 
         <FeatureGrid />
+
+        <Testimonials />
 
       </main>
 

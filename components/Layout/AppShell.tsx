@@ -6,12 +6,14 @@ import { Sidebar } from "./Sidebar";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
+import { useLanguage } from "@/lib/language-context";
 
 type UserRole = "admin" | "manager" | "teacher" | "staff" | "parent" | "student" | "guest";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-    const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const [isSidebarOpen, setSidebarOpen] = useState(true); // Default open for desktop
     const pathname = usePathname();
+    const { locale } = useLanguage();
 
     // Skip dashboard layout for the landing page or onboarding
     const isLandingPage = pathname === "/";
@@ -38,19 +40,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
     return (
         <RoleGuard requiredRole={requiredRole}>
-            <div className="min-h-screen bg-background font-sans">
+            <div className="min-h-screen bg-background font-sans relative overflow-x-hidden">
+                {/* mesh gradient background handled in globals.css now, but we can add more specific layers here if needed */}
+
                 <Navbar
                     onMenuClick={() => setSidebarOpen(!isSidebarOpen)}
                     isSidebarOpen={isSidebarOpen}
                     pathname={pathname}
                 />
+
                 <Sidebar isOpen={isSidebarOpen} />
 
                 <main className={cn(
-                    "bg-background transition-all duration-300 min-h-[calc(100vh-4rem)] p-4 sm:p-6 lg:p-8",
-                    "lg:ms-64" // Margin Start
+                    "relative transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                    "min-h-[calc(100vh-6rem)] pt-24 pb-12",
+                    isSidebarOpen ? (locale === 'ar' ? "lg:mr-80 lg:ml-8" : "lg:ml-80 lg:mr-8") : "lg:mx-8",
+                    "px-4 sm:px-6"
                 )}>
-                    <div className="mx-auto max-w-6xl animate-in fade-in slide-in-from-bottom-5 duration-500">
+                    <div className="mx-auto max-w-7xl animate-in fade-in slide-in-from-bottom-5 duration-700">
                         {children}
                     </div>
                 </main>
@@ -58,7 +65,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 {/* Overlay for mobile sidebar */}
                 {isSidebarOpen && (
                     <div
-                        className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm lg:hidden"
+                        className="fixed inset-0 z-30 bg-black/20 backdrop-blur-[2px] lg:hidden"
                         onClick={() => setSidebarOpen(false)}
                     />
                 )}

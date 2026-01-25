@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,22 +14,21 @@ import {
     FileText,
     Calendar,
     CheckCircle,
-    Clock,
     Loader2,
     Sparkles,
     ChevronRight,
-    Phone,
     Mail,
     Building,
     TrendingUp,
-    AlertCircle
+    AlertCircle,
+    Activity,
+    ClipboardList
 } from "lucide-react";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/language-context";
-import { toast } from "sonner";
 
 export default function StaffDashboard() {
     const { t, locale, dir } = useLanguage();
@@ -41,9 +40,6 @@ export default function StaffDashboard() {
     const registrations = useQuery(api.registrations.list);
     const stats = useQuery(api.admin.getStats);
 
-    // Get today's date for attendance
-    const today = new Date().toISOString().split('T')[0];
-
     // Filter students based on search
     const filteredStudents = students?.filter(s =>
         s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -54,7 +50,6 @@ export default function StaffDashboard() {
     // Count pending registrations
     const pendingRegistrations = registrations?.filter(r => r.status === "new").length ?? 0;
 
-    // Get greeting based on time
     const getGreeting = () => {
         const hour = new Date().getHours();
         if (locale === 'ar') {
@@ -67,490 +62,207 @@ export default function StaffDashboard() {
         return "Good Evening";
     };
 
+    const container = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1 }
+        }
+    };
+
+    const item = {
+        hidden: { opacity: 0, y: 20 },
+        show: { opacity: 1, y: 0 }
+    };
+
     return (
         <RoleGuard requiredRole="staff">
-            <div className="space-y-8">
-                {/* Hero Welcome Section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sky-600 via-blue-500 to-indigo-500 text-white p-8 shadow-2xl"
-                >
-                    {/* Background decorations */}
-                    <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-white/10 blur-3xl" />
-                    <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
-                    <div className="absolute right-10 bottom-10 opacity-10">
-                        <Building className="h-32 w-32" />
-                    </div>
-
-                    <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-sky-100">
-                                <Sparkles className="h-4 w-4" />
-                                <span className="text-sm font-medium uppercase tracking-wider">
-                                    {locale === 'ar' ? 'مركز العمليات' : "Operations Center"}
-                                </span>
-                            </div>
-                            <h1 className="text-3xl md:text-4xl font-bold font-amiri">
-                                {getGreeting()}, {user?.name?.split(' ')[0] || (locale === 'ar' ? 'موظف' : 'Staff')}!
-                            </h1>
-                            <p className="text-sky-100 max-w-md">
-                                {locale === 'ar'
-                                    ? 'مركز الدعم الإداري والعمليات اليومية للمدرسة.'
-                                    : 'Administrative support and daily operations center.'
-                                }
-                            </p>
+            <motion.div
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="space-y-6 pb-20"
+            >
+                {/* Operations Header */}
+                <motion.div variants={item} className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4">
+                    <div>
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="flex h-2 w-2 rounded-full bg-sky-500 animate-pulse" />
+                            <span className="text-xs font-bold text-sky-500 uppercase tracking-widest">Operations Center</span>
                         </div>
-
-                        <div className="flex flex-wrap gap-3">
-                            <Link href="/dashboard/manager/students">
-                                <Button
-                                    size="lg"
-                                    className="bg-white/20 hover:bg-white/30 text-white border border-white/20 backdrop-blur-sm rounded-xl"
-                                >
-                                    <Users className="h-4 w-4 ltr:mr-2 rtl:ml-2" />
-                                    {locale === 'ar' ? 'دليل الطلاب' : 'Student Directory'}
-                                </Button>
-                            </Link>
-                            <Link href="/dashboard/manager/fees">
-                                <Button
-                                    size="lg"
-                                    className="bg-white text-sky-600 hover:bg-sky-50 rounded-xl font-bold shadow-lg"
-                                >
-                                    <CreditCard className="h-4 w-4 ltr:mr-2 rtl:ml-2" />
-                                    {locale === 'ar' ? 'الرسوم' : 'Fees'}
-                                </Button>
-                            </Link>
-                        </div>
+                        <h1 className="text-4xl font-bold font-amiri tracking-tight text-foreground">
+                            {getGreeting()}, {user?.name?.split(' ')[0] || (locale === 'ar' ? 'موظف' : 'Staff')}
+                        </h1>
                     </div>
                 </motion.div>
 
-                {/* Quick Stats Grid */}
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        <Link href="/dashboard/teacher/attendance">
-                            <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 hover:from-emerald-500/20 hover:to-teal-500/10 transition-all duration-300 group cursor-pointer">
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-medium text-muted-foreground">
-                                                {locale === 'ar' ? 'تسجيل الحضور' : 'Daily Check-ins'}
-                                            </p>
-                                            <p className="text-3xl font-bold mt-1">
-                                                {stats === undefined ? (
-                                                    <Loader2 className="h-6 w-6 animate-spin" />
-                                                ) : stats?.totalStudents ?? 0}
-                                            </p>
-                                        </div>
-                                        <div className="h-12 w-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <Users className="h-6 w-6 text-emerald-500" />
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground mt-2">
-                                        {locale === 'ar' ? 'طلاب مسجلين' : 'Total enrolled students'}
-                                    </p>
-                                    <ChevronRight className={cn(
-                                        "absolute top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-500 opacity-0 group-hover:opacity-100 transition-all",
-                                        dir === 'rtl' ? "left-4 rotate-180" : "right-4"
-                                    )} />
-                                </CardContent>
-                            </Card>
-                        </Link>
-                    </motion.div>
+                {/* Hero / Main Action Center */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <motion.div variants={item} className="lg:col-span-2 rounded-[32px] bg-gradient-to-br from-sky-600 to-blue-700 p-8 text-white relative overflow-hidden shadow-2xl">
+                        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay" />
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        <Link href="/dashboard/manager/applications">
-                            <Card className={cn(
-                                "relative overflow-hidden border-0 transition-all duration-300 group cursor-pointer",
-                                pendingRegistrations > 0
-                                    ? "bg-gradient-to-br from-orange-500/10 to-amber-500/5 hover:from-orange-500/20 hover:to-amber-500/10"
-                                    : "bg-gradient-to-br from-blue-500/10 to-indigo-500/5 hover:from-blue-500/20 hover:to-indigo-500/10"
-                            )}>
-                                <CardContent className="p-6">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-medium text-muted-foreground">
-                                                {locale === 'ar' ? 'التسجيلات الجديدة' : 'New Registrations'}
-                                            </p>
-                                            <p className="text-3xl font-bold mt-1">
-                                                {registrations === undefined ? (
-                                                    <Loader2 className="h-6 w-6 animate-spin" />
-                                                ) : pendingRegistrations}
-                                            </p>
-                                        </div>
-                                        <div className={cn(
-                                            "h-12 w-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform",
-                                            pendingRegistrations > 0 ? "bg-orange-500/20" : "bg-blue-500/20"
-                                        )}>
-                                            <UserPlus className={cn(
-                                                "h-6 w-6",
-                                                pendingRegistrations > 0 ? "text-orange-500" : "text-blue-500"
-                                            )} />
-                                        </div>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground mt-2">
-                                        {pendingRegistrations > 0
-                                            ? (locale === 'ar' ? 'بانتظار المراجعة' : 'Pending verification')
-                                            : (locale === 'ar' ? 'لا توجد طلبات جديدة' : 'No pending requests')
-                                        }
-                                    </p>
-                                    {pendingRegistrations > 0 && (
-                                        <span className="absolute top-3 right-3 h-3 w-3 rounded-full bg-orange-500 animate-pulse" />
-                                    )}
-                                    <ChevronRight className={cn(
-                                        "absolute top-1/2 -translate-y-1/2 h-5 w-5 opacity-0 group-hover:opacity-100 transition-all",
-                                        pendingRegistrations > 0 ? "text-orange-500" : "text-blue-500",
-                                        dir === 'rtl' ? "left-4 rotate-180" : "right-4"
-                                    )} />
-                                </CardContent>
-                            </Card>
-                        </Link>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                    >
-                        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-violet-500/10 to-purple-500/5">
-                            <CardContent className="p-6">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-muted-foreground">
-                                            {locale === 'ar' ? 'الحلقات النشطة' : 'Active Classes'}
-                                        </p>
-                                        <p className="text-3xl font-bold mt-1">
-                                            {stats === undefined ? (
-                                                <Loader2 className="h-6 w-6 animate-spin" />
-                                            ) : stats?.activeClasses ?? 0}
-                                        </p>
-                                    </div>
-                                    <div className="h-12 w-12 rounded-2xl bg-violet-500/20 flex items-center justify-center">
-                                        <Calendar className="h-6 w-6 text-violet-500" />
-                                    </div>
+                        <div className="relative z-10 flex flex-col h-full justify-between">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h2 className="text-2xl font-bold mb-2">Registration Hub</h2>
+                                    <p className="text-sky-100 max-w-md">Manage new enrollments and student onboarding efficiency.</p>
                                 </div>
-                                <p className="text-xs text-muted-foreground mt-2">
-                                    {locale === 'ar' ? 'حلقات قائمة' : 'Running halaqas'}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                    >
-                        <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-amber-500/10 to-orange-500/5">
-                            <CardContent className="p-6">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-muted-foreground">
-                                            {locale === 'ar' ? 'آيات محفوظة' : 'Ayahs Memorized'}
-                                        </p>
-                                        <p className="text-3xl font-bold mt-1 text-amber-600">
-                                            {stats === undefined ? (
-                                                <Loader2 className="h-6 w-6 animate-spin" />
-                                            ) : stats?.totalAyahs?.toLocaleString() ?? 0}
-                                        </p>
-                                    </div>
-                                    <div className="h-12 w-12 rounded-2xl bg-amber-500/20 flex items-center justify-center">
-                                        <CheckCircle className="h-6 w-6 text-amber-500" />
-                                    </div>
+                                <div className="bg-white/20 backdrop-blur-md p-3 rounded-2xl">
+                                    <UserPlus className="h-6 w-6 text-white" />
                                 </div>
-                                <p className="text-xs text-emerald-600 flex items-center gap-1 mt-2">
-                                    <TrendingUp className="h-3 w-3" />
-                                    {locale === 'ar' ? 'تقدم مبارك' : 'Blessed progress'}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                </div>
+                            </div>
 
-                {/* Main Content Grid */}
-                <div className="grid gap-6 md:grid-cols-2">
-                    {/* Student Search */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.5 }}
-                    >
-                        <Card className="border-0 bg-background/50 backdrop-blur-xl shadow-xl h-full">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                                        <Search className="h-5 w-5 text-sky-500" />
+                            <div className="mt-8 flex gap-4">
+                                <Link href="/dashboard/manager/applications" className="flex-1">
+                                    <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl p-4 hover:bg-white/20 transition-colors group cursor-pointer">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-sm font-medium text-sky-100">Direct Enrollments</span>
+                                            <ChevronRight className="h-4 w-4 text-sky-200 group-hover:translate-x-1 transition-transform" />
+                                        </div>
+                                        <div className="text-2xl font-bold">{pendingRegistrations}</div>
+                                        <div className="text-xs text-sky-200 mt-1">Pending Review</div>
                                     </div>
-                                    <div>
-                                        <span className="text-lg font-bold">
-                                            {locale === 'ar' ? 'البحث السريع عن طالب' : 'Quick Student Lookup'}
-                                        </span>
-                                        <p className="text-xs text-muted-foreground font-normal">
-                                            {locale === 'ar' ? 'البحث بالاسم أو البريد أو الهاتف' : 'Search by name, email, or phone'}
-                                        </p>
-                                    </div>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="flex gap-2">
-                                    <div className="relative flex-1">
-                                        <Search className={cn(
-                                            "absolute top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground",
-                                            dir === 'rtl' ? "right-3" : "left-3"
-                                        )} />
-                                        <Input
-                                            className={cn(
-                                                "rounded-xl border-0 bg-accent/50",
-                                                dir === 'rtl' ? "pr-10" : "pl-10"
-                                            )}
-                                            placeholder={locale === 'ar' ? "ابحث عن طالب..." : "Search student name or ID..."}
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                        />
-                                    </div>
-                                    <Link href="/dashboard/manager/students">
-                                        <Button className="rounded-xl bg-sky-500 hover:bg-sky-600">
-                                            <Search className="h-4 w-4" />
-                                        </Button>
-                                    </Link>
-                                </div>
-
-                                {/* Search Results */}
-                                <AnimatePresence>
-                                    {searchQuery && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="space-y-2 max-h-[300px] overflow-y-auto"
-                                        >
-                                            {students === undefined ? (
-                                                <div className="flex items-center justify-center py-8">
-                                                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                                                </div>
-                                            ) : filteredStudents.length === 0 ? (
-                                                <div className="text-center py-8 text-muted-foreground">
-                                                    <Users className="h-10 w-10 mx-auto mb-2 opacity-20" />
-                                                    <p className="text-sm">{locale === 'ar' ? 'لا توجد نتائج' : 'No students found'}</p>
-                                                </div>
-                                            ) : (
-                                                filteredStudents.slice(0, 5).map((student, idx) => (
-                                                    <motion.div
-                                                        key={student._id}
-                                                        initial={{ opacity: 0, x: -10 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        transition={{ delay: 0.05 * idx }}
-                                                        className="flex items-center justify-between p-3 rounded-xl bg-accent/30 hover:bg-accent/50 transition-colors group cursor-pointer"
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold">
-                                                                {student.name.charAt(0)}
-                                                            </div>
-                                                            <div>
-                                                                <p className="font-medium">{student.name}</p>
-                                                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                                    {student.email && (
-                                                                        <span className="flex items-center gap-1">
-                                                                            <Mail className="h-3 w-3" />
-                                                                            {student.email}
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <ChevronRight className={cn(
-                                                            "h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity",
-                                                            dir === 'rtl' && "rotate-180"
-                                                        )} />
-                                                    </motion.div>
-                                                ))
-                                            )}
-                                            {filteredStudents.length > 5 && (
-                                                <Link
-                                                    href="/dashboard/manager/students"
-                                                    className="block text-center py-2 text-sm text-sky-500 hover:underline"
-                                                >
-                                                    {locale === 'ar'
-                                                        ? `عرض ${filteredStudents.length - 5} نتيجة إضافية...`
-                                                        : `View ${filteredStudents.length - 5} more results...`
-                                                    }
-                                                </Link>
-                                            )}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-
-                    {/* Quick Actions */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.6 }}
-                    >
-                        <Card className="border-0 bg-background/50 backdrop-blur-xl shadow-xl h-full">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                                        <CreditCard className="h-5 w-5 text-emerald-500" />
-                                    </div>
-                                    <div>
-                                        <span className="text-lg font-bold">
-                                            {locale === 'ar' ? 'تحصيل الرسوم' : 'Payment Collection'}
-                                        </span>
-                                        <p className="text-xs text-muted-foreground font-normal">
-                                            {locale === 'ar' ? 'تسجيل المدفوعات النقدية' : 'Record cash payments'}
-                                        </p>
-                                    </div>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <p className="text-sm text-muted-foreground">
-                                    {locale === 'ar'
-                                        ? 'قم بتسجيل المدفوعات النقدية للطلاب بسرعة وسهولة.'
-                                        : 'Quickly record over-the-counter cash payments from students.'
-                                    }
-                                </p>
-                                <Link href="/dashboard/manager/fees" className="block">
-                                    <Button className="w-full h-14 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-lg shadow-xl shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-[0.98] group">
-                                        <CreditCard className="h-5 w-5 ltr:mr-2 rtl:ml-2" />
-                                        {locale === 'ar' ? 'فتح شاشة الدفع' : 'Open Cashier'}
-                                        <Sparkles className="h-4 w-4 ltr:ml-2 rtl:mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                    </Button>
                                 </Link>
-
-                                <div className="pt-4 border-t border-border/50">
-                                    <h4 className="text-sm font-medium mb-3">
-                                        {locale === 'ar' ? 'إجراءات سريعة' : 'Quick Actions'}
-                                    </h4>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <Link
-                                            href="/dashboard/manager/applications"
-                                            className={cn(
-                                                "flex flex-col items-center justify-center p-4 rounded-xl border transition-all hover:shadow-md",
-                                                pendingRegistrations > 0
-                                                    ? "bg-orange-500/5 border-orange-500/20 hover:bg-orange-500/10"
-                                                    : "bg-accent/30 border-transparent hover:bg-accent/50"
-                                            )}
-                                        >
-                                            <UserPlus className={cn(
-                                                "h-6 w-6 mb-2",
-                                                pendingRegistrations > 0 ? "text-orange-500" : "text-muted-foreground"
-                                            )} />
-                                            <span className="text-xs font-medium text-center">
-                                                {locale === 'ar' ? 'التسجيلات' : 'Applications'}
-                                            </span>
-                                            {pendingRegistrations > 0 && (
-                                                <span className="mt-1 px-2 py-0.5 rounded-full bg-orange-500 text-white text-[10px] font-bold">
-                                                    {pendingRegistrations}
-                                                </span>
-                                            )}
-                                        </Link>
-                                        <Link
-                                            href="/messages"
-                                            className="flex flex-col items-center justify-center p-4 rounded-xl bg-accent/30 border border-transparent hover:bg-accent/50 transition-all hover:shadow-md"
-                                        >
-                                            <FileText className="h-6 w-6 text-muted-foreground mb-2" />
-                                            <span className="text-xs font-medium text-center">
-                                                {locale === 'ar' ? 'الرسائل' : 'Messages'}
-                                            </span>
-                                        </Link>
+                                <Link href="/dashboard/manager/students" className="flex-1">
+                                    <div className="bg-white text-sky-700 rounded-2xl p-4 hover:bg-sky-50 transition-colors group cursor-pointer shadow-lg">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <span className="text-sm font-bold">Student Directory</span>
+                                            <Search className="h-4 w-4 opacity-50" />
+                                        </div>
+                                        <div className="text-2xl font-bold">{stats?.totalStudents ?? 0}</div>
+                                        <div className="text-xs opacity-70 mt-1">Total Active Students</div>
                                     </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                </Link>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    <motion.div variants={item} className="glass-card rounded-[32px] p-6 flex flex-col justify-between group hover:bg-emerald-500/5 transition-colors">
+                        <div>
+                            <div className="h-12 w-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-4 text-xl font-bold">
+                                $
+                            </div>
+                            <h3 className="text-xl font-bold mb-1">Fee Collection</h3>
+                            <p className="text-sm text-muted-foreground">Process cash payments and view transactions.</p>
+                        </div>
+                        <Link href="/dashboard/manager/fees">
+                            <button className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 mt-6">
+                                <CreditCard className="h-4 w-4" />
+                                Open Terminal
+                            </button>
+                        </Link>
                     </motion.div>
                 </div>
 
-                {/* Recent Registrations */}
-                {registrations && registrations.length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.7 }}
-                    >
-                        <Card className="border-0 bg-background/50 backdrop-blur-xl shadow-xl">
-                            <CardHeader>
-                                <div className="flex items-center justify-between">
-                                    <CardTitle className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-xl bg-violet-500/20 flex items-center justify-center">
-                                            <UserPlus className="h-5 w-5 text-violet-500" />
-                                        </div>
-                                        <div>
-                                            <span className="text-lg font-bold">
-                                                {locale === 'ar' ? 'التسجيلات الأخيرة' : 'Recent Registrations'}
-                                            </span>
-                                            <p className="text-xs text-muted-foreground font-normal">
-                                                {locale === 'ar' ? 'آخر طلبات التسجيل' : 'Latest enrollment requests'}
-                                            </p>
-                                        </div>
-                                    </CardTitle>
-                                    <Link href="/dashboard/manager/applications">
-                                        <Button variant="outline" size="sm" className="rounded-xl">
-                                            {locale === 'ar' ? 'عرض الكل' : 'View All'}
-                                            <ChevronRight className={cn("h-4 w-4 ltr:ml-1 rtl:mr-1", dir === 'rtl' && "rotate-180")} />
-                                        </Button>
-                                    </Link>
+                {/* Operations Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <StaffBentoCard title="Daily Attendance" value={stats?.activeClasses ?? 0} icon={Calendar} sub="Classes Today" color="bg-violet-500" />
+                    <StaffBentoCard title="Messages" value="12" icon={Mail} sub="Unread" color="bg-pink-500" />
+                    <StaffBentoCard title="Maintenance" value="All Good" icon={CheckCircle} sub="System Status" color="bg-emerald-500" />
+                    <StaffBentoCard title="Reports" value="Generate" icon={FileText} sub="Weekly Summary" color="bg-amber-500" />
+                </div>
+
+                {/* Search & List Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Search Module */}
+                    <motion.div variants={item} className="lg:col-span-2 glass-card rounded-[32px] p-6">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 bg-accent rounded-lg">
+                                <Search className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                            <h3 className="font-bold text-lg">Quick Lookup</h3>
+                        </div>
+
+                        <div className="relative mb-6">
+                            <Input
+                                className={cn(
+                                    "h-12 rounded-xl bg-accent/30 border-transparent focus:bg-background transition-all pl-10 text-base",
+                                    dir === 'rtl' ? "pr-10" : "pl-10"
+                                )}
+                                placeholder={locale === 'ar' ? "ابحث عن طالب..." : "Search student name or ID..."}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground opacity-50" />
+                        </div>
+
+                        <div className="space-y-2">
+                            {students === undefined ? (
+                                <div className="flex items-center justify-center py-8">
+                                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                                 </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-3">
-                                    {registrations.slice(0, 4).map((reg, idx) => (
-                                        <motion.div
-                                            key={reg._id}
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.1 * idx }}
-                                            className="flex items-center justify-between p-4 rounded-xl bg-accent/20 hover:bg-accent/30 transition-colors"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className={cn(
-                                                    "h-12 w-12 rounded-xl flex items-center justify-center text-white font-bold",
-                                                    reg.status === 'new' ? "bg-gradient-to-br from-orange-500 to-amber-500" :
-                                                        reg.status === 'contacted' ? "bg-gradient-to-br from-blue-500 to-indigo-500" :
-                                                            "bg-gradient-to-br from-emerald-500 to-teal-500"
-                                                )}>
-                                                    {reg.studentName.charAt(0)}
-                                                </div>
-                                                <div>
-                                                    <p className="font-medium">{reg.studentName}</p>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        {reg.parentName} • {reg.plan}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <span className={cn(
-                                                    "px-3 py-1 rounded-full text-[10px] font-bold uppercase",
-                                                    reg.status === 'new' ? "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400" :
-                                                        reg.status === 'contacted' ? "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400" :
-                                                            "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400"
-                                                )}>
-                                                    {reg.status === 'new' ? (locale === 'ar' ? 'جديد' : 'New') :
-                                                        reg.status === 'contacted' ? (locale === 'ar' ? 'تم التواصل' : 'Contacted') :
-                                                            (locale === 'ar' ? 'مسجل' : 'Enrolled')}
-                                                </span>
-                                                <span className="text-xs text-muted-foreground">
-                                                    {new Date(reg.submittedAt).toLocaleDateString()}
-                                                </span>
-                                            </div>
-                                        </motion.div>
-                                    ))}
+                            ) : filteredStudents.length === 0 && searchQuery ? (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    <Users className="h-10 w-10 mx-auto mb-2 opacity-20" />
+                                    <p className="text-sm">No students found matching "{searchQuery}"</p>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            ) : (
+                                (searchQuery ? filteredStudents : filteredStudents.slice(0, 5)).map((student, idx) => (
+                                    <motion.div
+                                        key={student._id}
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.05 * idx }}
+                                        className="flex items-center justify-between p-3 rounded-xl hover:bg-accent/50 transition-colors group cursor-pointer border border-transparent hover:border-border/50"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-sky-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                                                {student.name.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-sm text-foreground">{student.name}</p>
+                                                <p className="text-xs text-muted-foreground">{student.email || 'No email'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button className="p-2 hover:bg-background rounded-lg text-xs font-bold border border-border">View</button>
+                                        </div>
+                                    </motion.div>
+                                ))
+                            )}
+                        </div>
                     </motion.div>
-                )}
-            </div>
+
+                    {/* Recent Activity */}
+                    <motion.div variants={item} className="glass-card rounded-[32px] p-6">
+                        <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
+                            <Activity className="h-5 w-5 text-orange-500" />
+                            Recent
+                        </h3>
+                        <div className="space-y-6">
+                            {registrations?.slice(0, 3).map((reg, i) => (
+                                <div key={i} className="flex gap-3 relative">
+                                    {i !== 2 && <div className="absolute left-[19px] top-10 bottom-[-10px] w-0.5 bg-border/50" />}
+                                    <div className="h-10 w-10 shrink-0 rounded-full bg-accent flex items-center justify-center border-4 border-background z-10">
+                                        <UserPlus className="h-4 w-4 text-muted-foreground" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">New Registration</p>
+                                        <p className="text-xs text-muted-foreground mt-0.5">{reg.studentName}</p>
+                                        <p className="text-[10px] text-muted-foreground/60 mt-1">{new Date(reg.submittedAt).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
+            </motion.div>
         </RoleGuard>
+    );
+}
+
+function StaffBentoCard({ title, value, icon: Icon, sub, color }: any) {
+    return (
+        <motion.div variants={{ hidden: { opacity: 0, scale: 0.9 }, show: { opacity: 1, scale: 1 } }} className="glass-card p-5 rounded-[24px] hover:shadow-lg transition-all group">
+            <div className="flex justify-between items-start mb-3">
+                <div className={cn("p-2 rounded-xl text-white", color)}>
+                    <Icon className="h-5 w-5" />
+                </div>
+            </div>
+            <div className="text-2xl font-bold font-amiri text-foreground group-hover:scale-105 transition-transform origin-left">{value}</div>
+            <div className="text-xs font-bold text-muted-foreground uppercase tracking-wide mt-1">{title}</div>
+            <div className="text-[10px] text-muted-foreground/50 mt-1">{sub}</div>
+        </motion.div>
     );
 }

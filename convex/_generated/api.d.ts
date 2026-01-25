@@ -30,6 +30,7 @@ import type * as payments from "../payments.js";
 import type * as permissions from "../permissions.js";
 import type * as registrations from "../registrations.js";
 import type * as reports from "../reports.js";
+import type * as salaries from "../salaries.js";
 import type * as schedule from "../schedule.js";
 import type * as seed from "../seed.js";
 import type * as students from "../students.js";
@@ -68,6 +69,7 @@ declare const fullApi: ApiFromModules<{
   permissions: typeof permissions;
   registrations: typeof registrations;
   reports: typeof reports;
+  salaries: typeof salaries;
   schedule: typeof schedule;
   seed: typeof seed;
   students: typeof students;

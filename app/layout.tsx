@@ -4,6 +4,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { AppShell } from "@/components/Layout/AppShell";
 import { LanguageProvider } from "@/lib/language-context";
+import { BrandBackground } from "@/components/ui/brand-background";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 // Font configurations
@@ -36,9 +38,17 @@ export default function RootLayout({
             className={`${inter.variable} ${amiri.variable} ${notoNaskh.variable} font-sans antialiased`}
             suppressHydrationWarning
           >
-            <ConvexClientProvider>
-              <AppShell>{children}</AppShell>
-            </ConvexClientProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark" // Defaulting to dark for Project 1000x aesthetic
+              enableSystem
+              disableTransitionOnChange
+            >
+              <BrandBackground />
+              <ConvexClientProvider>
+                <AppShell>{children}</AppShell>
+              </ConvexClientProvider>
+            </ThemeProvider>
           </body>
         </html>
       </LanguageProvider>

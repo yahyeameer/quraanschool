@@ -3,193 +3,202 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { RoleGuard } from "@/components/Auth/RoleGuard";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { Plus, DollarSign, Calendar, CheckCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, DollarSign, Wallet, Calendar } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
 export default function SalariesPage() {
-    const currentMonthStr = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
-    const [selectedMonth, setSelectedMonth] = useState(currentMonthStr);
-    const salariesData = useQuery(api.finance.getSalaries, { month: selectedMonth });
-    const payoutSalary = useMutation(api.finance.payoutSalary);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedStaff, setSelectedStaff] = useState<any>(null);
-    const [amount, setAmount] = useState<string>("");
+    const [selectedMonth, setSelectedMonth] = useState(format(new Date(), "yyyy-MM"));
+    const salaries = useQuery(api.salaries.getSalaries, { month: selectedMonth });
+    const contracts = useQuery(api.salaries.getContracts);
+    const generatePayroll = useMutation(api.salaries.generateMonthlyPayroll);
+    const approveSalary = useMutation(api.salaries.approveSalary);
+    const markAsPaid = useMutation(api.salaries.markAsPaid);
 
-    const handlePayout = async () => {
-        if (!selectedStaff) return;
+    const [isGenerating, setIsGenerating] = useState(false);
+
+    const handleGenerate = async () => {
+        setIsGenerating(true);
         try {
-            await payoutSalary({
-                staffId: selectedStaff.staff._id,
-                amount: parseFloat(amount),
-                month: selectedMonth
-            });
-            toast.success("Salary payout recorded successfully");
-            setIsModalOpen(false);
-        } catch (error: any) {
-            toast.error(error.message || "Failed to record payout");
+            const count = await generatePayroll({ month: selectedMonth });
+            toast.success(`Generated payroll for ${count} staff members.`);
+        } catch (error) {
+            toast.error("Failed to generate payroll.");
+            console.error(error);
+        } finally {
+            setIsGenerating(false);
         }
     };
 
-    if (salariesData === undefined) {
-        return (
-            <div className="flex h-96 items-center justify-center">
-                <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
-            </div>
-        );
-    }
+    const handleApprove = async (id: any) => {
+        await approveSalary({ salaryId: id });
+        toast.success("Salary approved.");
+    };
 
-    const totalPayout = salariesData.reduce((sum, item) => sum + (item.status === 'paid' ? item.amount : 0), 0);
-    const pendingCount = salariesData.filter(item => item.status === 'pending').length;
+    const handlePay = async (id: any) => {
+        await markAsPaid({ salaryId: id, paymentDate: new Date().toISOString() });
+        toast.success("Salary marked as paid.");
+    };
+
+    // Calculate Totals
+    const totalPayroll = salaries?.reduce((acc, s) => acc + s.totalAmount, 0) || 0;
+    const pendingCount = salaries?.filter(s => s.status !== "paid").length || 0;
 
     return (
-        <RoleGuard requiredRole="manager">
-            <div className="space-y-8">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h2 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-600 bg-clip-text text-transparent italic">
-                            Staff Salaries
-                        </h2>
-                        <p className="text-muted-foreground mt-1">Manage staff payroll and track salary payouts.</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-bold text-white">{selectedMonth}</span>
-                    </div>
+        <div className="p-8 space-y-8 bg-slate-50/50 dark:bg-slate-900/50 min-h-screen">
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-3xl font-bold font-amiri tracking-tight">Financial Command Center</h1>
+                    <p className="text-muted-foreground">Manage contracts, payroll, and payouts.</p>
                 </div>
-
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    <Card className="glass-panel bg-blue-900/10 border-blue-500/20">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-blue-500">Total Payout</CardTitle>
-                            <DollarSign className="h-4 w-4 text-blue-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-blue-400">${totalPayout.toFixed(2)}</div>
-                        </CardContent>
-                    </Card>
-                    <Card className="glass-panel bg-amber-900/10 border-amber-500/20">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-amber-500">Pending Payouts</CardTitle>
-                            <Wallet className="h-4 w-4 text-amber-500" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-amber-400">{pendingCount} Staff</div>
-                        </CardContent>
-                    </Card>
+                <div className="flex gap-4">
+                    <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Select Month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="2026-01">January 2026</SelectItem>
+                            <SelectItem value="2026-02">February 2026</SelectItem>
+                            <SelectItem value="2026-03">March 2026</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Button onClick={handleGenerate} disabled={isGenerating} className="bg-emerald-600 hover:bg-emerald-700">
+                        {isGenerating ? "Generating..." : "Generate Payroll"}
+                    </Button>
                 </div>
-
-                <Card className="glass-panel border-white/5">
-                    <CardHeader>
-                        <CardTitle>Payroll List</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="rounded-md border border-white/10">
-                            <table className="w-full text-sm">
-                                <thead className="bg-white/5 text-muted-foreground">
-                                    <tr>
-                                        <th className="h-12 px-4 text-left font-medium">Staff Member</th>
-                                        <th className="h-12 px-4 text-left font-medium">Role</th>
-                                        <th className="h-12 px-4 text-left font-medium">Status</th>
-                                        <th className="h-12 px-4 text-right font-medium">Amount</th>
-                                        <th className="h-12 px-4 text-right font-medium">Date</th>
-                                        <th className="h-12 px-4 text-right font-medium">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {salariesData.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={6} className="p-4 text-center text-muted-foreground">No eligible staff found.</td>
-                                        </tr>
-                                    ) : (
-                                        salariesData.map((record) => (
-                                            <tr key={record.staff._id} className="border-t border-white/5 hover:bg-white/5 transition-colors">
-                                                <td className="p-4 font-medium">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="h-8 w-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold">
-                                                            {record.staff.name[0]}
-                                                        </div>
-                                                        {record.staff.name}
-                                                    </div>
-                                                </td>
-                                                <td className="p-4 text-muted-foreground capitalize">{record.staff.role}</td>
-                                                <td className="p-4">
-                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${record.status === 'paid'
-                                                            ? 'bg-blue-500/20 text-blue-500'
-                                                            : 'bg-amber-500/20 text-amber-500'
-                                                        }`}>
-                                                        {record.status === 'paid' ? 'Paid' : 'Pending'}
-                                                    </span>
-                                                </td>
-                                                <td className="p-4 text-right font-mono text-muted-foreground">
-                                                    {record.amount > 0 ? `$${record.amount}` : '-'}
-                                                </td>
-                                                <td className="p-4 text-right text-muted-foreground">
-                                                    {record.paymentDate ? format(new Date(record.paymentDate), 'MMM d, yyyy') : '-'}
-                                                </td>
-                                                <td className="p-4 text-right">
-                                                    {record.status === 'pending' && (
-                                                        <Button
-                                                            variant="default"
-                                                            size="sm"
-                                                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                                                            onClick={() => {
-                                                                setSelectedStaff(record);
-                                                                setAmount("");
-                                                                setIsModalOpen(true);
-                                                            }}
-                                                        >
-                                                            Process Payout
-                                                        </Button>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Payout Modal */}
-                <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                    <DialogContent className="bg-zinc-900 border-white/10 text-white">
-                        <DialogHeader>
-                            <DialogTitle>Process Payout for {selectedStaff?.staff?.name}</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                            <div className="space-y-2">
-                                <Label>Salary Amount ($)</Label>
-                                <Input
-                                    type="number"
-                                    value={amount}
-                                    onChange={(e) => setAmount(e.target.value)}
-                                    placeholder="e.g. 2500"
-                                    className="bg-black/40 border-white/10"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Month</Label>
-                                <Input value={selectedMonth} disabled className="bg-black/40 border-white/10 opacity-50" />
-                            </div>
-                        </div>
-                        <Button
-                            onClick={handlePayout}
-                            disabled={!amount}
-                            className="w-full bg-blue-600 hover:bg-blue-700 font-bold"
-                        >
-                            Confirm Transfer
-                        </Button>
-                    </DialogContent>
-                </Dialog>
             </div>
-        </RoleGuard>
+
+            <div className="grid md:grid-cols-3 gap-6">
+                <StatCard
+                    title="Total Payroll"
+                    value={`$${totalPayroll.toLocaleString()}`}
+                    icon={DollarSign}
+                    color="text-emerald-500"
+                />
+                <StatCard
+                    title="Pending Payouts"
+                    value={pendingCount.toString()}
+                    icon={Clock}
+                    color="text-amber-500"
+                />
+                <StatCard
+                    title="Active Contracts"
+                    value={contracts?.length.toString() || "0"}
+                    icon={CheckCircle}
+                    color="text-blue-500"
+                />
+            </div>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Payroll: {format(new Date(selectedMonth), "MMMM yyyy")}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Staff Name</TableHead>
+                                <TableHead>Role</TableHead>
+                                <TableHead>Base Salary</TableHead>
+                                <TableHead>Adjustments</TableHead>
+                                <TableHead>Net Pay</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {salaries?.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
+                                        No payroll generated for this month yet.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {salaries?.map((salary) => (
+                                <TableRow key={salary._id}>
+                                    <TableCell className="font-medium">{salary.staffName}</TableCell>
+                                    <TableCell>{salary.staffRole}</TableCell>
+                                    <TableCell>${salary.baseAmount.toLocaleString()}</TableCell>
+                                    <TableCell className={salary.adjustments >= 0 ? "text-emerald-600" : "text-red-600"}>
+                                        {salary.adjustments > 0 ? "+" : ""}{salary.adjustments}
+                                    </TableCell>
+                                    <TableCell className="font-bold">${salary.totalAmount.toLocaleString()}</TableCell>
+                                    <TableCell>
+                                        <Badge status={salary.status} />
+                                    </TableCell>
+                                    <TableCell className="text-right space-x-2">
+                                        {salary.status === "draft" && (
+                                            <Button size="sm" variant="outline" onClick={() => handleApprove(salary._id)}>
+                                                Approve
+                                            </Button>
+                                        )}
+                                        {salary.status === "approved" && (
+                                            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => handlePay(salary._id)}>
+                                                Mark Paid
+                                            </Button>
+                                        )}
+                                        {salary.status === "paid" && (
+                                            <span className="text-xs text-muted-foreground">Paid on {new Date(salary.paymentDate!).toLocaleDateString()}</span>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+function StatCard({ title, value, icon: Icon, color }: any) {
+    return (
+        <Card>
+            <CardContent className="p-6 flex items-center justify-between">
+                <div>
+                    <p className="text-sm font-medium text-muted-foreground">{title}</p>
+                    <h3 className="text-2xl font-bold mt-2">{value}</h3>
+                </div>
+                <div className={`w-12 h-12 rounded-full ${color.replace("text-", "bg-")}/10 flex items-center justify-center`}>
+                    <Icon className={`w-6 h-6 ${color}`} />
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+function Badge({ status }: { status: string }) {
+    const styles: any = {
+        draft: "bg-slate-100 text-slate-600",
+        approved: "bg-blue-100 text-blue-600",
+        paid: "bg-emerald-100 text-emerald-600",
+    };
+    return (
+        <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${styles[status] || styles.draft}`}>
+            {status}
+        </span>
     );
 }

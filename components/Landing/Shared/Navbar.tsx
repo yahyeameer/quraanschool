@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useLanguage } from "@/lib/language-context";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/Landing/LanguageSwitcher";
+import { ModeToggle } from "@/components/mode-toggle";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from "framer-motion";
 import { useState } from "react";
@@ -35,8 +36,8 @@ export function Navbar() {
                 className={cn(
                     "pointer-events-auto flex items-center justify-between transition-all duration-500 glass-pill relative overflow-hidden",
                     scrolled
-                        ? "w-[90%] max-w-4xl py-2 px-4 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.3)] bg-black/60 dark:bg-black/60 border-white/10"
-                        : "w-[95%] max-w-7xl py-4 px-8 bg-black/20 border-white/5 backdrop-blur-md"
+                        ? "w-[90%] max-w-4xl py-2 px-4 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.3)] bg-black/60 dark:bg-black/80 border-white/10"
+                        : "w-[95%] max-w-7xl py-4 px-8 bg-black/20 dark:bg-black/40 border-white/5 backdrop-blur-md"
                 )}
             >
                 {/* Background Tint for Glass Effect */}
@@ -89,6 +90,7 @@ export function Navbar() {
                 {/* Actions Section */}
                 <div className="hidden md:flex items-center gap-3 relative z-10">
                     <LanguageSwitcher />
+                    <ModeToggle />
 
                     <div className="h-5 w-px bg-white/10 mx-1" /> {/* Divider */}
 
@@ -132,6 +134,7 @@ export function Navbar() {
                 {/* Mobile Toggle */}
                 <div className="flex md:hidden items-center gap-3 relative z-10">
                     <LanguageSwitcher />
+                    <ModeToggle />
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         className="p-2 text-white hover:bg-white/10 rounded-full transition-all active:scale-95 border border-white/5"
