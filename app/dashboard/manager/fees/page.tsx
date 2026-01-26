@@ -62,6 +62,8 @@ export default function FeesPage() {
     }
 
     const totalCollected = feesData.reduce((sum, item) => sum + (item.status === 'paid' ? item.amount : 0), 0);
+    const totalExpected = feesData.reduce((sum, item) => sum + (item.expectedAmount || 0), 0);
+    const unpaidBalance = totalExpected - totalCollected;
     const pendingCount = feesData.filter(item => item.status === 'unpaid').length;
 
     return (
@@ -94,23 +96,41 @@ export default function FeesPage() {
                 {/* Overdue Payments Section */}
                 <PaymentReminders />
 
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <Card className="glass-panel bg-emerald-900/10 border-emerald-500/20">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-emerald-500">Total Collected</CardTitle>
-                            <DollarSign className="h-4 w-4 text-emerald-500" />
+                            <CardTitle className="text-sm font-medium text-emerald-500">Collected</CardTitle>
+                            <CheckCircle className="h-4 w-4 text-emerald-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-emerald-400">${totalCollected.toFixed(2)}</div>
+                            <div className="text-2xl font-bold text-emerald-400">${totalCollected.toLocaleString()}</div>
+                        </CardContent>
+                    </Card>
+                    <Card className="glass-panel bg-blue-900/10 border-blue-500/20">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-blue-500">Expected</CardTitle>
+                            <DollarSign className="h-4 w-4 text-blue-500" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-blue-400">${totalExpected.toLocaleString()}</div>
+                        </CardContent>
+                    </Card>
+                    <Card className="glass-panel bg-red-900/10 border-red-500/20">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-red-500">Unpaid Balance</CardTitle>
+                            <XCircle className="h-4 w-4 text-red-500" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-red-400">${unpaidBalance.toLocaleString()}</div>
                         </CardContent>
                     </Card>
                     <Card className="glass-panel bg-amber-900/10 border-amber-500/20">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium text-amber-500">Pending Payments</CardTitle>
-                            <XCircle className="h-4 w-4 text-amber-500" />
+                            <CardTitle className="text-sm font-medium text-amber-500">Pending Students</CardTitle>
+                            <Loader2 className="h-4 w-4 text-amber-500" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-amber-400">{pendingCount} Students</div>
+                            <div className="text-2xl font-bold text-amber-400">{pendingCount}</div>
                         </CardContent>
                     </Card>
                 </div>

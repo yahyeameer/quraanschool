@@ -23,6 +23,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export default function ManagerStudentsPage() {
     const studentsData = useQuery(api.students.listEnrolled);
@@ -161,10 +162,13 @@ export default function ManagerStudentsPage() {
                                             <Phone className="h-5 w-5 mb-1" />
                                             <span className="text-[10px] font-medium opacity-60 group-hover/btn:opacity-100">Call</span>
                                         </a>
-                                        <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-white/5 hover:bg-blue-500/20 hover:text-blue-400 transition-colors group/btn cursor-pointer">
+                                        <Link
+                                            href={`/dashboard/manager/students/${student._id}`}
+                                            className="flex flex-col items-center justify-center p-2 rounded-xl bg-white/5 hover:bg-blue-500/20 hover:text-blue-400 transition-colors group/btn cursor-pointer"
+                                        >
                                             <GraduationCap className="h-5 w-5 mb-1" />
                                             <span className="text-[10px] font-medium opacity-60 group-hover/btn:opacity-100">Profile</span>
-                                        </div>
+                                        </Link>
                                     </div>
                                 </div>
                             </motion.div>

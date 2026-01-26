@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { motion } from "framer-motion";
 import { Plus, DollarSign, Calendar, CheckCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,12 @@ export default function SalariesPage() {
     const markAsPaid = useMutation(api.salaries.markAsPaid);
 
     const [isGenerating, setIsGenerating] = useState(false);
+    const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+    const [manualStaffId, setManualStaffId] = useState<string>("");
+    const [manualAmount, setManualAmount] = useState<string>("");
+    const [manualStatus, setManualStatus] = useState<string>("paid");
+    const staffList = useQuery(api.salaries.listStaff);
+    const recordManualPayout = useMutation(api.salaries.recordManualPayout);
 
     const handleGenerate = async () => {
         setIsGenerating(true);
@@ -53,6 +60,28 @@ export default function SalariesPage() {
         }
     };
 
+    const handleManualSubmit = async () => {
+        if (!manualStaffId || !manualAmount) {
+            toast.error("Please fill in all fields.");
+            return;
+        }
+        try {
+            await recordManualPayout({
+                staffId: manualStaffId as Id<"users">,
+                amount: parseFloat(manualAmount),
+                month: selectedMonth,
+                paymentDate: new Date().toISOString(),
+                status: manualStatus
+            });
+            toast.success("Salary payout recorded.");
+            setIsManualModalOpen(false);
+            setManualStaffId("");
+            setManualAmount("");
+        } catch (error) {
+            toast.error("Failed to record payout.");
+        }
+    };
+
     const handleApprove = async (id: any) => {
         await approveSalary({ salaryId: id });
         toast.success("Salary approved.");
@@ -63,9 +92,10 @@ export default function SalariesPage() {
         toast.success("Salary marked as paid.");
     };
 
-    // Calculate Totals
-    const totalPayroll = salaries?.reduce((acc, s) => acc + s.totalAmount, 0) || 0;
-    const pendingCount = salaries?.filter(s => s.status !== "paid").length || 0;
+    // Calculate Totals by Status
+    const totalPaid = salaries?.filter(s => s.status === "paid").reduce((acc, s) => acc + s.totalAmount, 0) || 0;
+    const totalApproved = salaries?.filter(s => s.status === "approved").reduce((acc, s) => acc + s.totalAmount, 0) || 0;
+    const totalDraft = salaries?.filter(s => s.status === "draft").reduce((acc, s) => acc + s.totalAmount, 0) || 0;
 
     return (
         <div className="p-8 space-y-8 bg-slate-50/50 dark:bg-slate-900/50 min-h-screen">
@@ -85,6 +115,9 @@ export default function SalariesPage() {
                             <SelectItem value="2026-03">March 2026</SelectItem>
                         </SelectContent>
                     </Select>
+                    <Button onClick={() => setIsManualModalOpen(true)} variant="outline">
+                        Record Salary Payout
+                    </Button>
                     <Button onClick={handleGenerate} disabled={isGenerating} className="bg-emerald-600 hover:bg-emerald-700">
                         {isGenerating ? "Generating..." : "Generate Payroll"}
                     </Button>
@@ -93,24 +126,76 @@ export default function SalariesPage() {
 
             <div className="grid md:grid-cols-3 gap-6">
                 <StatCard
-                    title="Total Payroll"
-                    value={`$${totalPayroll.toLocaleString()}`}
-                    icon={DollarSign}
+                    title="Confirmed (Paid)"
+                    value={`$${totalPaid.toLocaleString()}`}
+                    icon={CheckCircle}
                     color="text-emerald-500"
                 />
                 <StatCard
-                    title="Pending Payouts"
-                    value={pendingCount.toString()}
+                    title="Pending (Approved)"
+                    value={`$${totalApproved.toLocaleString()}`}
                     icon={Clock}
-                    color="text-amber-500"
-                />
-                <StatCard
-                    title="Active Contracts"
-                    value={contracts?.length.toString() || "0"}
-                    icon={CheckCircle}
                     color="text-blue-500"
                 />
+                <StatCard
+                    title="Not Confirmed (Draft)"
+                    value={`$${totalDraft.toLocaleString()}`}
+                    icon={DollarSign}
+                    color="text-amber-500"
+                />
             </div>
+
+            {/* Manual Payout Modal */}
+            <Dialog open={isManualModalOpen} onOpenChange={setIsManualModalOpen}>
+                <DialogContent className="bg-slate-900 border-white/10 text-white">
+                    <DialogHeader>
+                        <DialogTitle>Record Manual Payout</DialogTitle>
+                        <DialogDescription>Enter payment details for any staff member.</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label>Staff Member</Label>
+                            <Select value={manualStaffId} onValueChange={setManualStaffId}>
+                                <SelectTrigger className="bg-black/20 border-white/10">
+                                    <SelectValue placeholder="Select Staff" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-slate-800 border-white/10 text-white">
+                                    {staffList?.map((s: any) => (
+                                        <SelectItem key={s._id} value={s._id}>{s.name} ({s.role})</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Amount ($)</Label>
+                            <Input
+                                type="number"
+                                value={manualAmount}
+                                onChange={(e) => setManualAmount(e.target.value)}
+                                className="bg-black/20 border-white/10"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Status</Label>
+                            <Select value={manualStatus} onValueChange={setManualStatus}>
+                                <SelectTrigger className="bg-black/20 border-white/10">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-slate-800 border-white/10 text-white">
+                                    <SelectItem value="draft">Draft</SelectItem>
+                                    <SelectItem value="approved">Approved</SelectItem>
+                                    <SelectItem value="paid">Paid</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button onClick={handleManualSubmit} className="w-full bg-emerald-600 hover:bg-emerald-700">
+                            Confirm Record
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             <Card>
                 <CardHeader>

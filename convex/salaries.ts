@@ -47,6 +47,15 @@ export const getContracts = query({
     }
 });
 
+export const listStaff = query({
+    args: {},
+    handler: async (ctx) => {
+        const staffRoles = ["admin", "manager", "teacher", "staff", "accountant", "librarian", "receptionist"];
+        const users = await ctx.db.query("users").collect();
+        return users.filter(u => staffRoles.includes(u.role));
+    }
+});
+
 export const getAdjustments = query({
     args: { staffId: v.id("users"), month: v.string() },
     handler: async (ctx, args) => {
@@ -100,8 +109,6 @@ export const addAdjustment = mutation({
     },
     handler: async (ctx, args) => {
         await ctx.db.insert("payroll_adjustments", args);
-        // If salary record exists for this month, we might need to update it or mark it as needing recalculation
-        // For simplicity, we'll let the "generate" function handle this, or user can re-generate.
     },
 });
 
@@ -109,13 +116,11 @@ export const generateMonthlyPayroll = mutation({
     args: { month: v.string() }, // e.g. "2026-02"
     handler: async (ctx, args) => {
         const contracts = await ctx.db.query("staff_contracts").collect();
-
         const results = [];
 
         for (const contract of contracts) {
             if (contract.status !== "Active") continue;
 
-            // Get Adjustments
             const adjustments = await ctx.db.query("payroll_adjustments")
                 .withIndex("by_staff_month", q => q.eq("staffId", contract.staffId).eq("month", args.month))
                 .collect();
@@ -128,7 +133,6 @@ export const generateMonthlyPayroll = mutation({
 
             const totalAmount = contract.baseSalary + totalAdjustments;
 
-            // Check if already generated
             const existing = await ctx.db.query("salaries")
                 .withIndex("by_month", q => q.eq("month", args.month))
                 .filter(q => q.eq(q.field("staffId"), contract.staffId))
@@ -171,5 +175,41 @@ export const markAsPaid = mutation({
     args: { salaryId: v.id("salaries"), paymentDate: v.string() },
     handler: async (ctx, args) => {
         await ctx.db.patch(args.salaryId, { status: "paid", paymentDate: args.paymentDate });
+    }
+});
+
+export const recordManualPayout = mutation({
+    args: {
+        staffId: v.id("users"),
+        amount: v.number(),
+        month: v.string(),
+        paymentDate: v.string(),
+        status: v.string(), // "paid", "approved", "draft"
+    },
+    handler: async (ctx, args) => {
+        const existing = await ctx.db.query("salaries")
+            .withIndex("by_month", q => q.eq("month", args.month))
+            .filter(q => q.eq(q.field("staffId"), args.staffId))
+            .first();
+
+        if (existing) {
+            await ctx.db.patch(existing._id, {
+                totalAmount: args.amount,
+                status: args.status,
+                paymentDate: args.status === "paid" ? args.paymentDate : undefined,
+            });
+            return existing._id;
+        } else {
+            return await ctx.db.insert("salaries", {
+                staffId: args.staffId,
+                baseAmount: args.amount,
+                adjustments: 0,
+                totalAmount: args.amount,
+                month: args.month,
+                status: args.status,
+                paymentDate: args.status === "paid" ? args.paymentDate : undefined,
+                generatedAt: new Date().toISOString(),
+            });
+        }
     }
 });

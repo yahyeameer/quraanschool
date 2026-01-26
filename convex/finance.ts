@@ -24,16 +24,24 @@ export const getFees = query({
             .collect();
 
         // Join data
-        return students.map(student => {
+        const result = await Promise.all(students.map(async (student) => {
             const payment = payments.find(p => p.studentId === student._id && p.month === currentMonth);
+            const feeStructure = await ctx.db
+                .query("fee_structures")
+                .withIndex("by_student", q => q.eq("studentId", student._id))
+                .first();
+
             return {
                 student,
                 status: payment ? payment.status : "unpaid",
                 amount: payment ? payment.amount : 0,
+                expectedAmount: feeStructure?.monthlyAmount || 0,
                 paymentDate: payment ? payment.date : null,
                 paymentId: payment ? payment._id : null
             };
-        });
+        }));
+
+        return result;
     }
 });
 
