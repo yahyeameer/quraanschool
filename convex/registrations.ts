@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { hasAnyRole } from "./permissions";
 
 // Public mutation for submitting the enrollment form
 export const submit = mutation({
@@ -24,8 +25,6 @@ export const submit = mutation({
 // Admin/Staff query to get all registrations
 export const get = query({
     handler: async (ctx) => {
-        // Optionally add auth check here later (UserIdentity check)
-        // For now, we assume this is called from a protected dashboard page
         return await ctx.db.query("registrations").order("desc").collect();
     },
 });
@@ -47,4 +46,53 @@ export const updateStatus = mutation({
             ...(notes ? { notes } : {}) // Update notes only if provided
         });
     },
+});
+
+export const confirmEnrollment = mutation({
+    args: {
+        id: v.id("registrations"),
+        role: v.string(), // "student" | "teacher"
+    },
+    handler: async (ctx, args) => {
+        const { id, role } = args;
+        const registration = await ctx.db.get(id);
+        if (!registration) throw new Error("Registration not found");
+
+        const { hasRole } = await hasAnyRole(ctx, ["admin", "manager"]);
+        if (!hasRole) throw new Error("Unauthorized");
+
+        if (role === "student") {
+            // 1. Create Student User
+            const studentId = await ctx.db.insert("users", {
+                name: registration.studentName,
+                role: "student",
+                clerkId: `pending_${registration.studentName}_${Date.now()}`,
+                email: registration.email,
+                phone: registration.phone,
+            });
+
+            // 2. Create Parent Invitation
+            await ctx.db.insert("invitations", {
+                email: registration.email,
+                phone: registration.phone,
+                role: "parent",
+                status: "pending",
+                invitedAt: new Date().toISOString(),
+                studentName: registration.studentName,
+                studentId: studentId
+            });
+        } else if (role === "teacher") {
+            await ctx.db.insert("invitations", {
+                email: registration.email,
+                phone: registration.phone,
+                role: "teacher",
+                status: "pending",
+                invitedAt: new Date().toISOString(),
+                studentName: registration.studentName,
+            });
+        }
+
+        // 3. Mark registration as enrolled
+        await ctx.db.patch(id, { status: "enrolled" });
+    }
 });

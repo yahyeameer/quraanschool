@@ -154,6 +154,7 @@ export default defineSchema({
     status: v.string(), // "pending" | "accepted"
     invitedAt: v.string(),
     studentName: v.optional(v.string()), // To track who this invitation is for
+    studentId: v.optional(v.id("users")), // Link to pre-created student user
   })
     .index("by_email", ["email"])
     .index("by_phone", ["phone"]), // Added phone index
@@ -336,4 +337,26 @@ export default defineSchema({
   })
     .index("by_student", ["studentId"])
     .index("by_route", ["routeId"]),
+
+  // New Academic Management
+  subjects: defineTable({
+    name: v.string(), // e.g., "Quran", "Arabic", "Fiqh"
+    code: v.string(), // e.g., "QUR101"
+    category: v.string(), // "Hifz", "Academic", "Language"
+    description: v.optional(v.string()),
+    teacherId: v.optional(v.id("users")), // Primary teacher if applicable
+  }).index("by_category", ["category"]),
+
+  course_of_study: defineTable({
+    subjectId: v.id("subjects"),
+    title: v.string(), // e.g., "Level 1: Foundation"
+    level: v.string(),
+    description: v.optional(v.string()),
+    books: v.array(v.object({
+      title: v.string(),
+      author: v.optional(v.string()),
+      link: v.optional(v.string()), // PDF or external link
+    })),
+    topics: v.array(v.string()), // Key topics covered
+  }).index("by_subject", ["subjectId"]),
 });

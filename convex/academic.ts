@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireRole } from "./permissions";
+import { requireRole, hasAnyRole } from "./permissions";
 
 // --- Attendance Management ---
 
@@ -150,5 +150,58 @@ export const getExamResults = query({
         }));
 
         return enriched;
+    }
+});
+
+// --- Subject & Course of Study Management ---
+
+export const listSubjects = query({
+    args: {},
+    handler: async (ctx) => {
+        return await ctx.db.query("subjects").collect();
+    }
+});
+
+export const getCourseOfStudy = query({
+    args: { subjectId: v.id("subjects") },
+    handler: async (ctx, args) => {
+        return await ctx.db
+            .query("course_of_study")
+            .withIndex("by_subject", q => q.eq("subjectId", args.subjectId))
+            .collect();
+    }
+});
+
+export const addSubject = mutation({
+    args: {
+        name: v.string(),
+        code: v.string(),
+        category: v.string(),
+        description: v.optional(v.string()),
+    },
+    handler: async (ctx, args) => {
+        const { hasRole } = await hasAnyRole(ctx, ["admin", "manager"]);
+        if (!hasRole) throw new Error("Unauthorized");
+        return await ctx.db.insert("subjects", args);
+    }
+});
+
+export const addCourseItem = mutation({
+    args: {
+        subjectId: v.id("subjects"),
+        title: v.string(),
+        level: v.string(),
+        description: v.optional(v.string()),
+        books: v.array(v.object({
+            title: v.string(),
+            author: v.optional(v.string()),
+            link: v.optional(v.string())
+        })),
+        topics: v.array(v.string())
+    },
+    handler: async (ctx, args) => {
+        const { hasRole } = await hasAnyRole(ctx, ["admin", "manager"]);
+        if (!hasRole) throw new Error("Unauthorized");
+        return await ctx.db.insert("course_of_study", args);
     }
 });

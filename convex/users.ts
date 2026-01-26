@@ -19,7 +19,6 @@ export const store = mutation({
         const phone = identity.phoneNumber; // Get phone from Clerk
 
         // Check for pending invitation (Email OR Phone) if user is new OR is a guest
-        // This ensures if someone signed up before invitation, or sync failed, we retry
         if (user === null || user.role === "guest") {
             let invitation = null;
 
@@ -42,29 +41,32 @@ export const store = mutation({
                 const newRole = invitation.role;
                 await ctx.db.patch(invitation._id, { status: "accepted" });
 
+                let userId;
                 if (user) {
-                    // Update existing guest
                     await ctx.db.patch(user._id, {
                         role: newRole as any,
                         name: identity.name || invitation.studentName || user.name
                     });
-                    return user._id;
+                    userId = user._id;
                 } else {
-                    // Will create new user with this role below
-                    // Just pass the role to the insert
-                    // We need to refactor the insert flow slightly
-
-                    // Create new user
-                    const newUserId = await ctx.db.insert("users", {
+                    userId = await ctx.db.insert("users", {
                         clerkId: identity.subject,
-                        name: identity.name || invitation?.studentName || "Anonymous",
+                        name: identity.name || invitation.studentName || "Anonymous",
                         email: email,
                         phone: phone,
                         role: newRole as any,
                         avatarUrl: identity.pictureUrl,
                     });
-                    return newUserId;
                 }
+
+                // LINKING LOGICAL: If parent invitation has a studentId, link them
+                if (newRole === "parent" && (invitation as any).studentId) {
+                    await ctx.db.patch((invitation as any).studentId, {
+                        parentId: userId
+                    });
+                }
+
+                return userId;
             }
         }
 
@@ -92,7 +94,6 @@ export const completeOnboarding = mutation({
         const identity = await ctx.auth.getUserIdentity();
         if (!identity) throw new Error("Unauthorized");
 
-        // SECURITY FIX: Only allow safe roles during self-onboarding
         const allowedRoles = ["student", "teacher", "parent"];
         if (!allowedRoles.includes(args.role)) {
             throw new Error("Invalid role. Please select Student, Teacher, or Parent.");
