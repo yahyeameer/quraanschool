@@ -3,19 +3,32 @@
 import React, { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Loader2, Plus, Mail, UserPlus, X } from "lucide-react";
+import {
+    Loader2,
+    Plus,
+    Mail,
+    UserPlus,
+    X,
+    User,
+    Phone,
+    Briefcase,
+    Sparkles,
+    ShieldCheck
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
-// Define proper role type
 type StaffRole = "teacher" | "staff" | "manager" | "accountant" | "librarian" | "receptionist";
 
 export function AddStaffModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
     const inviteStaff = useMutation(api.admin.inviteStaff);
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
     const [role, setRole] = useState<StaffRole>("teacher");
     const [isLoading, setIsLoading] = useState(false);
 
@@ -23,12 +36,21 @@ export function AddStaffModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
         e.preventDefault();
         setIsLoading(true);
         try {
-            await inviteStaff({ email, role });
-            toast.success("Staff invitation sent successfully!");
+            await inviteStaff({
+                email,
+                name,
+                phone: phone || undefined,
+                role
+            });
+            toast.success("Divine invitation dispatched!", {
+                icon: <Sparkles className="h-4 w-4 text-emerald-400" />
+            });
+            setName("");
             setEmail("");
+            setPhone("");
             onClose();
         } catch (error: any) {
-            toast.error(error.message || "Failed to send invitation");
+            toast.error(error.message || "Failed to dispatch invitation");
         } finally {
             setIsLoading(false);
         }
@@ -38,105 +60,116 @@ export function AddStaffModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                    initial={{ opacity: 0, scale: 0.9, y: 40 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="relative w-full max-w-lg overflow-hidden bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl p-6"
+                    exit={{ opacity: 0, scale: 0.9, y: 40 }}
+                    className="relative w-full max-w-2xl overflow-hidden bg-[#030712] border border-white/10 rounded-[2.5rem] shadow-[0_0_100px_rgba(59,130,246,0.1)] p-8 md:p-12"
                 >
+                    {/* Background Glow */}
+                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] -z-10" />
+                    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-indigo-600/10 rounded-full blur-[80px] -z-10" />
+
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-white rounded-full hover:bg-white/5 transition-colors"
+                        className="absolute top-8 right-8 p-3 text-zinc-500 hover:text-white rounded-2xl hover:bg-white/5 border border-transparent hover:border-white/10 transition-all"
                     >
-                        <X className="h-5 w-5" />
+                        <X className="h-6 w-6" />
                     </button>
 
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-primary/20 text-primary">
-                            <UserPlus className="h-6 w-6" />
+                    <div className="flex items-center gap-6 mb-12">
+                        <div className="h-16 w-16 flex items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-blue-500/20 to-indigo-500/20 text-blue-400 border border-blue-500/20 shadow-lg shadow-blue-500/5">
+                            <UserPlus className="h-8 w-8" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold text-white tracking-tight">Add New Staff</h3>
-                            <p className="text-xs text-zinc-400">Invite a new member to your team</p>
+                            <h3 className="text-3xl font-bold font-amiri text-white tracking-tight">Commission Staff</h3>
+                            <p className="text-sm text-zinc-500 tracking-widest uppercase mt-1">Summon a new guardian to the institution</p>
                         </div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email" className="text-zinc-400">Email Address</Label>
-                            <div className="relative">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-500" />
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="pl-10 bg-black/40 border-white/10"
-                                    placeholder="staff@example.com"
-                                    required
-                                />
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="name" className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] ml-1">Full Name</Label>
+                                <div className="relative">
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-600" />
+                                    <Input
+                                        id="name"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="pl-12 bg-white/5 border-white/10 h-14 rounded-2xl focus:ring-blue-500/50 text-white placeholder:text-zinc-700"
+                                        placeholder="Enter scholar's name"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="email" className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] ml-1">Email Coordinate</Label>
+                                <div className="relative">
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-600" />
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="pl-12 bg-white/5 border-white/10 h-14 rounded-2xl focus:ring-blue-500/50 text-white placeholder:text-zinc-700"
+                                        placeholder="official@quraan.com"
+                                        required
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <Label className="text-zinc-400">Role</Label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {[
-                                    { value: "teacher", label: "Teacher", color: "primary" },
-                                    { value: "staff", label: "Support Staff", color: "sky" },
-                                    { value: "manager", label: "Manager", color: "amber" },
-                                    { value: "accountant", label: "Accountant", color: "emerald" },
-                                    { value: "librarian", label: "Librarian", color: "violet" },
-                                    { value: "receptionist", label: "Receptionist", color: "orange" },
-                                ].map((option) => {
-                                    const isSelected = role === option.value;
-                                    // Construct class names manually to avoid dynamic Tailwind classes issue if safe list isn't set
-                                    // But user asked for generic beautiful UI, assuming Tailwind is standard.
-                                    // Safer to use conditional logic for classes or basic colors if dynamic `bg-${color}-500` is risky.
-                                    // I'll stick to a simpler approach or standard colors if I'm not sure about safelist.
-                                    // Actually, standard Tailwind classes like bg-emerald-500 should work if they are used elsewhere or JIT is on.
-                                    // To be safe I will use specific classes for each or `cn` if I had it, or just use the logic I had.
-                                    // Let's use a switch/map for style to be safe or just risk it if JIT.
-                                    // Given I don't want to debug Tailwind JIT issues, I'll use specific conditions if needed, 
-                                    // BUT the previous code block used template literals. I'll stick to what I proposed but maybe simpler.
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label htmlFor="phone" className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] ml-1">Phone Link (Optional)</Label>
+                                <div className="relative">
+                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-600" />
+                                    <Input
+                                        id="phone"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        className="pl-12 bg-white/5 border-white/10 h-14 rounded-2xl focus:ring-blue-500/50 text-white placeholder:text-zinc-700"
+                                        placeholder="+1 234 567 890"
+                                    />
+                                </div>
+                            </div>
 
-                                    let activeClass = "";
-                                    let inactiveClass = "bg-black/40 border-white/10 text-zinc-400 hover:border-white/20 hover:bg-white/5";
-
-                                    switch (option.color) {
-                                        case 'primary': activeClass = "bg-primary/20 border-primary text-primary"; break;
-                                        case 'sky': activeClass = "bg-sky-500/20 border-sky-500 text-sky-400"; break;
-                                        case 'amber': activeClass = "bg-amber-500/20 border-amber-500 text-amber-400"; break;
-                                        case 'emerald': activeClass = "bg-emerald-500/20 border-emerald-500 text-emerald-400"; break;
-                                        case 'violet': activeClass = "bg-violet-500/20 border-violet-500 text-violet-400"; break;
-                                        case 'orange': activeClass = "bg-orange-500/20 border-orange-500 text-orange-400"; break;
-                                    }
-
-                                    return (
-                                        <button
-                                            key={option.value}
-                                            type="button"
-                                            onClick={() => setRole(option.value as StaffRole)}
-                                            className={`px-3 py-3 text-sm font-medium rounded-xl border transition-all text-left ${isSelected ? activeClass : inactiveClass}`}
-                                        >
-                                            {option.label}
-                                        </button>
-                                    );
-                                })}
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] ml-1">Assigned Domain</Label>
+                                <div className="relative">
+                                    <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-600" />
+                                    <select
+                                        value={role}
+                                        onChange={(e) => setRole(e.target.value as StaffRole)}
+                                        className="w-full pl-12 pr-4 bg-white/5 border border-white/10 h-14 rounded-2xl focus:ring-blue-500/50 text-white appearance-none outline-none cursor-pointer hover:bg-white/10 transition-all font-medium"
+                                    >
+                                        <option value="teacher" className="bg-[#030712] text-white">Teacher / Murshid</option>
+                                        <option value="staff" className="bg-[#030712] text-white">Support Staff</option>
+                                        <option value="manager" className="bg-[#030712] text-white">Domain Manager</option>
+                                        <option value="accountant" className="bg-[#030712] text-white">Fiscal Officer</option>
+                                        <option value="librarian" className="bg-[#030712] text-white">Keeper of Books</option>
+                                        <option value="receptionist" className="bg-[#030712] text-white">Gatekeeper</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="pt-2">
+                        <div className="pt-8">
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                                className="w-full h-16 rounded-[1.5rem] bg-blue-600 hover:bg-blue-700 text-white font-black text-lg tracking-tight shadow-xl shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 group"
                             >
                                 {isLoading ? (
-                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    <Loader2 className="h-6 w-6 animate-spin" />
                                 ) : (
-                                    "Send Invitation"
+                                    <>
+                                        <ShieldCheck className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                                        Disperse Invitation
+                                    </>
                                 )}
                             </Button>
                         </div>

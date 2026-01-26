@@ -45,15 +45,16 @@ export const store = mutation({
                 if (user) {
                     await ctx.db.patch(user._id, {
                         role: newRole as any,
-                        name: identity.name || invitation.studentName || user.name
+                        name: identity.name || (invitation as any).name || (invitation as any).studentName || user.name,
+                        phone: identity.phoneNumber || (invitation as any).phone || user.phone
                     });
                     userId = user._id;
                 } else {
                     userId = await ctx.db.insert("users", {
                         clerkId: identity.subject,
-                        name: identity.name || invitation.studentName || "Anonymous",
+                        name: identity.name || (invitation as any).name || (invitation as any).studentName || "Anonymous",
                         email: email,
-                        phone: phone,
+                        phone: identity.phoneNumber || (invitation as any).phone,
                         role: newRole as any,
                         avatarUrl: identity.pictureUrl,
                     });

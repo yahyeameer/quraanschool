@@ -78,6 +78,8 @@ export const listUsers = query({
 export const inviteStaff = mutation({
     args: {
         email: v.string(),
+        name: v.string(),
+        phone: v.optional(v.string()),
         role: v.union(
             v.literal("teacher"),
             v.literal("staff"),
@@ -111,7 +113,9 @@ export const inviteStaff = mutation({
         }
 
         return await ctx.db.insert("invitations", {
-            email: args.email.toLowerCase(), // Normalize email
+            email: args.email.toLowerCase(),
+            name: args.name,
+            phone: args.phone,
             role: args.role,
             status: "pending",
             invitedAt: new Date().toISOString(),

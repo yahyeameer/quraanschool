@@ -153,7 +153,8 @@ export default defineSchema({
     role: v.string(), // "teacher" | "staff"
     status: v.string(), // "pending" | "accepted"
     invitedAt: v.string(),
-    studentName: v.optional(v.string()), // To track who this invitation is for
+    name: v.optional(v.string()), // For staff/teacher invitations
+    studentName: v.optional(v.string()), // Legacy/Student specific
     studentId: v.optional(v.id("users")), // Link to pre-created student user
   })
     .index("by_email", ["email"])
