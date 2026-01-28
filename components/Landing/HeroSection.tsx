@@ -6,165 +6,233 @@ import { ArrowRight, Play, Star, Sparkles, ChevronDown } from "lucide-react";
 import ShimmerButton from "@/components/magicui/shimmer-button";
 import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { TiltCard } from "@/components/ui/tilt-card";
 import Image from "next/image";
-import AnimatedShaderHero from "@/components/ui/animated-shader-hero";
 
 export function HeroSection() {
     const { t, dir } = useLanguage();
     const { scrollY } = useScroll();
-    const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-    const y2 = useTransform(scrollY, [0, 500], [0, -150]);
+
+    // Parallax & Smooth effects
+    const yText = useTransform(scrollY, [0, 500], [0, 150]);
+    const yVisual = useTransform(scrollY, [0, 500], [0, -100]);
+    const opacityHero = useTransform(scrollY, [0, 400], [1, 0]);
+    const scaleHero = useTransform(scrollY, [0, 1000], [1, 1.1]);
+
+    const springConfig = { stiffness: 100, damping: 30, restDelta: 0.001 };
+    const mouseX = useSpring(0, springConfig);
+    const mouseY = useSpring(0, springConfig);
 
     return (
-        <AnimatedShaderHero
-            headline={{ line1: "", line2: "" }} // Headlines handled in children for custom layout
-            subtitle=""
-            className="!h-auto min-h-[90vh]"
-        >
-            <div className="relative z-10 w-full pt-24 pb-12 px-4">
-                {/* Spotlight Effect */}
-                <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-emerald-500/10 blur-[120px] pointer-events-none" />
+        <section className="relative min-h-[110vh] flex items-center justify-center overflow-hidden bg-slate-950 pt-20">
+            {/* 1. Dynamic Background Layers */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                {/* Deep Space Gradients */}
+                <div className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] bg-indigo-950/40 rounded-full blur-[150px] animate-pulse-slow" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-emerald-950/30 rounded-full blur-[150px] animate-pulse-slow delay-1000" />
 
-                <div className="container max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center relative z-10">
-                    {/* Text Content */}
+                {/* Celestial Orbs */}
+                <motion.div
+                    style={{ y: yVisual, x: -50 }}
+                    className="absolute top-[20%] right-[10%] w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[100px] opacity-60"
+                />
+
+                {/* Grid Overlay */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_80%)]" />
+            </div>
+
+            <div className="container max-w-7xl mx-auto px-4 relative z-10 grid lg:grid-cols-2 gap-16 items-center">
+
+                {/* 2. Text Content (Left) */}
+                <motion.div
+                    style={{ y: yText, opacity: opacityHero }}
+                    className="space-y-10 text-center lg:text-left"
+                >
+                    {/* Badge */}
                     <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="space-y-8 text-center lg:text-left"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-900/30 border border-indigo-500/30 backdrop-blur-md text-indigo-300 text-sm font-medium shadow-[0_0_15px_rgba(99,102,241,0.2)] hover:bg-indigo-900/50 transition-colors cursor-default"
                     >
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-emerald-300 text-sm font-medium shadow-glow hover:bg-white/10 transition-colors"
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                        </span>
+                        <span>Next-Gen School Management</span>
+                    </motion.div>
+
+                    {/* Main Headline */}
+                    <motion.h1
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        className="text-6xl md:text-8xl font-bold font-amiri leading-[1.05] tracking-tight"
+                    >
+                        <span className="text-slate-100 drop-shadow-2xl">Manage with</span>
+                        <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-400 animate-shine bg-[length:200%_auto]">
+                            Excellence
+                        </span>
+                    </motion.h1>
+
+                    {/* Subtitle */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className="text-xl md:text-2xl text-slate-400 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0"
+                    >
+                        {t.landing.hero.subtitle || "The complete digital ecosystem for modern Islamic institutions. Empowering teachers, engaging parents, and streamlining operations."}
+                    </motion.p>
+
+                    {/* CTAs */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.6 }}
+                        className="flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start"
+                    >
+                        <SignedOut>
+                            <SignInButton mode="modal">
+                                <button className="group relative px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-lg font-bold rounded-full shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+                                    <span className="relative z-10 flex items-center gap-2">
+                                        Get Started Free <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    </span>
+                                    <div className="absolute inset-0 rounded-full bg-white/20 blur opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </button>
+                            </SignInButton>
+                        </SignedOut>
+
+                        <SignedIn>
+                            <Link href="/dashboard">
+                                <button className="group relative px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-lg font-bold rounded-full shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.5)] transition-all duration-300 transform hover:-translate-y-1">
+                                    <span className="relative z-10 flex items-center gap-2">
+                                        Go to Dashboard <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    </span>
+                                </button>
+                            </Link>
+                        </SignedIn>
+
+                        <button
+                            onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                            className="px-8 py-4 rounded-full border border-white/10 text-slate-300 hover:text-white hover:bg-white/5 hover:border-white/20 transition-all duration-300 text-lg font-medium flex items-center gap-3 group backdrop-blur-sm"
                         >
-                            <Sparkles className="h-4 w-4 text-amber-400" />
-                            <span>Teacher Dashboard 2.0 Now Live</span>
-                        </motion.div>
+                            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <Play className="w-3 h-3 fill-current ml-0.5" />
+                            </div>
+                            <span>See How It Works</span>
+                        </button>
+                    </motion.div>
 
-                        <h1 className="text-5xl md:text-7xl font-bold font-amiri leading-[1.1] tracking-tight">
-                            <span className="text-white drop-shadow-sm">{t.landing.hero.title.split(' ').slice(0, 3).join(' ')}</span>
-                            <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 animate-aurora relative">
-                                {t.landing.hero.title.split(' ').slice(3).join(' ') || "Excellence"}
-                                {/* Text Glow */}
-                                <span className="absolute inset-0 bg-emerald-400/20 blur-xl -z-10" />
-                            </span>
-                        </h1>
-
-                        <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto lg:mx-0 font-light leading-relaxed">
-                            {t.landing.hero.subtitle}
-                        </p>
-
-                        <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                            <SignedOut>
-                                <SignInButton mode="modal">
-                                    <ShimmerButton className="shadow-[0_0_30px_rgba(16,185,129,0.4)] scale-110 active:scale-95 transition-transform" shimmerColor="#34d399">
-                                        <span className="whitespace-pre-wrap text-center text-sm font-bold leading-none tracking-tight text-white lg:text-lg flex items-center gap-2">
-                                            {t.landing.hero.ctaPrimary} <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                                        </span>
-                                    </ShimmerButton>
-                                </SignInButton>
-                            </SignedOut>
-                            <SignedIn>
-                                <Link href="/dashboard">
-                                    <ShimmerButton className="shadow-[0_0_30px_rgba(16,185,129,0.4)] scale-110 active:scale-95 transition-transform" shimmerColor="#34d399">
-                                        <span className="whitespace-pre-wrap text-center text-sm font-bold leading-none tracking-tight text-white lg:text-lg flex items-center gap-2">
-                                            {t.common.dashboard} <ArrowRight className="h-5 w-5" />
-                                        </span>
-                                    </ShimmerButton>
-                                </Link>
-                            </SignedIn>
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                className="h-14 px-8 rounded-full border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 text-white hover:text-emerald-300 border-transparent hover:border-emerald-500/30 transition-all duration-300 group text-base"
-                                onClick={() => {
-                                    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-                                }}
-                            >
-                                <Play className="mr-3 h-4 w-4 fill-current group-hover:scale-110 transition-transform" />
-                                {t.landing.hero.ctaSecondary}
-                            </Button>
+                    {/* Social Proof */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1 }}
+                        className="pt-6 border-t border-white/5 flex items-center gap-6 justify-center lg:justify-start"
+                    >
+                        <div className="flex -space-x-3">
+                            {[1, 2, 3, 4].map(i => (
+                                <div key={i} className="w-10 h-10 rounded-full border-2 border-slate-950 bg-slate-800 flex items-center justify-center text-xs text-slate-400 font-bold">
+                                    {String.fromCharCode(64 + i)}
+                                </div>
+                            ))}
                         </div>
+                        <div className="text-sm">
+                            <div className="flex items-center gap-1 text-amber-400">
+                                <Star className="w-4 h-4 fill-current" />
+                                <Star className="w-4 h-4 fill-current" />
+                                <Star className="w-4 h-4 fill-current" />
+                                <Star className="w-4 h-4 fill-current" />
+                                <Star className="w-4 h-4 fill-current" />
+                            </div>
+                            <div className="text-slate-400 mt-1"><span className="text-white font-semibold">500+</span> Schools Trust Us</div>
+                        </div>
+                    </motion.div>
+                </motion.div>
 
-                        <div className="pt-8 flex items-center gap-8 justify-center lg:justify-start text-white/50 text-sm font-medium">
-                            <div className="flex items-center gap-2">
-                                <Star className="h-4 w-4 text-amber-500 fill-amber-500 animate-pulse" />
-                                <span>Trusted by 50+ Families</span>
+                {/* 3. Visual Content (Right - 3D Mockups) */}
+                <motion.div
+                    style={{ y: yVisual, scale: scaleHero }}
+                    className="relative hidden lg:block h-[800px] w-full perspective-2000"
+                >
+                    {/* Floating Glow */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-amber-500/20 to-purple-500/20 rounded-full blur-[100px] animate-pulse-slow" />
+
+                    {/* Main Dashboard Card */}
+                    <motion.div
+                        initial={{ opacity: 0, rotateX: 20, rotateY: -20, z: -100 }}
+                        animate={{ opacity: 1, rotateX: 6, rotateY: -12, z: 0 }}
+                        transition={{ duration: 1.2, ease: "easeOut" }}
+                        className="absolute top-[10%] right-[5%] z-20 w-[650px] rounded-[32px] overflow-hidden border border-white/20 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] bg-slate-900/90 backdrop-blur-xl"
+                    >
+                        <Image
+                            src="/dashboard-preview.png"
+                            alt="Dashboard UI"
+                            width={1200}
+                            height={900}
+                            className="w-full h-auto object-cover opacity-90 transition-opacity hover:opacity-100"
+                        />
+                        {/* Glass Reflection */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
+                    </motion.div>
+
+                    {/* Floating Widgets */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 100, x: -50 }}
+                        animate={{ opacity: 1, y: 0, x: 0 }}
+                        transition={{ duration: 1, delay: 0.8 }}
+                        className="absolute bottom-[20%] left-[0%] z-30 w-[280px] p-5 rounded-2xl border border-white/10 bg-slate-800/80 backdrop-blur-md shadow-2xl"
+                    >
+                        <div className="flex items-center gap-4 mb-3">
+                            <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                <Sparkles className="w-5 h-5" />
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Star className="h-4 w-4 text-emerald-500 fill-emerald-500 animate-pulse delay-300" />
-                                <span>Certified Curriculum</span>
+                            <div>
+                                <h4 className="text-white font-bold text-sm">Monthly Revenue</h4>
+                                <p className="text-emerald-400 text-xs font-bold">+24.5% vs last mo.</p>
                             </div>
+                        </div>
+                        <div className="h-2 w-full bg-slate-700 rounded-full overflow-hidden">
+                            <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: "75%" }}
+                                transition={{ duration: 1.5, delay: 1.2 }}
+                                className="h-full bg-emerald-400"
+                            />
                         </div>
                     </motion.div>
 
-                    {/* 3D Visuals */}
-                    <div className="relative h-[600px] w-full hidden lg:block perspective-1000">
-                        {/* Floating Quran App Interface */}
-                        <motion.div style={{ y: y1 }} className="absolute top-10 right-10 z-20 w-[450px]">
-                            <TiltCard tiltIntensity={15}>
-                                <div className="relative aspect-[4/3] rounded-[20px] border-[1px] border-white/20 bg-slate-900/80 overflow-hidden shadow-2xl ring-1 ring-white/10 backdrop-blur-md">
-                                    <Image
-                                        src="/dashboard-preview.png"
-                                        alt="App Interface"
-                                        fill
-                                        className="object-cover"
-                                    />
-                                    {/* Reflection */}
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none" />
-                                </div>
-                            </TiltCard>
-                        </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, y: -50, x: 50 }}
+                        animate={{ opacity: 1, y: 0, x: 0 }}
+                        transition={{ duration: 1, delay: 1 }}
+                        className="absolute top-[5%] right-[0%] z-10 w-[220px] p-4 rounded-2xl border border-white/10 bg-slate-800/80 backdrop-blur-md shadow-2xl"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="w-3 h-3 rounded-full bg-amber-400 animate-pulse" />
+                            <span className="text-slate-200 text-sm font-medium">Live Attendance</span>
+                        </div>
+                        <div className="mt-2 text-2xl font-bold text-white">98.2%</div>
+                    </motion.div>
 
-                        {/* Floating Decorative Elements */}
-                        <motion.div style={{ y: y2 }} className="absolute bottom-20 left-10 z-10 w-[280px]">
-                            <TiltCard tiltIntensity={20}>
-                                <div className="glass-card p-6 rounded-3xl border border-white/20 bg-white/5 backdrop-blur-xl">
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <div className="h-12 w-12 rounded-full bg-emerald-500 flex items-center justify-center">
-                                            <Sparkles className="h-6 w-6 text-white" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-white font-bold">Daily Progress</h4>
-                                            <p className="text-white/60 text-xs">Consistent Growth</p>
-                                        </div>
-                                    </div>
-                                    <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: "75%" }}
-                                            transition={{ duration: 1.5, delay: 0.5 }}
-                                            className="h-full bg-emerald-400"
-                                        />
-                                    </div>
-                                </div>
-                            </TiltCard>
-                        </motion.div>
-                    </div>
-                </div>
+                </motion.div>
 
                 {/* Scroll Indicator */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 1, duration: 1 }}
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 hover:text-white transition-colors cursor-pointer"
+                    transition={{ delay: 1.5, duration: 1 }}
+                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500 cursor-pointer hover:text-white transition-colors"
                     onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                    <div className="h-10 w-6 rounded-full border-2 border-current flex justify-center pt-2">
-                        <motion.div
-                            animate={{ y: [0, 10, 0] }}
-                            transition={{ repeat: Infinity, duration: 1.5 }}
-                            className="h-2 w-1 bg-current rounded-full"
-                        />
-                    </div>
+                    <span className="text-xs uppercase tracking-widest">Scroll to Explore</span>
+                    <ChevronDown className="w-5 h-5 animate-bounce" />
                 </motion.div>
+
             </div>
-        </AnimatedShaderHero>
+        </section>
     );
 }

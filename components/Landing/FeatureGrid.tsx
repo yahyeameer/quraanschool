@@ -1,48 +1,77 @@
 "use client";
 
 import { useLanguage } from "@/lib/language-context";
-import { Users, BarChart3, Clock, Atom, ShieldCheck, Microscope, Sparkles } from "lucide-react";
+import { Users, BarChart3, Clock, Atom, ShieldCheck, Sparkles, BookOpen, Wallet, GraduationCap, LayoutDashboard } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { TiltCard } from "@/components/ui/tilt-card";
 
-const features = [
+const bentoFeatures = [
     {
         key: 'finance',
         title: "Financial Confidence",
-        icon: BarChart3,
-        color: "text-emerald-500",
-        bg: "bg-emerald-500/10",
+        icon: Wallet,
+        color: "text-amber-400",
+        bg: "bg-amber-500/10",
         colSpan: "lg:col-span-2 lg:row-span-2",
-        description: "Complete financial oversight. Track student fees, staff payroll, and operational expenses in one unified ledger.",
+        description: "Complete financial oversight. detailed ledger for fees, salaries, and operational costs.",
+        gradient: "from-amber-500/20 to-orange-500/5",
+        delay: 0.1
     },
     {
-        key: 'library',
-        title: "Digital Library",
-        icon: Atom,
-        color: "text-blue-500",
+        key: 'curriculum',
+        title: "Smart Curriculum",
+        icon: BookOpen,
+        color: "text-blue-400",
         bg: "bg-blue-500/10",
-        colSpan: "lg:col-span-1",
-        description: "Catalog books, track borrowing, and manage digital resources for your institution.",
+        colSpan: "lg:col-span-1 lg:row-span-1",
+        description: "Digital syllabus tracking and progress monitoring.",
+        gradient: "from-blue-500/20 to-cyan-500/5",
+        delay: 0.2
     },
     {
         key: 'transport',
-        title: "Transport Tracking",
+        title: "Live Transport",
         icon: Clock,
-        color: "text-orange-500",
-        bg: "bg-orange-500/10",
-        colSpan: "lg:col-span-1",
-        description: "Real-time updates on bus routes and student pickup/drop-off status.",
+        color: "text-emerald-400",
+        bg: "bg-emerald-500/10",
+        colSpan: "lg:col-span-1 lg:row-span-1",
+        description: "Real-time updates on student pickup/drop-off.",
+        gradient: "from-emerald-500/20 to-teal-500/5",
+        delay: 0.3
+    },
+    {
+        key: 'analytics',
+        title: "Deep Analytics",
+        icon: BarChart3,
+        color: "text-purple-400",
+        bg: "bg-purple-500/10",
+        colSpan: "lg:col-span-2 lg:row-span-1",
+        description: "Turn data into decisions with comprehensive dashboard reports.",
+        gradient: "from-purple-500/20 to-pink-500/5",
+        delay: 0.4
+    },
+    {
+        key: 'portals',
+        title: "Role-Based Portals",
+        icon: LayoutDashboard,
+        color: "text-rose-400",
+        bg: "bg-rose-500/10",
+        colSpan: "lg:col-span-1 lg:row-span-1",
+        description: "Dedicated interfaces for Parents, Teachers, and Staff.",
+        gradient: "from-rose-500/20 to-red-500/5",
+        delay: 0.5
     },
     {
         key: 'attendance',
-        title: "Smart Attendance",
+        title: "Biometric Attendance",
         icon: ShieldCheck,
-        color: "text-purple-500",
-        bg: "bg-purple-500/10",
-        colSpan: "lg:col-span-2",
-        description: "Automated attendance tracking for students and staff with biometric integration options.",
+        color: "text-indigo-400",
+        bg: "bg-indigo-500/10",
+        colSpan: "lg:col-span-1 lg:row-span-1",
+        description: "Automated logging for precision.",
+        gradient: "from-indigo-500/20 to-violet-500/5",
+        delay: 0.6
     }
 ];
 
@@ -50,99 +79,99 @@ export function FeatureGrid() {
     const { t } = useLanguage();
 
     return (
-        <section id="features" className="py-32 relative overflow-hidden bg-background">
-            {/* Background Glow */}
-            <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
+        <section id="features" className="py-32 relative bg-slate-950 overflow-hidden">
 
-            {/* Logo Background Watermark */}
-            <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none mix-blend-multiply dark:mix-blend-screen">
-                <Image
-                    src="/golden-islamic-pattern.png"
-                    alt="Background Pattern"
-                    fill
-                    className="object-cover"
-                />
-            </div>
+            {/* Ambient Background */}
+            <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-indigo-950/20 to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
 
-            <div className="container mx-auto px-4 relative z-10">
-                <div className="text-center max-w-3xl mx-auto mb-20">
+            {/* Content Container */}
+            <div className="container max-w-7xl mx-auto px-4 relative z-10">
+
+                {/* Section Header */}
+                <div className="text-center max-w-3xl mx-auto mb-24">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-sm font-bold mb-6 border border-emerald-500/20 shadow-glow"
+                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/50 border border-slate-700 text-slate-300 text-sm font-medium mb-6 backdrop-blur-sm"
                     >
-                        <Sparkles className="h-4 w-4" /> Why Choose Us
+                        <Sparkles className="h-4 w-4 text-amber-400" />
+                        <span>Everything You Need</span>
                     </motion.div>
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
                         viewport={{ once: true }}
-                        className="font-amiri text-5xl md:text-7xl font-bold mb-6 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 via-white to-amber-200 drop-shadow-sm"
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                        className="text-4xl md:text-6xl font-bold mb-6 text-white tracking-tight font-amiri"
                     >
-                        {t.landing.features.title}
+                        Powerful Features for <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">
+                            Modern Institutions
+                        </span>
                     </motion.h2>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.1 }}
                         viewport={{ once: true }}
-                        className="text-emerald-100/70 text-xl leading-relaxed font-light"
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="text-slate-400 text-lg md:text-xl leading-relaxed font-light"
                     >
-                        {t.landing.features.description}
+                        {t.landing.features.description || "Streamline your school's operations with our comprehensive suite of tools designed for efficiency and ease of use."}
                     </motion.p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
-                    {features.map((feature, i) => (
-                        <TiltCard
+                {/* Bento Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-[minmax(250px,auto)]">
+                    {bentoFeatures.map((feature, i) => (
+                        <motion.div
                             key={feature.key}
-                            className={cn("h-full", feature.colSpan)}
-                            tiltIntensity={10}
-
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.7, delay: feature.delay }}
+                            className={cn(
+                                "group relative overflow-hidden rounded-[32px] border border-white/5 bg-slate-900/50 backdrop-blur-xl p-8 hover:border-white/10 transition-all duration-500 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1 block",
+                                feature.colSpan
+                            )}
                         >
-                            <motion.div
-                                initial={{ opacity: 0, y: 40 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                                viewport={{ once: true }}
-                                className={cn(
-                                    "group relative flex flex-col justify-between p-8 rounded-[2rem] border border-black/5 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-sm overflow-hidden h-full shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10"
-                                )}
-                            >
-                                {/* Content */}
-                                <div className="relative z-10 h-full flex flex-col">
-                                    <div className={cn(
-                                        "w-14 h-14 rounded-2xl flex items-center justify-center mb-auto shadow-sm group-hover:scale-110 transition-transform duration-500 border border-white/20",
-                                        feature.bg,
-                                        feature.color
-                                    )}>
-                                        <feature.icon className="h-7 w-7" />
-                                    </div>
+                            {/* Inner Gradient */}
+                            <div className={cn(
+                                "absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-700",
+                                feature.gradient
+                            )} />
 
-                                    <div>
-                                        <h3 className="text-2xl font-bold mb-3 tracking-tight group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
-                                            {feature.title}
-                                        </h3>
-                                        <p className="text-muted-foreground leading-relaxed text-sm md:text-base group-hover:text-foreground dark:group-hover:text-white/80 transition-colors">
-                                            {feature.description}
-                                        </p>
-                                    </div>
+                            {/* Icon Background Blob */}
+                            <div className={cn(
+                                "absolute -bottom-10 -right-10 w-48 h-48 rounded-full blur-[60px] opacity-20 group-hover:opacity-40 transition-opacity duration-500",
+                                feature.bg.replace('/10', '/30') // Boost opacity for blob
+                            )} />
+
+                            <div className="relative z-10 h-full flex flex-col justify-between">
+                                {/* Icon */}
+                                <div className={cn(
+                                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border border-white/10 shadow-lg group-hover:scale-110 transition-transform duration-500 bg-slate-800/80",
+                                    feature.color
+                                )}>
+                                    <feature.icon className="h-7 w-7" />
                                 </div>
 
-                                {/* Decorative Background Icon */}
-                                <div className="absolute -bottom-10 -right-10 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none group-hover:rotate-12 transform">
-                                    <feature.icon className="h-48 w-48" />
+                                {/* Text */}
+                                <div>
+                                    <h3 className="text-2xl font-bold mb-3 text-slate-100 group-hover:text-white transition-colors">
+                                        {feature.title}
+                                    </h3>
+                                    <p className="text-slate-400 leading-relaxed text-sm group-hover:text-slate-200 transition-colors">
+                                        {feature.description}
+                                    </p>
                                 </div>
+                            </div>
 
-                                {/* Spotlight Gradient */}
-                                <div
-                                    className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent dark:from-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none mix-blend-overlay"
-                                />
-                            </motion.div>
-                        </TiltCard>
+                            {/* Border Shine */}
+                            <div className="absolute inset-0 rounded-[32px] border border-white/5 group-hover:border-white/20 pointer-events-none transition-colors duration-500" />
+                        </motion.div>
                     ))}
                 </div>
             </div>
