@@ -1,0 +1,92 @@
+{
+    "tech_stack": [
+        "TypeScript",
+        "Next.js",
+        "Convex",
+        "Tailwind CSS",
+        "Clerk",
+        "LiveKit",
+        "Shadcn UI",
+        "Framer Motion"
+    ],
+    "features": [
+        {
+            "name": "Authentication & Onboarding",
+            "description": "User authentication using Clerk and role-based onboarding flow.",
+            "files": [
+                "convex/auth.config.ts",
+                "convex/users.ts",
+                "app/onboarding/page.tsx",
+                "middleware.ts"
+            ]
+        },
+        {
+            "name": "Role-Based Dashboards",
+            "description": "Distinct dashboards for Admins, Teachers, Parents, and Students.",
+            "files": [
+                "app/dashboard/page.tsx",
+                "convex/admin.ts",
+                "convex/teacher.ts",
+                "convex/parent.ts",
+                "convex/students.ts"
+            ]
+        },
+        {
+            "name": "Academic Management",
+            "description": "Management of classes (Halaqa), assignments, attendance, and student progress.",
+            "files": [
+                "convex/classes.ts",
+                "convex/assignments.ts",
+                "convex/attendance.ts",
+                "convex/dailyProgress.ts",
+                "convex/tracker.ts",
+                "app/halaqa/page.tsx",
+                "app/assignments/page.tsx",
+                "app/tracker/page.tsx"
+            ]
+        },
+        {
+            "name": "Financial Management",
+            "description": "Handling billing, payments, staff salaries, and school expenses.",
+            "files": [
+                "convex/billing.ts",
+                "convex/payments.ts",
+                "convex/finance.ts",
+                "convex/salaries.ts",
+                "convex/expenses.ts",
+                "app/pricing/page.tsx"
+            ]
+        },
+        {
+            "name": "Communication & Collaboration",
+            "description": "Messaging system, notifications, and live video integration.",
+            "files": [
+                "convex/messages.ts",
+                "convex/notifications.ts",
+                "convex/livekit.ts",
+                "app/messages/page.tsx"
+            ]
+        },
+        {
+            "name": "School Operations",
+            "description": "Transport management, library system, and scheduling.",
+            "files": [
+                "convex/transport.ts",
+                "convex/library.ts",
+                "convex/schedule.ts",
+                "app/library/page.tsx",
+                "app/schedule/page.tsx"
+            ]
+        },
+        {
+            "name": "Content & Landing",
+            "description": "Public facing pages including About, Features, and Careers.",
+            "files": [
+                "app/page.tsx",
+                "app/about/page.tsx",
+                "app/features/page.tsx",
+                "app/careers/page.tsx"
+            ]
+        }
+    ]
+}

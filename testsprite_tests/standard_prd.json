@@ -1,0 +1,140 @@
+{
+  "meta": {
+    "project": "Khalaf Al-Cuduul Quran School Management System",
+    "date": "2026-01-21",
+    "prepared_by": "Software Development Manager"
+  },
+  "product_overview": "Khalaf Al-Cuduul is a next-generation Islamic school management platform designed to streamline Quranic education administration by combining modern web technologies with spiritual reverence. It provides comprehensive tools for academic management, financial oversight, communication, operations, and detailed role-based dashboards for all school stakeholders.",
+  "core_goals": [
+    "Provide a seamless and secure multi-role authentication and onboarding experience.",
+    "Enable role-specific dashboards and functionalities for Admins, Teachers, Parents, Students, Accountants, Librarians, and Managers.",
+    "Facilitate comprehensive academic management including classes, assignments, attendance, and student progress tracking.",
+    "Offer robust financial management tools covering billing, payments, salaries, and expenses.",
+    "Support efficient communication and collaboration through messaging, notifications, and live video integration.",
+    "Manage school operations including transport, library, and scheduling effectively.",
+    "Deliver a premium, responsive UI optimized for Arabic, English, and Somali users with RTL support."
+  ],
+  "key_features": [
+    "Multi-role Authentication & Role-based Onboarding using Clerk for enterprise-grade security.",
+    "Distinct dashboards customized per role: Admin, Manager, Teacher, Student, Parent, Accountant, Librarian.",
+    "Academic management modules: Class (Halaqa) management, assignments, attendance tracking, progress analytics, and digital logbooks.",
+    "Financial management: billing, payments, detailed invoicing, salary management, and expense tracking with visual financial analytics.",
+    "Communication features including a real-time messaging system, notifications, and integrated LiveKit video conferencing.",
+    "School operation tools like transport route and driver management, real-time status tracking, and a comprehensive library catalog with loan tracking.",
+    "Gamification engine rewarding student engagement via points, badges, streaks, and a leaderboard.",
+    "Advanced analytics and reporting tools for academic velocity, attendance trends, and performance benchmarking.",
+    "Modern UI/UX with liquid glass design, dynamic colors, smooth animations, RTL support, and full responsiveness."
+  ],
+  "user_flow_summary": [
+    "User authentication with Clerk enabling secure access and smooth onboarding by role assignment.",
+    "Upon login, users are directed to their dedicated dashboard tailored to their role with relevant features and data.",
+    "Teachers create and manage Halaqa sessions, track attendance, record student progress, and assign homework.",
+    "Parents monitor their child's performance, communicate directly with teachers, and manage fee payments.",
+    "Accountants oversee financial activities including billing, revenue tracking, and expense management through their portal.",
+    "Librarians manage library inventory, loans, and view usage statistics within their dashboard.",
+    "Transport coordinators manage routes, drivers, and track vehicle status linking communication for emergencies.",
+    "Students engage with their dashboards to track progress, complete assignments, and participate in gamification features driving motivation."
+  ],
+  "validation_criteria": [
+    "All user roles authenticate securely with Clerk and transition smoothly through the onboarding flow.",
+    "Role-specific dashboards and features load correctly per the authenticated user's role without data leakage.",
+    "Academic modules accurately reflect class schedules, attendance, assignments, and progress with no data inconsistency.",
+    "Financial transactions including billing, payments, and salaries process correctly with accurate reporting and analytics visuals.",
+    "Real-time messaging and notifications deliver instant updates and LiveKit video sessions function without interruptions.",
+    "Transport and library management records update in real-time and reflect accurate statuses and inventories.",
+    "UI supports full RTL languages with responsiveness across desktop, tablet, and mobile devices.",
+    "Gamification features track points, badges, streaks, and leaderboard standings reliably, encouraging sustained engagement."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "TypeScript",
+      "Next.js",
+      "Convex",
+      "Tailwind CSS",
+      "Clerk",
+      "LiveKit",
+      "Shadcn UI",
+      "Framer Motion"
+    ],
+    "features": [
+      {
+        "name": "Authentication & Onboarding",
+        "description": "User authentication using Clerk and role-based onboarding flow.",
+        "files": [
+          "convex/auth.config.ts",
+          "convex/users.ts",
+          "app/onboarding/page.tsx",
+          "middleware.ts"
+        ]
+      },
+      {
+        "name": "Role-Based Dashboards",
+        "description": "Distinct dashboards for Admins, Teachers, Parents, and Students.",
+        "files": [
+          "app/dashboard/page.tsx",
+          "convex/admin.ts",
+          "convex/teacher.ts",
+          "convex/parent.ts",
+          "convex/students.ts"
+        ]
+      },
+      {
+        "name": "Academic Management",
+        "description": "Management of classes (Halaqa), assignments, attendance, and student progress.",
+        "files": [
+          "convex/classes.ts",
+          "convex/assignments.ts",
+          "convex/attendance.ts",
+          "convex/dailyProgress.ts",
+          "convex/tracker.ts",
+          "app/halaqa/page.tsx",
+          "app/assignments/page.tsx",
+          "app/tracker/page.tsx"
+        ]
+      },
+      {
+        "name": "Financial Management",
+        "description": "Handling billing, payments, staff salaries, and school expenses.",
+        "files": [
+          "convex/billing.ts",
+          "convex/payments.ts",
+          "convex/finance.ts",
+          "convex/salaries.ts",
+          "convex/expenses.ts",
+          "app/pricing/page.tsx"
+        ]
+      },
+      {
+        "name": "Communication & Collaboration",
+        "description": "Messaging system, notifications, and live video integration.",
+        "files": [
+          "convex/messages.ts",
+          "convex/notifications.ts",
+          "convex/livekit.ts",
+          "app/messages/page.tsx"
+        ]
+      },
+      {
+        "name": "School Operations",
+        "description": "Transport management, library system, and scheduling.",
+        "files": [
+          "convex/transport.ts",
+          "convex/library.ts",
+          "convex/schedule.ts",
+          "app/library/page.tsx",
+          "app/schedule/page.tsx"
+        ]
+      },
+      {
+        "name": "Content & Landing",
+        "description": "Public facing pages including About, Features, and Careers.",
+        "files": [
+          "app/page.tsx",
+          "app/about/page.tsx",
+          "app/features/page.tsx",
+          "app/careers/page.tsx"
+        ]
+      }
+    ]
+  }
+}
