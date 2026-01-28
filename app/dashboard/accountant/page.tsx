@@ -1,234 +1,307 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import React from "react";
+import { motion } from "framer-motion";
 import {
     DollarSign,
-    Wallet,
     TrendingUp,
     TrendingDown,
     CreditCard,
-    FileText,
-    PieChart,
-    AlertCircle,
-    ArrowUpRight,
-    ArrowDownRight,
-    Loader2,
-    Sparkles
+    Wallet,
+    PieChart as PieChartIcon,
+    Activity
 } from "lucide-react";
-import { RoleGuard } from "@/components/Auth/RoleGuard";
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { useLanguage } from "@/lib/language-context";
+import {
+    AreaChart,
+    Area,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    PieChart,
+    Pie,
+    Cell
+} from "recharts";
+
+// Mock Data
+const revenueData = [
+    { name: "Jan", revenue: 4000, expenses: 2400 },
+    { name: "Feb", revenue: 3000, expenses: 1398 },
+    { name: "Mar", revenue: 2000, expenses: 9800 },
+    { name: "Apr", revenue: 2780, expenses: 3908 },
+    { name: "May", revenue: 1890, expenses: 4800 },
+    { name: "Jun", revenue: 2390, expenses: 3800 },
+    { name: "Jul", revenue: 3490, expenses: 4300 },
+];
+
+const feeStatusData = [
+    { name: "Paid", value: 400, color: "#4ade80" }, // Green
+    { name: "Pending", value: 300, color: "#fbbf24" }, // Amber
+    { name: "Overdue", value: 100, color: "#f87171" }, // Red
+];
+
+const recentTransactions = [
+    { id: 1, user: "Ahmed Ali", type: "Fee Payment", amount: "+$150.00", date: "2024-03-10", status: "Completed" },
+    { id: 2, user: "Utility Bill", type: "Expense", amount: "-$450.00", date: "2024-03-09", status: "Processed" },
+    { id: 3, user: "Sarah Smith", type: "Fee Payment", amount: "+$150.00", date: "2024-03-09", status: "Completed" },
+    { id: 4, user: "Maintenance", type: "Expense", amount: "-$120.00", date: "2024-03-08", status: "Processed" },
+];
 
 export default function AccountantDashboard() {
-    const { t, locale } = useLanguage();
-    const user = useQuery(api.users.currentUser);
-    const overview = useQuery(api.finance.getFinancialOverview);
-    const stats = useQuery(api.admin.getStats); // For student count context
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
 
-    // Calculate profit margin
-    const profitMargin = overview
-        ? ((overview.netIncome / overview.totalRevenue) * 100).toFixed(1)
-        : "0";
-
-    const getGreeting = () => {
-        const hour = new Date().getHours();
-        if (hour < 12) return "Good Morning";
-        if (hour < 17) return "Good Afternoon";
-        return "Good Evening";
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: { y: 0, opacity: 1 }
     };
 
     return (
-        <RoleGuard requiredRole="accountant">
-            <div className="space-y-8">
-                {/* Hero Section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-800 via-emerald-600 to-teal-600 text-white p-8 shadow-2xl"
-                >
-                    <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-white/10 blur-3xl" />
-                    <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
+        <div className="min-h-screen bg-slate-950 p-6 md:p-8 font-sans text-slate-100 overflow-hidden relative">
+            {/* Background Ambience */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/20 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-amber-600/10 rounded-full blur-[120px]" />
+            </div>
 
-                    <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-2 text-emerald-100">
-                                <Sparkles className="h-4 w-4" />
-                                <span className="text-sm font-medium uppercase tracking-wider">
-                                    Financial Command Center
-                                </span>
+            <motion.div
+                className="relative z-10 max-w-7xl mx-auto space-y-8"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+            >
+                {/* Header */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+                            Financial Overview
+                        </h1>
+                        <p className="text-slate-400 mt-1">Welcome back, analyze the school's financial health.</p>
+                    </div>
+
+                    <div className="flex gap-3">
+                        <button className="px-4 py-2 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-300 transition-all backdrop-blur-md">
+                            Download Report
+                        </button>
+                        <button className="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/50 text-amber-400 rounded-lg text-sm transition-all shadow-[0_0_15px_rgba(245,158,11,0.15)] backdrop-blur-md">
+                            + New Transaction
+                        </button>
+                    </div>
+                </div>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <StatsCard
+                        title="Total Revenue"
+                        value="$45,231.89"
+                        change="+20.1% from last month"
+                        icon={DollarSign}
+                        color="text-emerald-400"
+                        trend="up"
+                    />
+                    <StatsCard
+                        title="Expenses"
+                        value="$12,345.00"
+                        change="+4.5% from last month"
+                        icon={CreditCard}
+                        color="text-rose-400"
+                        trend="down"
+                    />
+                    <StatsCard
+                        title="Net Income"
+                        value="$32,886.89"
+                        change="+12.5% from last month"
+                        icon={Wallet}
+                        color="text-amber-400"
+                        trend="up"
+                    />
+                    <StatsCard
+                        title="Outstanding Properties"
+                        value="$4,200.00"
+                        change="-2.3% from last month"
+                        icon={Activity}
+                        color="text-blue-400"
+                        trend="down"
+                    />
+                </div>
+
+                {/* Main Content Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    {/* Revenue Chart */}
+                    <motion.div
+                        variants={itemVariants}
+                        className="lg:col-span-2 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
+                    >
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-lg font-semibold text-slate-200 flex items-center gap-2">
+                                <TrendingUp className="w-5 h-5 text-amber-400" />
+                                Revenue vs Expenses
+                            </h3>
+                            <select className="bg-slate-900/50 border border-white/10 rounded-lg px-3 py-1 text-xs text-slate-400 outline-none focus:border-amber-500/50">
+                                <option>Last 6 Months</option>
+                                <option>This Year</option>
+                            </select>
+                        </div>
+
+                        <div className="h-[300px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#fbbf24" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
+                                        </linearGradient>
+                                        <linearGradient id="colorExpenses" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} tickFormatter={(value) => `$${value}`} />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                                        itemStyle={{ color: '#fff' }}
+                                    />
+                                    <Area type="monotone" dataKey="revenue" stroke="#fbbf24" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
+                                    <Area type="monotone" dataKey="expenses" stroke="#f43f5e" strokeWidth={2} fillOpacity={1} fill="url(#colorExpenses)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </motion.div>
+
+                    {/* Fee Status Pie Chart */}
+                    <motion.div
+                        variants={itemVariants}
+                        className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex flex-col"
+                    >
+                        <h3 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
+                            <PieChartIcon className="w-5 h-5 text-purple-400" />
+                            Fee Collection
+                        </h3>
+
+                        <div className="flex-1 flex items-center justify-center relative">
+                            <div className="h-[220px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={feeStatusData}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={80}
+                                            paddingAngle={5}
+                                            dataKey="value"
+                                        >
+                                            {feeStatusData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.color} stroke="rgba(0,0,0,0)" />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }} />
+                                    </PieChart>
+                                </ResponsiveContainer>
                             </div>
-                            <h1 className="text-3xl md:text-4xl font-bold font-amiri">
-                                {getGreeting()}, {user?.name?.split(' ')[0] || 'Accountant'}
-                            </h1>
-                            <p className="text-emerald-100 max-w-md">
-                                Overview of school finances for {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}.
-                            </p>
+
+                            {/* Center Text */}
+                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <span className="text-3xl font-bold text-white">75%</span>
+                                <span className="text-xs text-slate-400 uppercase tracking-wider">Collected</span>
+                            </div>
                         </div>
 
-                        <div className="flex gap-3">
-                            <Link href="/dashboard/manager/fees">
-                                <Button className="bg-white text-emerald-700 hover:bg-emerald-50 rounded-xl font-bold shadow-lg">
-                                    <CreditCard className="mr-2 h-4 w-4" />
-                                    Collect Fees
-                                </Button>
-                            </Link>
-                            <Link href="/dashboard/manager/finance/expenses">
-                                <Button className="bg-emerald-700/50 hover:bg-emerald-700 text-white border border-emerald-400/30 rounded-xl backdrop-blur-sm">
-                                    <FileText className="mr-2 h-4 w-4" />
-                                    Record Expense
-                                </Button>
-                            </Link>
+                        <div className="mt-4 space-y-3">
+                            {feeStatusData.map((item, index) => (
+                                <div key={index} className="flex items-center justify-between text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                                        <span className="text-slate-300">{item.name}</span>
+                                    </div>
+                                    <span className="font-semibold text-slate-200">{item.value} Students</span>
+                                </div>
+                            ))}
                         </div>
+                    </motion.div>
+                </div>
+
+                {/* Recent Transactions */}
+                <motion.div
+                    variants={itemVariants}
+                    className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6"
+                >
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-lg font-semibold text-slate-200">Recent Transactions</h3>
+                        <button className="text-sm text-amber-400 hover:text-amber-300 transition-colors">View All</button>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="text-slate-400 text-xs uppercase tracking-wider border-b border-white/5">
+                                    <th className="pb-4 pl-2 font-medium">Transaction ID</th>
+                                    <th className="pb-4 font-medium">User/Entity</th>
+                                    <th className="pb-4 font-medium">Type</th>
+                                    <th className="pb-4 font-medium">Date</th>
+                                    <th className="pb-4 font-medium text-right">Amount</th>
+                                    <th className="pb-4 pr-2 font-medium text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody className="text-sm">
+                                {recentTransactions.map((tx) => (
+                                    <tr key={tx.id} className="group hover:bg-white/5 transition-colors">
+                                        <td className="py-4 pl-2 text-slate-400 border-b border-white/5 font-mono">#{tx.id + 2030}</td>
+                                        <td className="py-4 text-slate-200 border-b border-white/5 font-medium">{tx.user}</td>
+                                        <td className="py-4 text-slate-300 border-b border-white/5">{tx.type}</td>
+                                        <td className="py-4 text-slate-400 border-b border-white/5">{tx.date}</td>
+                                        <td className={`py-4 text-right border-b border-white/5 font-semibold ${tx.amount.startsWith('+') ? 'text-emerald-400' : 'text-slate-200'}`}>
+                                            {tx.amount}
+                                        </td>
+                                        <td className="py-4 pr-2 text-right border-b border-white/5">
+                                            <span className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                                {tx.status}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </motion.div>
-
-                {/* Financial Stats Grid */}
-                <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-3">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        <Card className="border-0 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 relative overflow-hidden">
-                            <CardContent className="p-6">
-                                <div className="flex items-center justify-between mb-4">
-                                    <span className="text-sm font-medium text-muted-foreground">Total Revenue</span>
-                                    <div className="h-10 w-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                                        <TrendingUp className="h-5 w-5 text-emerald-600" />
-                                    </div>
-                                </div>
-                                <div className="space-y-1">
-                                    <h3 className="text-3xl font-bold">
-                                        {overview ? `$${overview.totalRevenue.toLocaleString()}` : <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />}
-                                    </h3>
-                                    <div className="flex items-center gap-1 text-xs text-emerald-600 font-medium">
-                                        <ArrowUpRight className="h-3 w-3" />
-                                        <span>Income from fees & donations</span>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        <Card className="border-0 bg-gradient-to-br from-red-500/10 to-orange-500/5 relative overflow-hidden">
-                            <CardContent className="p-6">
-                                <div className="flex items-center justify-between mb-4">
-                                    <span className="text-sm font-medium text-muted-foreground">Total Expenses</span>
-                                    <div className="h-10 w-10 rounded-xl bg-red-500/20 flex items-center justify-center">
-                                        <TrendingDown className="h-5 w-5 text-red-600" />
-                                    </div>
-                                </div>
-                                <div className="space-y-1">
-                                    <h3 className="text-3xl font-bold text-red-700">
-                                        {overview ? `$${overview.totalExpenses.toLocaleString()}` : <Loader2 className="h-8 w-8 animate-spin text-red-500" />}
-                                    </h3>
-                                    <div className="flex items-center gap-1 text-xs text-red-600 font-medium">
-                                        <ArrowDownRight className="h-3 w-3" />
-                                        <span>Salaries & Operational costs</span>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                    >
-                        <Card className="border-0 bg-gradient-to-br from-blue-500/10 to-indigo-500/5 relative overflow-hidden">
-                            <CardContent className="p-6">
-                                <div className="flex items-center justify-between mb-4">
-                                    <span className="text-sm font-medium text-muted-foreground">Net Income</span>
-                                    <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                                        <Wallet className="h-5 w-5 text-blue-600" />
-                                    </div>
-                                </div>
-                                <div className="space-y-1">
-                                    <h3 className="text-3xl font-bold text-blue-700">
-                                        {overview ? `$${overview.netIncome.toLocaleString()}` : <Loader2 className="h-8 w-8 animate-spin text-blue-500" />}
-                                    </h3>
-                                    <div className="flex items-center gap-1 text-xs text-blue-600 font-medium">
-                                        <PieChart className="h-3 w-3" />
-                                        <span>{profitMargin}% Profit Margin</span>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </motion.div>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-2">
-                    {/* Quick Links / Tasks */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Financial Tasks</CardTitle>
-                        </CardHeader>
-                        <CardContent className="grid gap-4">
-                            <Link href="/dashboard/manager/fees" className="flex items-center justify-between p-4 rounded-xl border hover:bg-accent/50 transition-colors">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-emerald-100 text-emerald-600 p-2 rounded-lg">
-                                        <DollarSign className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold">Student Fee Management</p>
-                                        <p className="text-xs text-muted-foreground">Track pending payments and process fees</p>
-                                    </div>
-                                </div>
-                                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                            </Link>
-
-                            <Link href="/dashboard/manager/salaries" className="flex items-center justify-between p-4 rounded-xl border hover:bg-accent/50 transition-colors">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-blue-100 text-blue-600 p-2 rounded-lg">
-                                        <Wallet className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <p className="font-bold">Staff Payroll</p>
-                                        <p className="text-xs text-muted-foreground">Manage monthly salary disbursements</p>
-                                    </div>
-                                </div>
-                                <TrendingDown className="h-4 w-4 text-muted-foreground" />
-                            </Link>
-                        </CardContent>
-                    </Card>
-
-                    {/* Pending Actions (Mock for now or derive from deep queries if possible) */}
-                    <Card className="bg-amber-500/5 border-amber-500/20">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-amber-700">
-                                <AlertCircle className="h-5 w-5" />
-                                Attention Required
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium">Pending Approvals</span>
-                                    <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full font-bold">3 Expenses</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium">Unpaid Fees (Current Month)</span>
-                                    <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full font-bold">12 Students</span>
-                                </div>
-                                <Button className="w-full mt-4 bg-amber-600 hover:bg-amber-700 text-white" size="sm">
-                                    View Action Items
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-        </RoleGuard>
+            </motion.div>
+        </div>
     );
+}
+
+// Sub-component for Stats Card
+function StatsCard({ title, value, change, icon: Icon, color, trend }: { title: string, value: string, change: string, icon: any, color: string, trend: 'up' | 'down' }) {
+    return (
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-amber-500/30 transition-all group">
+            <div className="flex justify-between items-start mb-2">
+                <div className={`p-2 rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors ${color}`}>
+                    <Icon className="w-5 h-5" />
+                </div>
+                {trend === 'up' ? (
+                    <span className="flex items-center text-xs font-medium text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full border border-emerald-500/20">
+                        <TrendingUp className="w-3 h-3 mr-1" /> {change.split(' ')[0]}
+                    </span>
+                ) : (
+                    <span className="flex items-center text-xs font-medium text-rose-400 bg-rose-500/10 px-2 py-1 rounded-full border border-rose-500/20">
+                        <TrendingDown className="w-3 h-3 mr-1" /> {change.split(' ')[0]}
+                    </span>
+                )}
+            </div>
+            <div>
+                <h4 className="text-slate-400 text-sm font-medium mb-1">{title}</h4>
+                <div className="text-2xl font-bold text-slate-100">{value}</div>
+            </div>
+        </div>
+    )
 }
