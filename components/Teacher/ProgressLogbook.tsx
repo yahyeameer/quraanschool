@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, BookOpen, Star, Sparkles, User, GraduationCap, ArrowRight, PenLine, ScrollText } from "lucide-react";
+import { Loader2, BookOpen, Star, Sparkles, User, GraduationCap, ArrowRight, PenLine, ScrollText, CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -210,9 +210,9 @@ export function ProgressLogbook() {
                                                     onChange={(e) => setForm({ ...form, status: e.target.value })}
                                                     className="w-full rounded-xl border-white/10 p-3 text-sm bg-background focus:ring-amber-500/50 outline-none ring-1 ring-white/5"
                                                 >
-                                                    <option value="Passed" className="bg-zinc-900">✅ Outstanding / Passed</option>
-                                                    <option value="Needs Review" className="bg-zinc-900">🔄 Needs Practice</option>
-                                                    <option value="Failed" className="bg-zinc-900">❌ Re-check Required</option>
+                                                    <option value="Passed" className="bg-zinc-900">Outstanding / Passed</option>
+                                                    <option value="Needs Review" className="bg-zinc-900">Needs Practice</option>
+                                                    <option value="Failed" className="bg-zinc-900">Re-check Required</option>
                                                 </select>
                                             </div>
                                         </div>

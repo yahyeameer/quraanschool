@@ -9,10 +9,9 @@
     "projectName": "quraanschool",
     "projectPath": "c:\\Users\\THINKPAD\\Downloads\\my new realoproject\\quraanschool",
     "testIds": [],
-    "additionalInstruction": "Run all tests.",
+    "additionalInstruction": "",
     "envs": {
       "API_KEY": "sk-user-8pVLV2E66GIpF6oMabtup3s0aFLkvGs6Xk1f1JfxiYCpbRpDc62jcTvoV44c30aNkrGzZ93k84rSZs6R7t9P_KAsYs0ZsYGmFfsC4sA5ZEo_G2u-GqzT6P5XKUMTA0t6Bwo"
     }
-  },
-  "proxy": "http://bc56fea0-6d2c-45ad-b7f8-8e84dbd6b508:OjDPVevXqz3ONNeR6kc6ZHae0dwpCU2t@tun.testsprite.com:8080"
+  }
 }

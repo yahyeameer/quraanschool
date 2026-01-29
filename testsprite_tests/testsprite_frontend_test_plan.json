@@ -1,479 +1,462 @@
 [
   {
     "id": "TC001",
-    "title": "Successful login for all roles",
-    "description": "Verify that users from all defined roles (Admin, Teacher, Parent, Student, Accountant, Librarian, Manager) can authenticate successfully using valid credentials and are directed to their respective dashboards.",
+    "title": "Successful Authentication for Each User Role",
+    "description": "Verify that users from all roles (Admin, Teacher, Parent, Student, Accountant, Librarian, Manager) can authenticate successfully using Clerk and complete onboarding.",
     "category": "functional",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Navigate to the login page"
+        "description": "Navigate to the login page."
       },
       {
         "type": "action",
-        "description": "Enter valid credentials for each role one by one"
+        "description": "Input valid credentials for a specific user role."
       },
       {
         "type": "action",
-        "description": "Submit the login form"
+        "description": "Complete any required onboarding steps for the role."
       },
       {
         "type": "assertion",
-        "description": "Verify that each user is redirected to the correct role-specific dashboard"
+        "description": "Verify user is authenticated and directed to the correct role-based dashboard."
       }
     ]
   },
   {
     "id": "TC002",
-    "title": "Handle invalid login attempts gracefully",
-    "description": "Verify that authentication fails properly when invalid or empty credentials are submitted and appropriate error messages are displayed.",
-    "category": "error handling",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Navigate to the login page"
-      },
-      {
-        "type": "action",
-        "description": "Enter invalid credentials"
-      },
-      {
-        "type": "action",
-        "description": "Submit the login form"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify error message indicating invalid login credentials is shown"
-      },
-      {
-        "type": "action",
-        "description": "Attempt login with empty username and/or password"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify error messages for required fields are displayed"
-      }
-    ]
-  },
-  {
-    "id": "TC003",
-    "title": "Role-based dashboard content verification",
-    "description": "Ensure each user role sees the correct dashboard content, features, and widgets tailored only to their role without data leakage.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Login as Admin and verify dashboard components"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify admin features such as user management, finance overview, operations controls are present"
-      },
-      {
-        "type": "action",
-        "description": "Login as Teacher and verify dashboard components"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify academic management tools like classes, attendance, assignments are visible"
-      },
-      {
-        "type": "action",
-        "description": "Login as Parent and verify dashboard components"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify child progress, communications, and payments sections are accessible"
-      },
-      {
-        "type": "action",
-        "description": "Login as Student, Accountant, Librarian, and Manager and verify their respective dashboards for correct elements"
-      }
-    ]
-  },
-  {
-    "id": "TC004",
-    "title": "Create, update, and delete Halaqa sessions",
-    "description": "Verify Teachers can create, modify, and delete classes (Halaqa sessions) and that changes reflect in the system correctly.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Login as Teacher and navigate to Halaqa management"
-      },
-      {
-        "type": "action",
-        "description": "Create a new Halaqa session with valid data"
-      },
-      {
-        "type": "assertion",
-        "description": "Confirm new session appears in the list"
-      },
-      {
-        "type": "action",
-        "description": "Edit the created Halaqa session details"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify updated information is saved and shown correctly"
-      },
-      {
-        "type": "action",
-        "description": "Delete the previously created Halaqa session"
-      },
-      {
-        "type": "assertion",
-        "description": "Confirm the session is removed from the list"
-      }
-    ]
-  },
-  {
-    "id": "TC005",
-    "title": "Assignment lifecycle management",
-    "description": "Validate that Teachers can create, update, and delete assignments and students can view and submit them appropriately.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Teacher logs in and navigates to assignments module"
-      },
-      {
-        "type": "action",
-        "description": "Create a new assignment with proper title, description, and due date"
-      },
-      {
-        "type": "assertion",
-        "description": "Assignment is listed and visible to assigned students"
-      },
-      {
-        "type": "action",
-        "description": "Teacher updates assignment details"
-      },
-      {
-        "type": "assertion",
-        "description": "Updated assignment data is reflected for students"
-      },
-      {
-        "type": "action",
-        "description": "Teacher deletes an assignment"
-      },
-      {
-        "type": "assertion",
-        "description": "Assignment is no longer visible to students"
-      },
-      {
-        "type": "action",
-        "description": "Student logs in and views assignments"
-      },
-      {
-        "type": "assertion",
-        "description": "Student can view assignment details and submission status"
-      }
-    ]
-  },
-  {
-    "id": "TC006",
-    "title": "Attendance tracking accuracy",
-    "description": "Verify Teachers can record attendance for classes properly and that attendance data is stored and visible for reports and dashboards.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Teacher navigates to attendance module for a given Halaqa"
-      },
-      {
-        "type": "action",
-        "description": "Mark present and absent students for a session"
-      },
-      {
-        "type": "assertion",
-        "description": "Attendance is saved and accessible in the system"
-      },
-      {
-        "type": "action",
-        "description": "Modify attendance and save changes"
-      },
-      {
-        "type": "assertion",
-        "description": "Updates reflect correctly in attendance records"
-      },
-      {
-        "type": "action",
-        "description": "Verify attendance data visible in performance analytics for teachers and parents"
-      }
-    ]
-  },
-  {
-    "id": "TC007",
-    "title": "Student progress tracking and digital logbook accuracy",
-    "description": "Ensure progress analytics and digital logbooks reflect accurate student data entered by teachers and are accessible by appropriate roles.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Teacher inputs progress data for students"
-      },
-      {
-        "type": "assertion",
-        "description": "Data is saved and shown in student progress trackers"
-      },
-      {
-        "type": "action",
-        "description": "Parent views child's progress on dashboard"
-      },
-      {
-        "type": "assertion",
-        "description": "Progress analytics and logbooks display correct data"
-      },
-      {
-        "type": "action",
-        "description": "Student views own progress data"
-      },
-      {
-        "type": "assertion",
-        "description": "Student progress data corresponds with teacher entries"
-      }
-    ]
-  },
-  {
-    "id": "TC008",
-    "title": "Financial transaction processing and billing management",
-    "description": "Validate billing creation, payment processing, and expense recording function correctly, with accurate financial reports and analytics available to Accountants and Admins.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Accountant creates billing records for students/parents"
-      },
-      {
-        "type": "assertion",
-        "description": "Billing appears correctly in system and on user portals"
-      },
-      {
-        "type": "action",
-        "description": "Make a payment towards a billing item"
-      },
-      {
-        "type": "assertion",
-        "description": "Payment is recorded, balance updated accurately"
-      },
-      {
-        "type": "action",
-        "description": "Record staff salaries and expenses"
-      },
-      {
-        "type": "assertion",
-        "description": "Finance reports correctly reflect recorded salaries and expenses"
-      },
-      {
-        "type": "action",
-        "description": "Verify financial analytics dashboard displays accurate charts and summaries"
-      }
-    ]
-  },
-  {
-    "id": "TC009",
-    "title": "Real-time messaging delivery and notification handling",
-    "description": "Verify that real-time messages between users are delivered instantly and notifications trigger appropriately for new messages or alerts.",
-    "category": "functional",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "User A sends a message to User B"
-      },
-      {
-        "type": "assertion",
-        "description": "User B receives the message instantly"
-      },
-      {
-        "type": "action",
-        "description": "Generate a notification for a new message or event"
-      },
-      {
-        "type": "assertion",
-        "description": "Notification appears immediately on recipient's device"
-      },
-      {
-        "type": "action",
-        "description": "Send multiple simultaneous messages to stress test messaging system"
-      },
-      {
-        "type": "assertion",
-        "description": "All messages are delivered without loss or duplication"
-      }
-    ]
-  },
-  {
-    "id": "TC010",
-    "title": "Transport management workflow",
-    "description": "Test management of transport routes, driver assignments, and vehicle status updating by coordinators and verify real-time status tracking.",
-    "category": "functional",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Transport coordinator creates a new route with stops"
-      },
-      {
-        "type": "assertion",
-        "description": "Route details are saved and visible in the system"
-      },
-      {
-        "type": "action",
-        "description": "Assign drivers to routes"
-      },
-      {
-        "type": "assertion",
-        "description": "Driver assignments are recorded and shown"
-      },
-      {
-        "type": "action",
-        "description": "Update vehicle status during route operation"
-      },
-      {
-        "type": "assertion",
-        "description": "Real-time vehicle status is updated and reflected to stakeholders"
-      }
-    ]
-  },
-  {
-    "id": "TC011",
-    "title": "Library system inventory and loan management",
-    "description": "Verify that librarians can manage book inventory, issue and return loans properly, and usage statistics are accurate.",
-    "category": "functional",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Librarian adds new books to inventory"
-      },
-      {
-        "type": "assertion",
-        "description": "Books appear in catalog with correct details"
-      },
-      {
-        "type": "action",
-        "description": "Issue a book loan to a student or parent"
-      },
-      {
-        "type": "assertion",
-        "description": "Loan record is created and book status updated"
-      },
-      {
-        "type": "action",
-        "description": "Return a loaned book"
-      },
-      {
-        "type": "assertion",
-        "description": "Book availability status returns to 'available' and loan is closed"
-      },
-      {
-        "type": "action",
-        "description": "View library usage statistics dashboard"
-      },
-      {
-        "type": "assertion",
-        "description": "Statistics reflect accurate loan counts and inventory status"
-      }
-    ]
-  },
-  {
-    "id": "TC012",
-    "title": "Gamification points and leaderboard update",
-    "description": "Confirm that student gamification points, badges, streaks are recorded properly and leaderboard reflects real-time ranking.",
-    "category": "functional",
-    "priority": "Medium",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Students complete tasks to earn points and badges"
-      },
-      {
-        "type": "assertion",
-        "description": "Points and badges are updated immediately in user profile"
-      },
-      {
-        "type": "action",
-        "description": "Access the leaderboard page"
-      },
-      {
-        "type": "assertion",
-        "description": "Leaderboard shows accurate, up-to-date rankings and streak information"
-      }
-    ]
-  },
-  {
-    "id": "TC013",
-    "title": "Multi-language support with RTL validation",
-    "description": "Ensure the UI supports Arabic, English, and Somali languages with proper Right-To-Left layout where applicable and fully responsive design across devices.",
-    "category": "ui",
-    "priority": "High",
-    "steps": [
-      {
-        "type": "action",
-        "description": "Switch application language to Arabic"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify all UI elements align properly with RTL reading order"
-      },
-      {
-        "type": "action",
-        "description": "Switch application language to Somali"
-      },
-      {
-        "type": "assertion",
-        "description": "Verify UI is correctly displayed in LTR format with translated text"
-      },
-      {
-        "type": "action",
-        "description": "Switch language to English and verify layout"
-      },
-      {
-        "type": "assertion",
-        "description": "Validate full responsiveness on desktop, tablet, and mobile screens in all languages"
-      }
-    ]
-  },
-  {
-    "id": "TC014",
-    "title": "Security validation for role-based data access",
-    "description": "Verify users cannot access features or data outside their assigned roles to prevent data leakage and maintain confidentiality.",
+    "title": "Role-Based Dashboard Access Control",
+    "description": "Ensure that each authenticated user sees dashboard elements and features corresponding only to their role without leakage of other roles' data.",
     "category": "security",
     "priority": "High",
     "steps": [
       {
         "type": "action",
-        "description": "Login as Teacher and attempt to access Admin-only pages or data"
+        "description": "Login as Admin."
       },
       {
         "type": "assertion",
-        "description": "Access is denied with appropriate error or redirection"
+        "description": "Verify Admin dashboard loads with Admin features only."
       },
       {
         "type": "action",
-        "description": "Login as Parent and verify inability to access Accountant or Librarian dashboards"
+        "description": "Logout and login as Teacher."
       },
       {
         "type": "assertion",
-        "description": "Access restriction is enforced"
+        "description": "Verify Teacher dashboard loads with Teacher features only."
       },
       {
         "type": "action",
-        "description": "Attempt unauthorized REST or backend API access using different role tokens"
+        "description": "Repeat for Parent, Student, Accountant, Librarian, and Manager roles."
       },
       {
         "type": "assertion",
-        "description": "API denies unauthorized data retrieval or manipulation"
+        "description": "Verify dashboard data isolation between all roles."
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Create and Manage Halaqa Sessions",
+    "description": "Verify Teachers can create, modify, and delete Halaqa sessions accurately.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as Teacher."
+      },
+      {
+        "type": "action",
+        "description": "Navigate to Halaqa management page."
+      },
+      {
+        "type": "action",
+        "description": "Create a new Halaqa session with valid data."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new Halaqa session appears in the session list with correct details."
+      },
+      {
+        "type": "action",
+        "description": "Modify the Halaqa session details."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify changes are saved and displayed correctly."
+      },
+      {
+        "type": "action",
+        "description": "Delete the Halaqa session."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the session is removed from the list."
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Attendance Tracking Accuracy and Edge Cases",
+    "description": "Validate that Teachers can record attendance, handle absent and excused statuses, and view accurate attendance reports.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as Teacher."
+      },
+      {
+        "type": "action",
+        "description": "Navigate to attendance page for a specific Halaqa session."
+      },
+      {
+        "type": "action",
+        "description": "Mark attendance for all students as present."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the attendance is saved and reflected correctly."
+      },
+      {
+        "type": "action",
+        "description": "Mark some students as absent and excused."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm attendance report accurately reflects all statuses."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to mark attendance outside session dates."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify system prevents invalid attendance recording."
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Assignment Creation, Submission, and Progress Tracking",
+    "description": "Verify Teachers can assign homework, Students can view and complete assignments, and Parents can monitor progress; system tracks progress accurately.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as Teacher and create an assignment for a Halaqa session."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify assignment is listed in Teacher's dashboard."
+      },
+      {
+        "type": "action",
+        "description": "Login as Student and check for new assignment."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify assignment details are correct and accessible."
+      },
+      {
+        "type": "action",
+        "description": "Complete and submit the assignment."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the submission is recorded."
+      },
+      {
+        "type": "action",
+        "description": "Login as Parent to view child's assignment status and progress."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that progress is displayed accurately."
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Financial Management: Billing and Payments Processing",
+    "description": "Validate that Accountants can create billing records, view payments, manage salaries and expenses and reports display correct financial data.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as Accountant."
+      },
+      {
+        "type": "action",
+        "description": "Create a billing invoice for a student or parent."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify invoice is generated with correct details."
+      },
+      {
+        "type": "action",
+        "description": "Record payment against the invoice."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify payment status updates accordingly."
+      },
+      {
+        "type": "action",
+        "description": "Manage staff salary entries."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm salary details and payments are recorded."
+      },
+      {
+        "type": "action",
+        "description": "Register school expenses."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify expenses appear correctly in financial reports."
+      },
+      {
+        "type": "action",
+        "description": "View financial analytics dashboards."
+      },
+      {
+        "type": "assertion",
+        "description": "Check charts and analytics represent accurate financial data."
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Real-time Messaging and Notifications Delivery",
+    "description": "Test that messages and notifications are sent and received in real-time between users across all applicable roles.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as Teacher and send a message to a Parent."
+      },
+      {
+        "type": "action",
+        "description": "Login as Parent and verify message receipt instantly."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure notification is received immediately on message arrival."
+      },
+      {
+        "type": "action",
+        "description": "Send system notification from Admin role."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify notification appears on all users' dashboards in real-time."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Transport Management: Route and Driver Updates",
+    "description": "Verify that transport coordinators can add, edit, delete routes and drivers and track vehicle status with live updates.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as Transport Coordinator."
+      },
+      {
+        "type": "action",
+        "description": "Add a new transport route and assign a driver."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm new route and driver appear correctly in the system."
+      },
+      {
+        "type": "action",
+        "description": "Update vehicle status during route."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify status updates reflect instantly in dashboard."
+      },
+      {
+        "type": "action",
+        "description": "Delete an existing route and verify it's removed."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm associated driver and status records are handled correctly."
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Library Management: Inventory and Loan Status",
+    "description": "Confirm librarians can add, update, and track library inventory, manage loans and view accurate usage statistics.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as Librarian."
+      },
+      {
+        "type": "action",
+        "description": "Add new books into library inventory."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify new books are listed with correct details."
+      },
+      {
+        "type": "action",
+        "description": "Issue a loan to a student and record return date."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm loan status updates correctly in the catalog."
+      },
+      {
+        "type": "action",
+        "description": "View usage statistics dashboard."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure statistics reflect current loans and inventory status accurately."
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "UI Responsiveness and RTL Language Support Across Devices",
+    "description": "Test the application UI displays correctly in RTL languages (Arabic, Somali) with full responsiveness on desktop, tablet, and mobile devices.",
+    "category": "ui",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Set application language to Arabic."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify text alignment, layout, and navigation adapt properly for RTL."
+      },
+      {
+        "type": "action",
+        "description": "Resize viewport across desktop, tablet, and mobile dimensions."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm UI elements resize and rearrange correctly without overlap or clipping."
+      },
+      {
+        "type": "action",
+        "description": "Repeat steps for Somali language setting."
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Gamification Features Tracking and Leaderboard Updates",
+    "description": "Validate that student activities correctly earn points, badges, and streaks; leaderboard updates reflect changes accurately in real-time.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as Student and complete various engagement activities."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify points and badges are awarded correctly."
+      },
+      {
+        "type": "action",
+        "description": "Maintain daily login streak."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm streak count increments accurately."
+      },
+      {
+        "type": "action",
+        "description": "Login as Teacher or Admin and view leaderboard."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure leaderboard ranks students correctly with up-to-date scores."
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Error Handling: Invalid Inputs on Academic Management Modules",
+    "description": "Verify that invalid data inputs in class creation, attendance marking, and assignment creation are handled gracefully with appropriate error messages.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to create a class with missing required fields."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify error messages are displayed and creation is blocked."
+      },
+      {
+        "type": "action",
+        "description": "Try submitting attendance using invalid student IDs."
+      },
+      {
+        "type": "assertion",
+        "description": "Check system rejects input and alerts user."
+      },
+      {
+        "type": "action",
+        "description": "Submit an assignment with incomplete or invalid details."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm form validation prevents submission and notifies user."
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Security: Access Denial for Unauthorized Dashboard Features",
+    "description": "Confirm users attempting to access features or data outside their permissions are denied access with proper error or redirect.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as Student."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to access Admin-only financial reports."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access is denied and user is redirected or shown an error."
+      },
+      {
+        "type": "action",
+        "description": "Login as Parent and try to edit teacher-specific Halaqa sessions."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm no unauthorized modifications are allowed."
       }
     ]
   }

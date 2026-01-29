@@ -1,91 +1,151 @@
 {
     "tech_stack": [
         "TypeScript",
-        "Next.js",
-        "Convex",
-        "Tailwind CSS",
-        "Clerk",
-        "LiveKit",
-        "Shadcn UI",
-        "Framer Motion"
+        "Next.js 16",
+        "React 19",
+        "Convex (Backend/Database)",
+        "Clerk (Authentication)",
+        "Tailwind CSS v4",
+        "Framer Motion",
+        "Shadcn/UI",
+        "LiveKit (Video)",
+        "Recharts"
     ],
     "features": [
         {
-            "name": "Authentication & Onboarding",
-            "description": "User authentication using Clerk and role-based onboarding flow.",
-            "files": [
-                "convex/auth.config.ts",
-                "convex/users.ts",
-                "app/onboarding/page.tsx",
-                "middleware.ts"
-            ]
-        },
-        {
-            "name": "Role-Based Dashboards",
-            "description": "Distinct dashboards for Admins, Teachers, Parents, and Students.",
-            "files": [
-                "app/dashboard/page.tsx",
-                "convex/admin.ts",
-                "convex/teacher.ts",
-                "convex/parent.ts",
-                "convex/students.ts"
-            ]
-        },
-        {
-            "name": "Academic Management",
-            "description": "Management of classes (Halaqa), assignments, attendance, and student progress.",
-            "files": [
-                "convex/classes.ts",
-                "convex/assignments.ts",
-                "convex/attendance.ts",
-                "convex/dailyProgress.ts",
-                "convex/tracker.ts",
-                "app/halaqa/page.tsx",
-                "app/assignments/page.tsx",
-                "app/tracker/page.tsx"
-            ]
-        },
-        {
-            "name": "Financial Management",
-            "description": "Handling billing, payments, staff salaries, and school expenses.",
-            "files": [
-                "convex/billing.ts",
-                "convex/payments.ts",
-                "convex/finance.ts",
-                "convex/salaries.ts",
-                "convex/expenses.ts",
-                "app/pricing/page.tsx"
-            ]
-        },
-        {
-            "name": "Communication & Collaboration",
-            "description": "Messaging system, notifications, and live video integration.",
-            "files": [
-                "convex/messages.ts",
-                "convex/notifications.ts",
-                "convex/livekit.ts",
-                "app/messages/page.tsx"
-            ]
-        },
-        {
-            "name": "School Operations",
-            "description": "Transport management, library system, and scheduling.",
-            "files": [
-                "convex/transport.ts",
-                "convex/library.ts",
-                "convex/schedule.ts",
-                "app/library/page.tsx",
-                "app/schedule/page.tsx"
-            ]
-        },
-        {
-            "name": "Content & Landing",
-            "description": "Public facing pages including About, Features, and Careers.",
+            "name": "Landing Page",
+            "description": "Public landing page with hero section, features, testimonials, and request demo modal",
             "files": [
                 "app/page.tsx",
-                "app/about/page.tsx",
-                "app/features/page.tsx",
-                "app/careers/page.tsx"
+                "components/Landing/HeroSection.tsx",
+                "components/Landing/FeatureGrid.tsx",
+                "components/Landing/Testimonials.tsx",
+                "components/Landing/Shared/Navbar.tsx",
+                "components/Landing/Shared/Footer.tsx"
+            ]
+        },
+        {
+            "name": "Authentication & Onboarding",
+            "description": "Clerk-based authentication with role-based onboarding flow for students, teachers, and parents",
+            "files": [
+                "middleware.ts",
+                "app/layout.tsx",
+                "components/Auth/RoleGuard.tsx",
+                "convex/users.ts"
+            ]
+        },
+        {
+            "name": "Manager Dashboard",
+            "description": "Comprehensive admin dashboard for managing school operations, students, staff, and analytics",
+            "files": [
+                "app/dashboard/manager/page.tsx",
+                "app/dashboard/manager/students/page.tsx",
+                "app/dashboard/manager/applications/page.tsx",
+                "app/dashboard/manager/classes/page.tsx",
+                "app/dashboard/manager/fees/page.tsx"
+            ]
+        },
+        {
+            "name": "Teacher Dashboard",
+            "description": "Teacher interface for managing classes, attendance, progress tracking, and assignments",
+            "files": [
+                "app/dashboard/teacher/page.tsx",
+                "components/Teacher/ProgressLogbook.tsx",
+                "components/Teacher/AttendanceMarker.tsx",
+                "components/Teacher/AssignmentManager.tsx"
+            ]
+        },
+        {
+            "name": "Staff Dashboard",
+            "description": "Staff operations center for registrations, student lookups, and fee collection",
+            "files": [
+                "app/dashboard/staff/page.tsx",
+                "components/Staff/AddStaffModal.tsx",
+                "components/Staff/EditStaffModal.tsx"
+            ]
+        },
+        {
+            "name": "Parent Dashboard",
+            "description": "Parent portal for viewing children's progress, attendance, and payments",
+            "files": [
+                "app/dashboard/parent/page.tsx"
+            ]
+        },
+        {
+            "name": "Student Tracker",
+            "description": "Self-service interface for students to log their Quran recitation progress",
+            "files": [
+                "app/tracker/page.tsx",
+                "components/Tracker/SelfTracker.tsx"
+            ]
+        },
+        {
+            "name": "Library Management",
+            "description": "Book catalog, loan tracking, and library resource management",
+            "files": [
+                "app/library/page.tsx",
+                "convex/library.ts"
+            ]
+        },
+        {
+            "name": "Transport System",
+            "description": "Bus route management, student assignments, and live tracking",
+            "files": [
+                "components/Transport/AddRouteModal.tsx",
+                "components/Transport/TransportStatusCard.tsx",
+                "convex/transport.ts"
+            ]
+        },
+        {
+            "name": "Gamification",
+            "description": "Student achievements, streaks, points system, and leaderboards",
+            "files": [
+                "components/Gamification/GamificationCard.tsx",
+                "convex/gamification.ts"
+            ]
+        },
+        {
+            "name": "Halaqa Management",
+            "description": "Class creation, live sessions with LiveKit, and student enrollment",
+            "files": [
+                "components/Halaqa/CreateHalaqaForm.tsx",
+                "components/Halaqa/HalaqaCard.tsx",
+                "convex/classes.ts"
+            ]
+        },
+        {
+            "name": "Theme System",
+            "description": "Dark/Light mode (Tahajjud/Fajr themes) with OKLCH color system",
+            "files": [
+                "app/globals.css",
+                "components/theme-provider.tsx"
+            ]
+        },
+        {
+            "name": "Internationalization",
+            "description": "Multi-language support (English, Arabic, Somali) with RTL layout",
+            "files": [
+                "lib/language-context.tsx",
+                "components/Layout/LanguageSwitcher.tsx",
+                "lib/locales/ar.ts",
+                "lib/locales/en.ts",
+                "lib/locales/so.ts"
+            ]
+        },
+        {
+            "name": "Messaging System",
+            "description": "Internal messaging between users with read/unread status",
+            "files": [
+                "components/Messages/MessageList.tsx",
+                "convex/messages.ts"
+            ]
+        },
+        {
+            "name": "Notifications",
+            "description": "Real-time notifications with notification center",
+            "files": [
+                "components/Layout/NotificationCenter.tsx",
+                "convex/notifications.ts"
             ]
         }
     ]
