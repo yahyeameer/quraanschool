@@ -10,7 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, Check, X, Clock, Loader2, Save } from "lucide-react";
+import { CalendarIcon, Check, X, Clock, Loader2, Save, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { Id } from "@/convex/_generated/dataModel";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,6 +21,7 @@ export default function TeacherAttendancePage() {
 
     // Fetch classes taught by this teacher
     const classes = useQuery(api.classes.getTeacherClasses) || [];
+    const user = useQuery(api.users.currentUser);
 
     // Fetch students for selected class
     const students = useQuery(api.classes.getClassStudents,
@@ -35,13 +36,11 @@ export default function TeacherAttendancePage() {
     const markAttendance = useMutation(api.academic.markAttendance);
     const [attendanceState, setAttendanceState] = useState<Record<string, string>>({});
 
-    // ... (handlers keep same) ...
     const handleStatusChange = (studentId: string, status: string) => {
         setAttendanceState(prev => ({ ...prev, [studentId]: status }));
     };
 
     const handleSave = async () => {
-        // ... (keep same) ...
         if (!selectedClassId) {
             toast.error("Please select a class");
             return;
@@ -52,11 +51,12 @@ export default function TeacherAttendancePage() {
             status: attendanceState[student._id] ||
                 (existingAttendance?.find((r) => r.studentId === student._id)?.status || "present")
         }));
+
         try {
             await markAttendance({
                 classId: selectedClassId as Id<"classes">,
                 date: format(date, "yyyy-MM-dd"),
-                records: records as any // Cast records if schema expectations slightly differ from map result
+                records: records as any
             });
             toast.success("Attendance saved successfully");
         } catch (error) {
@@ -64,11 +64,21 @@ export default function TeacherAttendancePage() {
         }
     };
 
-    const getStatus = (studentId: string) => { // ... (keep same)
+    const handlePrint = () => {
+        if (!selectedClassId) {
+            toast.error("Please select a class first");
+            return;
+        }
+        window.print();
+    };
+
+    const getStatus = (studentId: string) => {
         if (attendanceState[studentId]) return attendanceState[studentId];
         const record = existingAttendance?.find((r: any) => r.studentId === studentId);
         return record ? record.status : "present";
     };
+
+    const selectedClass = classes?.find((c: any) => c._id === selectedClassId);
 
     if (classes && classes.length === 0) {
         return (
@@ -92,16 +102,31 @@ export default function TeacherAttendancePage() {
     return (
         <RoleGuard requiredRole="teacher">
             <div className="space-y-8">
-                {/* ... (keep header) ... */}
-                <div>
+                <div className="print:hidden">
                     <h2 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-violet-400 to-purple-600 bg-clip-text text-transparent italic">
                         Daily Attendance
                     </h2>
                     <p className="text-muted-foreground mt-1">Mark student presence for your classes.</p>
                 </div>
 
-                {/* Controls */}
-                <div className="flex flex-col md:flex-row gap-4 items-end md:items-center bg-white/5 p-4 rounded-2xl border border-white/10">
+                {/* Visible only on Print */}
+                <div className="hidden print:block mb-8">
+                    <h1 className="text-2xl font-bold text-black border-b pb-2 mb-4">Attendance Report</h1>
+                    <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+                        <div>
+                            <span className="font-bold">Class:</span> {selectedClass?.name || 'N/A'}
+                        </div>
+                        <div>
+                            <span className="font-bold">Date:</span> {format(date, "PPP")}
+                        </div>
+                        <div>
+                            <span className="font-bold">Teacher:</span> {user?.name || 'N/A'}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Controls - Hidden on Print */}
+                <div className="flex flex-col md:flex-row gap-4 items-end md:items-center bg-white/5 p-4 rounded-2xl border border-white/10 print:hidden">
                     <div className="space-y-2 w-full md:w-64">
                         <label className="text-xs font-bold text-muted-foreground uppercase">Select Class</label>
                         <Select onValueChange={setSelectedClassId} value={selectedClassId}>
@@ -115,7 +140,7 @@ export default function TeacherAttendancePage() {
                             </SelectContent>
                         </Select>
                     </div>
-                    {/* ... (keep date picker) ... */}
+
                     <div className="space-y-2">
                         <label className="text-xs font-bold text-muted-foreground uppercase">Date</label>
                         <Popover>
@@ -145,23 +170,33 @@ export default function TeacherAttendancePage() {
                         </Popover>
                     </div>
 
-                    <Button
-                        onClick={handleSave}
-                        className="ml-auto bg-green-600 hover:bg-green-700 text-white font-bold px-8 shadow-lg shadow-green-600/20"
-                    >
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Attendance
-                    </Button>
+                    <div className="ml-auto flex gap-3">
+                        <Button
+                            variant="outline"
+                            onClick={handlePrint}
+                            className="bg-transparent border-white/10 hover:bg-white/5 text-white gap-2"
+                        >
+                            <Printer className="h-4 w-4" />
+                            Print Report
+                        </Button>
+                        <Button
+                            onClick={handleSave}
+                            className="bg-green-600 hover:bg-green-700 text-white font-bold px-8 shadow-lg shadow-green-600/20 gap-2"
+                        >
+                            <Save className="h-4 w-4" />
+                            Save Attendance
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Student List */}
-                <Card className="glass-panel border-white/5">
-                    <CardHeader>
+                <Card className="glass-panel border-white/5 print:shadow-none print:border-none print:p-0">
+                    <CardHeader className="print:hidden">
                         <CardTitle>Student List</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="print:p-0">
                         {!selectedClassId ? (
-                            <div className="h-40 flex items-center justify-center text-muted-foreground border-2 border-dashed border-white/10 rounded-xl">
+                            <div className="h-40 flex items-center justify-center text-muted-foreground border-2 border-dashed border-white/10 rounded-xl print:hidden">
                                 Select a class to view students
                             </div>
                         ) : !students ? (
@@ -173,22 +208,23 @@ export default function TeacherAttendancePage() {
                                 No students found in this class.
                             </div>
                         ) : (
-                            <div className="space-y-2">
+                            <div className="space-y-2 print:space-y-0 print:divide-y print:divide-gray-200">
                                 {students.map((student: any) => {
                                     const status = getStatus(student._id);
                                     return (
                                         <div
                                             key={student._id}
-                                            className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors"
+                                            className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors print:bg-transparent print:border-none print:p-2 print:rounded-none"
                                         >
                                             <div className="flex items-center gap-3">
-                                                <div className="h-10 w-10 rounded-full bg-violet-500/10 flex items-center justify-center text-violet-500 font-bold">
+                                                <div className="h-10 w-10 rounded-full bg-violet-500/10 flex items-center justify-center text-violet-500 font-bold print:border print:border-gray-300">
                                                     {student.name[0]}
                                                 </div>
-                                                <div className="font-bold text-white">{student.name}</div>
+                                                <div className="font-bold text-white print:text-black">{student.name}</div>
                                             </div>
 
-                                            <div className="flex bg-black/40 rounded-lg p-1 border border-white/10">
+                                            {/* Screen Interactive Controls */}
+                                            <div className="flex bg-black/40 rounded-lg p-1 border border-white/10 print:hidden">
                                                 <button
                                                     onClick={() => handleStatusChange(student._id, "present")}
                                                     className={cn(
@@ -225,6 +261,18 @@ export default function TeacherAttendancePage() {
                                                     <Clock className="h-4 w-4" />
                                                     Late
                                                 </button>
+                                            </div>
+
+                                            {/* Print Status Display */}
+                                            <div className="hidden print:block">
+                                                <span className={cn(
+                                                    "px-3 py-1 rounded-full text-sm font-bold border",
+                                                    status === "present" ? "bg-green-100 text-green-800 border-green-200" :
+                                                        status === "absent" ? "bg-red-100 text-red-800 border-red-200" :
+                                                            "bg-amber-100 text-amber-800 border-amber-200"
+                                                )}>
+                                                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                                                </span>
                                             </div>
                                         </div>
                                     );

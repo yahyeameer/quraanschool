@@ -128,7 +128,7 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
             }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             className={cn(
-                "fixed top-24 bottom-6 w-72 z-40 transition-all duration-300",
+                "fixed top-24 bottom-6 w-72 z-40 transition-all duration-300 print:hidden",
                 locale === 'ar' ? "right-6" : "left-6"
             )}
         >

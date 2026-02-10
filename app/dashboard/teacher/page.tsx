@@ -256,6 +256,7 @@ export default function TeacherDashboard() {
                                     color="text-pink-400"
                                     bg="bg-pink-500/10"
                                     border="border-pink-500/20"
+                                    href="#assignments"
                                 />
                                 <ToolLink
                                     icon={MessageSquare}
@@ -264,6 +265,7 @@ export default function TeacherDashboard() {
                                     color="text-blue-400"
                                     bg="bg-blue-500/10"
                                     border="border-blue-500/20"
+                                    href="/messages"
                                 />
                                 <ToolLink
                                     icon={Search}
@@ -272,10 +274,11 @@ export default function TeacherDashboard() {
                                     color="text-violet-400"
                                     bg="bg-violet-500/10"
                                     border="border-violet-500/20"
+                                    href="/halaqa"
                                 />
                             </div>
 
-                            <div className="mt-10 pt-8 border-t border-white/5">
+                            <div id="assignments" className="mt-10 pt-8 border-t border-white/5">
                                 <AssignmentManager />
                             </div>
                         </motion.div>
@@ -320,9 +323,12 @@ function TeacherMetric({ title, value, icon: Icon, description, color, highlight
     );
 }
 
-function ToolLink({ icon: Icon, title, subtitle, color, bg, border }: any) {
-    return (
-        <div className="flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition-all cursor-pointer group border border-transparent hover:border-white/5 active:scale-[0.98]">
+function ToolLink({ icon: Icon, title, subtitle, color, bg, border, href, onClick }: any) {
+    const Content = (
+        <div
+            onClick={onClick}
+            className="flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition-all cursor-pointer group border border-transparent hover:border-white/5 active:scale-[0.98]"
+        >
             <div className={cn("h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg border", bg, color, border)}>
                 <Icon className="h-5 w-5" />
             </div>
@@ -333,4 +339,10 @@ function ToolLink({ icon: Icon, title, subtitle, color, bg, border }: any) {
             <ChevronRight className="h-4 w-4 text-white/20 group-hover:text-white transition-colors" />
         </div>
     );
+
+    if (href) {
+        return <Link href={href}>{Content}</Link>;
+    }
+
+    return Content;
 }

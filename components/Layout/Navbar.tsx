@@ -24,7 +24,7 @@ export function Navbar({
         <motion.header
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="fixed top-4 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 pointer-events-none"
+            className="fixed top-4 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 pointer-events-none print:hidden"
         >
             <div className="glass-panel mx-auto max-w-7xl rounded-2xl h-16 pointer-events-auto flex items-center justify-between px-4 shadow-lg">
                 <div className="flex items-center gap-4">

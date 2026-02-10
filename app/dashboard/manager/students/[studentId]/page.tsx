@@ -21,7 +21,8 @@ import {
     XCircle,
     AlertCircle,
     GraduationCap,
-    TrendingUp
+    TrendingUp,
+    Printer
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Id } from "@/convex/_generated/dataModel";
@@ -67,21 +68,42 @@ export default function StudentProfilePage() {
     return (
         <RoleGuard requiredRole={["manager", "staff", "admin"]}>
             <div className="min-h-screen p-4 md:p-8 space-y-8 bg-black/5 dark:bg-black/20">
-                {/* Back Button */}
-                <Button
-                    variant="ghost"
-                    onClick={() => router.back()}
-                    className="hover:bg-white/10"
-                >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Students
-                </Button>
+                <style jsx global>{`
+                    @media print {
+                        @page { margin: 0.5cm; }
+                        body { background: white; color: black; }
+                        .no-print { display: none !important; }
+                        .print-only { display: block !important; }
+                        /* Restore visibility for main content but formatted */
+                        .print-content { display: block !important; }
+                    }
+                    .print-only { display: none; }
+                `}</style>
+
+                {/* Header Actions */}
+                <div className="flex justify-between items-center no-print">
+                    <Button
+                        variant="ghost"
+                        onClick={() => router.back()}
+                        className="hover:bg-white/10"
+                    >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back to Students
+                    </Button>
+                    <Button
+                        onClick={() => window.print()}
+                        className="bg-white/10 hover:bg-white/20 text-white border border-white/10 gap-2"
+                    >
+                        <Printer className="h-4 w-4" />
+                        Print Profile
+                    </Button>
+                </div>
 
                 {/* Profile Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-900/40 to-blue-900/20 border border-white/10 p-8 shadow-2xl"
+                    className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-900/40 to-blue-900/20 border border-white/10 p-8 shadow-2xl print-content no-print"
                 >
                     <div className="absolute inset-0 bg-grid-white/5 mask-image-gradient" />
                     <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
@@ -122,7 +144,7 @@ export default function StudentProfilePage() {
                                 )}
                             </div>
 
-                            <div className="pt-4 flex flex-wrap gap-3 justify-center md:justify-start">
+                            <div className="pt-4 flex flex-wrap gap-3 justify-center md:justify-start no-print">
                                 <Button className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl">
                                     <Trophy className="mr-2 h-4 w-4" />
                                     Reward Points: {stats?.points || 0}
@@ -147,6 +169,70 @@ export default function StudentProfilePage() {
                         </div>
                     </div>
                 </motion.div>
+
+                {/* Print Only Header */}
+                <div className="print-only mb-8">
+                    <div className="flex items-center gap-6 mb-8 border-b pb-6">
+                        <div className="h-24 w-24 rounded-full bg-emerald-100 flex items-center justify-center">
+                            {student.avatarUrl ? (
+                                <img src={student.avatarUrl} alt={student.name} className="h-full w-full object-cover rounded-full" />
+                            ) : (
+                                <User className="h-12 w-12 text-emerald-600" />
+                            )}
+                        </div>
+                        <div>
+                            <h1 className="text-3xl font-bold">{student.name}</h1>
+                            <p className="text-sm text-gray-500">Student Profile Report • {new Date().toLocaleDateString()}</p>
+                            <div className="flex gap-4 mt-2 text-sm">
+                                <span>{student.email}</span>
+                                <span>{student.phone}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-8 mb-8">
+                        <div className="p-4 border rounded-lg bg-gray-50">
+                            <h3 className="font-bold mb-2">Academic Stats</h3>
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>Attendance: <b>{attendanceRate}%</b></div>
+                                <div>Streak: <b>{student.streak || 0} days</b></div>
+                                <div>Points: <b>{stats?.points || 0}</b></div>
+                            </div>
+                        </div>
+                        <div className="p-4 border rounded-lg bg-gray-50">
+                            <h3 className="font-bold mb-2">Guardian</h3>
+                            <div className="text-sm">
+                                <p>Name: <b>{parent?.name || "N/A"}</b></p>
+                                <p>Phone: {parent?.phone || "N/A"}</p>
+                                <p>Email: {parent?.email || "N/A"}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mb-8">
+                        <h3 className="font-bold border-b pb-2 mb-4">Enrolled Classes</h3>
+                        <div className="space-y-4">
+                            {classes.map((c: any) => (
+                                <div key={c._id} className="flex justify-between p-2 border rounded">
+                                    <span>{c.classData?.name}</span>
+                                    <span className="text-sm text-gray-500">{c.classData?.schedule?.map((s: any) => `${s.day} ${s.time}`).join(", ")}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="font-bold border-b pb-2 mb-4">Recent Progress</h3>
+                        <div className="space-y-2">
+                            {recentProgress.slice(0, 10).map((log: any) => (
+                                <div key={log._id} className="text-sm p-2 border-b border-gray-100 flex justify-between">
+                                    <span>{log.surahName || log.topic}</span>
+                                    <span className="text-gray-500">{new Date(log.date).toLocaleDateString()}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
 
                 {/* Main Content Tabs */}
                 <Tabs defaultValue="overview" className="w-full">

@@ -71,7 +71,7 @@ const ReviewCard = ({
             className={cn(
                 "relative w-96 cursor-pointer overflow-hidden rounded-2xl border p-8 mx-6",
                 "border-slate-200 dark:border-white/10 bg-white/70 dark:bg-slate-900/40 backdrop-blur-md hover:bg-white/90 dark:hover:bg-slate-800/60",
-                "transform hover:scale-105 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 group"
+                "transform hover:scale-105 transition-all duration-500 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 group glow-on-hover"
             )}
         >
             <div className="flex flex-row items-center gap-4 mb-6">
@@ -114,8 +114,8 @@ export function Testimonials() {
     return (
         <section className="py-32 relative overflow-hidden bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-white/5 transition-colors duration-500">
 
-            {/* Ambient Background */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-500/5 dark:from-indigo-950/20 via-background to-background pointer-events-none" />
+            {/* Ambient Background with Aurora */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-500/5 dark:from-indigo-950/20 via-background to-background pointer-events-none aurora-bg" />
 
             <div className="container mx-auto px-4 relative z-10 mb-20 text-center">
                 <motion.div

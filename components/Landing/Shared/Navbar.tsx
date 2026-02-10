@@ -135,12 +135,13 @@ export function Navbar() {
                 <div className="flex md:hidden items-center gap-3 relative z-10">
                     <LanguageSwitcher />
                     <ModeToggle />
-                    <button
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         className="p-2 text-white hover:bg-white/10 rounded-full transition-all active:scale-95 border border-white/5"
                     >
                         {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                    </button>
+                    </motion.button>
                 </div>
             </motion.div>
 

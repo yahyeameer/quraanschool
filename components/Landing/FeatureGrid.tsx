@@ -123,17 +123,19 @@ export function FeatureGrid() {
                     </motion.p>
                 </div>
 
-                {/* Bento Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-[minmax(250px,auto)]">
+                {/* Bento Grid - Improved Mobile Spacing */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 auto-rows-[minmax(220px,auto)] md:auto-rows-[minmax(250px,auto)]">
                     {bentoFeatures.map((feature, i) => (
                         <motion.div
                             key={feature.key}
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             viewport={{ once: true, margin: "-50px" }}
-                            transition={{ duration: 0.7, delay: feature.delay }}
+                            transition={{ duration: 0.5, delay: feature.delay }}
                             className={cn(
-                                "group relative overflow-hidden rounded-[32px] border border-slate-200 dark:border-white/5 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl p-8 hover:border-slate-300 dark:hover:border-white/10 transition-all duration-500 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1 block",
+                                "group relative overflow-hidden rounded-[24px] md:rounded-[32px] border border-slate-200 dark:border-white/5 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xl p-6 md:p-8 hover:border-slate-300 dark:hover:border-white/10 transition-all duration-500 hover:shadow-2xl hover:shadow-indigo-500/10 block liquid-border glow-on-hover cursor-pointer",
                                 feature.colSpan
                             )}
                         >

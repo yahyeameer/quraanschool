@@ -53,9 +53,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
                 <main className={cn(
                     "relative transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
-                    "min-h-[calc(100vh-6rem)] pt-24 pb-12",
+                    "min-h-[calc(100vh-6rem)] pt-24 pb-12 print:p-0 print:m-0 print:w-full print:pt-0",
                     isSidebarOpen ? (locale === 'ar' ? "lg:mr-80 lg:ml-8" : "lg:ml-80 lg:mr-8") : "lg:mx-8",
-                    "px-4 sm:px-6"
+                    "px-4 sm:px-6 print:px-0"
                 )}>
                     <div className="mx-auto max-w-7xl animate-in fade-in slide-in-from-bottom-5 duration-700">
                         {children}

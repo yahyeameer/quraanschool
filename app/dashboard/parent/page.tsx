@@ -201,8 +201,68 @@ export default function ParentDashboard() {
 
                             {/* Main Content Split */}
                             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                                {/* Academic Logbook */}
-                                <div className="lg:col-span-8">
+                                {/* Exams & Results Section */}
+                                <div className="lg:col-span-8 space-y-6">
+                                    {/* Class Info Banner */}
+                                    {data.currentClass && (
+                                        <motion.div variants={item} className="bg-gradient-to-r from-violet-600/10 to-indigo-600/10 border border-violet-500/20 rounded-2xl p-6 flex items-center justify-between">
+                                            <div>
+                                                <h3 className="font-bold text-lg text-violet-300">Current Class</h3>
+                                                <p className="text-2xl font-bold text-white">{data.currentClass.name}</p>
+                                                <p className="text-sm text-violet-200/60">{data.currentClass.category} • {data.currentClass.subject || 'General'}</p>
+                                            </div>
+                                            <div className="h-12 w-12 rounded-full bg-violet-500/20 flex items-center justify-center">
+                                                <Book className="h-6 w-6 text-violet-300" />
+                                            </div>
+                                        </motion.div>
+                                    )}
+
+                                    {/* Recent Exams */}
+                                    {data.exams && data.exams.length > 0 && (
+                                        <motion.div variants={item} className="glass-card rounded-[32px] p-6">
+                                            <h3 className="text-xl font-bold flex items-center gap-2 mb-6">
+                                                <TrendingUp className="h-5 w-5 text-amber-500" />
+                                                {locale === 'ar' ? 'نتائج الامتحانات' : 'Recent Exam Results'}
+                                            </h3>
+                                            <div className="space-y-4">
+                                                {data.exams.map((exam: any, i: number) => {
+                                                    const percentage = Math.round((exam.marksObtained / exam.totalMarks) * 100);
+                                                    return (
+                                                        <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                                                            <div className="flex justify-between items-start mb-2">
+                                                                <div>
+                                                                    <h4 className="font-bold text-white">{exam.examTitle}</h4>
+                                                                    <p className="text-xs text-white/50">{new Date(exam.date).toLocaleDateString()}</p>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <span className={cn(
+                                                                        "text-lg font-bold",
+                                                                        percentage >= 80 ? "text-emerald-400" :
+                                                                            percentage >= 60 ? "text-amber-400" : "text-red-400"
+                                                                    )}>
+                                                                        {percentage}%
+                                                                    </span>
+                                                                    <p className="text-[10px] text-white/40">{exam.marksObtained}/{exam.totalMarks}</p>
+                                                                </div>
+                                                            </div>
+                                                            {/* Progress Bar */}
+                                                            <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden mt-2">
+                                                                <div
+                                                                    className={cn("h-full rounded-full",
+                                                                        percentage >= 80 ? "bg-emerald-500" :
+                                                                            percentage >= 60 ? "bg-amber-500" : "bg-red-500"
+                                                                    )}
+                                                                    style={{ width: `${percentage}%` }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+                                        </motion.div>
+                                    )}
+
+                                    {/* Academic Logbook */}
                                     <motion.div variants={item} className="glass-card rounded-[32px] p-6 h-full">
                                         <div className="flex items-center justify-between mb-6">
                                             <h3 className="text-xl font-bold flex items-center gap-2">

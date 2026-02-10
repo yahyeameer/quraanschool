@@ -33,7 +33,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export default function ApplicationsPage() {
-    const applications = useQuery(api.registrations.get);
+    const applications = useQuery(api.registrations.list);
     const updateStatus = useMutation(api.registrations.updateStatus);
     const confirmEnrollment = useMutation(api.registrations.confirmEnrollment);
 

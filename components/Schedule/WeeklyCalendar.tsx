@@ -18,7 +18,7 @@ export function WeeklyCalendar({ items }: { items: ScheduleItem[] }) {
     const currentDay = format(new Date(), "EEE"); // e.g., "Mon"
 
     return (
-        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm print:overflow-visible print:shadow-none print:border-none">
             <div className="grid grid-cols-7 border-b border-border bg-accent/30 text-center">
                 {DAYS.map((day) => (
                     <div

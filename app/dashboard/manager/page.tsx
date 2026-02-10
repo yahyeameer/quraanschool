@@ -61,7 +61,7 @@ export default function ManagerDashboard() {
                         </p>
                     </div>
 
-                    <div className="flex gap-2">
+                    {/* <div className="flex gap-2">
                         <button className="glass-pill px-5 py-2.5 text-xs font-bold hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-2 text-foreground dark:text-white border border-border dark:border-white/10 bg-background/50 dark:bg-white/5 backdrop-blur-md">
                             <Activity className="h-4 w-4" />
                             Live Reports
@@ -70,7 +70,8 @@ export default function ManagerDashboard() {
                             <Settings className="h-4 w-4" />
                             Configure
                         </button>
-                    </div>
+                    </div> */}
+                    <div />
                 </motion.div>
 
                 {/* KPI Bento Grid with Tilt Cards */}

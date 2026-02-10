@@ -30,6 +30,38 @@ export const getChildDashboardData = query({
         const student = await ctx.db.get(args.studentId);
         if (!student) return null;
 
+        // 1. Get Class Info (Active Enrollment)
+        const enrollment = await ctx.db
+            .query("enrollments")
+            .withIndex("by_student", (q) => q.eq("studentId", args.studentId))
+            .filter(q => q.eq(q.field("status"), "active"))
+            .first();
+
+        let currentClass = null;
+        if (enrollment) {
+            currentClass = await ctx.db.get(enrollment.classId);
+        }
+
+        // 2. Fetch Recent Exams & Results
+        const examResults = await ctx.db
+            .query("exam_results")
+            .withIndex("by_student", (q) => q.eq("studentId", args.studentId))
+            .order("desc")
+            .take(5);
+
+        const examsWithDetails = await Promise.all(
+            examResults.map(async (result) => {
+                const exam = await ctx.db.get(result.examId);
+                return {
+                    ...result,
+                    examTitle: exam?.title || "Unknown Exam",
+                    totalMarks: exam?.totalMarks || 100,
+                    date: exam?.date || "",
+                    subject: exam?.subject || ""
+                };
+            })
+        );
+
         // Fetch recent progress
         const progress = await ctx.db
             .query("dailyProgress")
@@ -41,6 +73,10 @@ export const getChildDashboardData = query({
         const attendance = await ctx.db
             .query("attendance")
             .filter(q => q.eq(q.field("studentId"), args.studentId))
+            // .order("desc") // Filter doesn't support order directly on non-indexed field effectively in all cases, but let's try or do in memory if needed. 
+            // Actually, for simple filter, typically we want an index. `by_student` is index.
+            // Let's use the index for attendance to be safe and efficient
+            .withIndex("by_student", q => q.eq("studentId", args.studentId))
             .order("desc")
             .take(10);
 
@@ -53,6 +89,8 @@ export const getChildDashboardData = query({
 
         return {
             student,
+            currentClass,
+            exams: examsWithDetails,
             progress,
             attendance,
             payments
