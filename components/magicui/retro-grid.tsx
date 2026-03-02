@@ -16,7 +16,7 @@ export default function RetroGrid({
             style={{ "--grid-angle": `${angle}deg` } as React.CSSProperties}
         >
             {/* Grid */}
-            <div className="absolute inset-0 [transform:rotateX(var(--grid-angle))]">
+            <div className="absolute inset-0 [transform:rotateX(var(--grid-angle))] hidden md:block">
                 <div
                     className={cn(
                         "animate-grid",
@@ -30,6 +30,9 @@ export default function RetroGrid({
                     )}
                 />
             </div>
+
+            {/* Mobile Static Fallback Grid */}
+            <div className="absolute inset-0 md:hidden bg-[linear-gradient(to_right,rgba(0,0,0,0.05)_1px,transparent_0),linear-gradient(to_bottom,rgba(0,0,0,0.05)_1px,transparent_0)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_0),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_0)] bg-[size:40px_40px] opacity-30" />
 
             {/* Background Gradient */}
             <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent to-90% dark:from-black" />
