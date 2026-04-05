@@ -33,6 +33,7 @@ import type * as reports from "../reports.js";
 import type * as salaries from "../salaries.js";
 import type * as schedule from "../schedule.js";
 import type * as seed from "../seed.js";
+import type * as settings from "../settings.js";
 import type * as students from "../students.js";
 import type * as tasks from "../tasks.js";
 import type * as teacher from "../teacher.js";
@@ -72,6 +73,7 @@ declare const fullApi: ApiFromModules<{
   salaries: typeof salaries;
   schedule: typeof schedule;
   seed: typeof seed;
+  settings: typeof settings;
   students: typeof students;
   tasks: typeof tasks;
   teacher: typeof teacher;
