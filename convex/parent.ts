@@ -72,11 +72,8 @@ export const getChildDashboardData = query({
         // Fetch recent attendance
         const attendance = await ctx.db
             .query("attendance")
-            .filter(q => q.eq(q.field("studentId"), args.studentId))
-            // .order("desc") // Filter doesn't support order directly on non-indexed field effectively in all cases, but let's try or do in memory if needed. 
-            // Actually, for simple filter, typically we want an index. `by_student` is index.
-            // Let's use the index for attendance to be safe and efficient
             .withIndex("by_student", q => q.eq("studentId", args.studentId))
+            // .filter(q => q.eq(q.field("studentId"), args.studentId)) // Wait, .withIndex already filters by studentId
             .order("desc")
             .take(10);
 

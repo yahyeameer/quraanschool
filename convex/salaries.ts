@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
+import { hasAnyRole } from "./permissions";
 
 // --- Queries ---
 
@@ -10,6 +11,9 @@ export const getSalaries = query({
         status: v.optional(v.string())
     },
     handler: async (ctx, args) => {
+        const { hasRole } = await hasAnyRole(ctx, ["admin", "manager", "accountant"]);
+        if (!hasRole) throw new Error("Unauthorized");
+
         let q = ctx.db.query("salaries").withIndex("by_month", (q) => q.eq("month", args.month));
 
         if (args.status) {
@@ -35,6 +39,9 @@ export const getSalaries = query({
 export const getContracts = query({
     args: {},
     handler: async (ctx) => {
+        const { hasRole } = await hasAnyRole(ctx, ["admin", "manager", "accountant"]);
+        if (!hasRole) throw new Error("Unauthorized");
+
         const contracts = await ctx.db.query("staff_contracts").collect();
         const enriched = await Promise.all(contracts.map(async (c) => {
             const staff = await ctx.db.get(c.staffId);
@@ -50,6 +57,9 @@ export const getContracts = query({
 export const listStaff = query({
     args: {},
     handler: async (ctx) => {
+        const { hasRole } = await hasAnyRole(ctx, ["admin", "manager", "accountant"]);
+        if (!hasRole) throw new Error("Unauthorized");
+
         const staffRoles = ["admin", "manager", "teacher", "staff", "accountant", "librarian", "receptionist"];
         const users = await ctx.db.query("users").collect();
         return users.filter(u => staffRoles.includes(u.role));
@@ -59,6 +69,15 @@ export const listStaff = query({
 export const getAdjustments = query({
     args: { staffId: v.id("users"), month: v.string() },
     handler: async (ctx, args) => {
+        const { hasRole } = await hasAnyRole(ctx, ["admin", "manager", "accountant"]);
+        // Allow the staff member to view their own adjustments
+        if (!hasRole) {
+            const identity = await ctx.auth.getUserIdentity();
+            if (!identity) throw new Error("Unauthorized");
+            const user = await ctx.db.query("users").withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject)).unique();
+            if (!user || user._id !== args.staffId) throw new Error("Unauthorized");
+        }
+
         return await ctx.db.query("payroll_adjustments")
             .withIndex("by_staff_month", (q) => q.eq("staffId", args.staffId).eq("month", args.month))
             .collect();

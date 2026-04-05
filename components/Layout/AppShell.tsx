@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import { useLanguage } from "@/lib/language-context";
 
-type UserRole = "admin" | "manager" | "teacher" | "staff" | "parent" | "student" | "guest";
+type UserRole = "admin" | "manager" | "teacher" | "staff" | "parent" | "student" | "guest" | "accountant" | "librarian";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setSidebarOpen] = useState(true); // Default open for desktop
@@ -31,6 +31,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     else if (pathname.startsWith("/dashboard/teacher")) requiredRole = "teacher";
     else if (pathname.startsWith("/dashboard/parent")) requiredRole = "parent";
     else if (pathname.startsWith("/dashboard/staff")) requiredRole = "staff";
+    else if (pathname.startsWith("/dashboard/accountant")) requiredRole = "accountant";
+    else if (pathname.startsWith("/dashboard/librarian")) requiredRole = "librarian";
+
+    // Allow multi-role access for shared routes
+    if (pathname.startsWith("/messages")) {
+        requiredRole = ["admin", "manager", "teacher", "parent", "staff"];
+    } else if (pathname.startsWith("/tracker")) {
+        requiredRole = ["student", "parent", "teacher", "admin", "manager"];
+    } else if (pathname.startsWith("/library")) {
+        requiredRole = ["student", "teacher", "admin", "manager", "librarian", "staff"];
+    } else if (pathname.startsWith("/schedule")) {
+        requiredRole = ["student", "parent", "teacher", "admin", "manager"];
+    }
 
     // Allow multi-role access to shared features if needed
     if (pathname === "/assignments") {

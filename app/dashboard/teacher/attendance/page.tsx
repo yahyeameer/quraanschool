@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,6 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CalendarIcon, Check, X, Clock, Loader2, Save, Printer } from "lucide-react";
 import { toast } from "sonner";
-import { Id } from "@/convex/_generated/dataModel";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function TeacherAttendancePage() {
@@ -56,7 +56,10 @@ export default function TeacherAttendancePage() {
             await markAttendance({
                 classId: selectedClassId as Id<"classes">,
                 date: format(date, "yyyy-MM-dd"),
-                records: records as any
+                records: records.map(r => ({
+                    studentId: r.studentId as Id<"users">,
+                    status: r.status as "present" | "absent" | "late"
+                }))
             });
             toast.success("Attendance saved successfully");
         } catch (error) {

@@ -6,6 +6,7 @@ import { api } from "@/convex/_generated/api";
 import { Bell, Check, Info, AlertTriangle, XCircle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export function NotificationCenter() {
     const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,9 @@ export function NotificationCenter() {
     const notifications = useQuery(api.notifications.list);
     // @ts-ignore
     const markAsRead = useMutation(api.notifications.markAsRead);
+    // @ts-ignore
+    const markAllAsRead = useMutation(api.notifications.markAllAsRead);
+    const router = useRouter();
 
     const unreadCount = notifications?.filter((n: any) => !n.isRead).length || 0;
 
@@ -75,7 +79,8 @@ export function NotificationCenter() {
                                                 await markAsRead({ notificationId: notification._id });
                                             }
                                             if (notification.link) {
-                                                window.location.href = notification.link;
+                                                router.push(notification.link);
+                                                setIsOpen(false);
                                             }
                                         }}
                                     >
@@ -101,7 +106,14 @@ export function NotificationCenter() {
                             </div>
 
                             <div className="p-3 border-t border-border bg-accent/5 text-center">
-                                <button className="text-[10px] font-bold text-primary uppercase hover:underline">
+                                <button 
+                                    onClick={async () => {
+                                        if (unreadCount > 0) {
+                                            await markAllAsRead();
+                                        }
+                                    }}
+                                    className="text-[10px] font-bold text-primary uppercase hover:underline"
+                                >
                                     Clear all
                                 </button>
                             </div>

@@ -33,7 +33,7 @@ export const getStats = query({
         await requireRole(ctx, "admin");
 
         // Count users by role
-        const allUsers = await ctx.db.query("users").collect();
+        const allUsers = await ctx.db.query("users").take(1000);
         const totalStudents = allUsers.filter(u => u.role === "student").length;
         const totalTeachers = allUsers.filter(u => u.role === "teacher").length;
 
@@ -42,15 +42,15 @@ export const getStats = query({
         const activeClasses = classes.length;
 
         // Calculate total ayahs memorized
-        const logs = await ctx.db.query("tracker_logs").collect();
+        const logs = await ctx.db.query("tracker_logs").take(1000);
         const totalAyahs = logs.reduce((acc, log) => acc + (log.ayahEnd - log.ayahStart + 1), 0);
 
         // Count pending registrations
-        const registrations = await ctx.db.query("registrations").collect();
+        const registrations = await ctx.db.query("registrations").take(1000);
         const pendingApplications = registrations.filter(r => r.status === "new").length;
 
         // Payment summary
-        const payments = await ctx.db.query("payments").collect();
+        const payments = await ctx.db.query("payments").take(1000);
         const totalRevenue = payments
             .filter(p => p.status === "paid")
             .reduce((sum, p) => sum + p.amount, 0);

@@ -14,14 +14,14 @@ export const getFees = query({
         const students = await ctx.db
             .query("users")
             .withIndex("by_role", (q) => q.eq("role", "student"))
-            .collect();
+            .take(1000);
 
         const currentMonth = args.month || new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
 
         // Get payments for this month
         const payments = await ctx.db
             .query("payments")
-            .collect();
+            .take(1000);
 
         // Join data
         const result = await Promise.all(students.map(async (student) => {
@@ -88,7 +88,7 @@ export const getSalaries = query({
         // Get all staff
         const staff = await ctx.db
             .query("users")
-            .collect();
+            .take(1000);
         // Filter in memory for specific roles to avoid complex index logic for now
         const eligibleStaff = staff.filter(u => ["teacher", "manager", "staff", "accountant", "librarian", "receptionist"].includes(u.role));
 
@@ -97,7 +97,7 @@ export const getSalaries = query({
         const salaries = await ctx.db
             .query("salaries")
             .withIndex("by_month", (q) => q.eq("month", currentMonth))
-            .collect();
+            .take(1000);
 
         return eligibleStaff.map(member => {
             const salary = salaries.find(s => s.staffId === member._id);
@@ -154,8 +154,8 @@ export const getFinancialOverview = query({
         const { hasRole } = await hasAnyRole(ctx, ["manager", "admin", "accountant"]);
         if (!hasRole) throw new Error("Unauthorized");
 
-        const payments = await ctx.db.query("payments").collect();
-        const salaries = await ctx.db.query("salaries").collect();
+        const payments = await ctx.db.query("payments").take(1000);
+        const salaries = await ctx.db.query("salaries").take(1000);
 
         const totalRevenue = payments.reduce((sum, p) => sum + (p.status === "paid" ? p.amount : 0), 0);
         const totalExpenses = salaries.reduce((sum, s) => sum + (s.status === "paid" ? s.totalAmount : 0), 0);

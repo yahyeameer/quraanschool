@@ -70,7 +70,7 @@ export const listInbox = query({
             .query("messages")
             .withIndex("by_recipient", (q) => q.eq("recipientId", user._id))
             .order("desc")
-            .collect();
+            .take(100);
 
         // Enrich with sender info
         const enriched = await Promise.all(
@@ -106,7 +106,7 @@ export const listSent = query({
             .query("messages")
             .withIndex("by_sender", (q) => q.eq("senderId", user._id))
             .order("desc")
-            .collect();
+            .take(100);
 
         // Enrich with recipient info
         const enriched = await Promise.all(
@@ -166,7 +166,7 @@ export const getUnreadCount = query({
             .query("messages")
             .withIndex("by_recipient", (q) => q.eq("recipientId", user._id))
             .filter((q) => q.eq(q.field("isRead"), false))
-            .collect();
+            .take(100);
 
         return unreadMessages.length;
     },
@@ -296,7 +296,7 @@ export const getRecipients = query({
             }
         } else if (user.role === "manager" || user.role === "admin") {
             // Can message all teachers and parents
-            const allUsers = await ctx.db.query("users").collect();
+            const allUsers = await ctx.db.query("users").take(100);
             recipients = allUsers
                 .filter((u) => u._id !== user._id && ["teacher", "parent", "staff"].includes(u.role))
                 .map((u) => ({
@@ -327,7 +327,7 @@ export const sendAnnouncement = mutation({
         const parents = await ctx.db
             .query("users")
             .withIndex("by_role", (q) => q.eq("role", "parent"))
-            .collect();
+            .take(1000);
 
         // Send message to each parent
         for (const parent of parents) {

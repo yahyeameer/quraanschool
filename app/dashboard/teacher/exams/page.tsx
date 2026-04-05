@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,7 @@ export default function TeacherExamsPage() {
 
     // --- Queries & Mutations ---
     const classes = useQuery(api.classes.list) || [];
-    const exams = useQuery(api.academic.getExams, { classId: createForm.classId ? createForm.classId as any : undefined });
+    const exams = useQuery(api.academic.getExams, { classId: createForm.classId ? createForm.classId as Id<"classes"> : undefined });
     const createExam = useMutation(api.academic.createExam);
     const submitResults = useMutation(api.academic.submitExamResults);
 
@@ -48,7 +49,7 @@ export default function TeacherExamsPage() {
 
         try {
             await createExam({
-                classId: createForm.classId as any,
+                classId: createForm.classId as Id<"classes">,
                 title: createForm.title,
                 subject: createForm.subject,
                 date: createForm.date,
@@ -73,7 +74,7 @@ export default function TeacherExamsPage() {
 
         try {
             await submitResults({
-                examId: selectedExamId as any,
+                examId: selectedExamId as Id<"exams">,
                 results
             });
             toast.success("Grades submitted successfully!");

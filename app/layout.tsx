@@ -20,9 +20,40 @@ const notoNaskh = Noto_Naskh_Arabic({
   variable: "--font-noto",
 });
 
+export const viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#020617" }
+  ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
-  title: "Khalaf Al-Cuduul Quran School",
-  description: "A premium Quran learning management system",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://quraanschool.app"),
+  title: {
+    default: "Khalaf Al-Cuduul Quran School",
+    template: "%s | Khalaf Al-Cuduul Quran School",
+  },
+  description: "A premium, state-of-the-art Quran learning management system.",
+  openGraph: {
+    title: "Khalaf Al-Cuduul Quran School",
+    description: "A premium, state-of-the-art Quran learning management system.",
+    url: "/",
+    siteName: "Khalaf Al-Cuduul Quran School",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Khalaf Al-Cuduul Quran School",
+    description: "A premium, state-of-the-art Quran learning management system.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -32,12 +63,12 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <LanguageProvider>
         <html lang="en" suppressHydrationWarning>
           <body
             className={`${inter.variable} ${amiri.variable} ${notoNaskh.variable} font-sans antialiased`}
             suppressHydrationWarning
           >
+            <LanguageProvider>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark" // Defaulting to dark for Project 1000x aesthetic
@@ -49,9 +80,9 @@ export default function RootLayout({
                 <AppShell>{children}</AppShell>
               </ConvexClientProvider>
             </ThemeProvider>
+            </LanguageProvider>
           </body>
         </html>
-      </LanguageProvider>
     </ClerkProvider>
   );
 }

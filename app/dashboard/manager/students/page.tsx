@@ -32,8 +32,8 @@ export default function ManagerStudentsPage() {
 
     // Filter Logic
     const filteredStudents = studentsData?.filter(s =>
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.parentName?.toLowerCase().includes(searchQuery.toLowerCase())
+        s?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s?.parentName?.toLowerCase().includes(searchQuery.toLowerCase())
     ) || [];
 
     const getWhatsAppLink = (phone: string | undefined, name: string) => {

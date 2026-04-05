@@ -12,7 +12,7 @@ export const getAcademicVelocity = query({
         // We will look at 'tracker_logs' (Ayah memorization) or 'dailyProgress'
         // Let's use tracker_logs for "Ayahs Memorized" velocity
 
-        const logs = await ctx.db.query("tracker_logs").collect();
+        const logs = await ctx.db.query("tracker_logs").take(1000);
 
         // Group by Month (last 6 months)
         const months: Record<string, number> = {};
@@ -53,7 +53,7 @@ export const getStudentProgress = query({
         const { hasRole } = await hasAnyRole(ctx, ["admin", "manager", "teacher", "student", "parent"]);
         if (!hasRole) return [];
 
-        const logs = await ctx.db.query("tracker_logs").collect();
+        const logs = await ctx.db.query("tracker_logs").take(1000);
 
         // Group by month
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -88,7 +88,7 @@ export const getAttendanceStats = query({
         const { hasRole } = await hasAnyRole(ctx, ["admin", "manager", "teacher"]);
         if (!hasRole) return { present: 0, late: 0, absent: 0, rate: 0 };
 
-        const attendance = await ctx.db.query("attendance").collect();
+        const attendance = await ctx.db.query("attendance").take(1000);
 
         const present = attendance.filter(a => a.status === "present").length;
         const late = attendance.filter(a => a.status === "late").length;
@@ -108,7 +108,7 @@ export const getClassComparison = query({
         if (!hasRole) return [];
 
         const classes = await ctx.db.query("classes").collect();
-        const dailyProgress = await ctx.db.query("dailyProgress").collect();
+        const dailyProgress = await ctx.db.query("dailyProgress").take(1000);
 
         // Calculate average rating per class
         const classRatings = await Promise.all(classes.map(async (cls) => {

@@ -1,5 +1,3 @@
-"use client";
-
 import dynamic from "next/dynamic";
 import { Navbar } from "@/components/Landing/Shared/Navbar";
 import { Footer } from "@/components/Landing/Shared/Footer";
@@ -11,7 +9,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 // Lazy Load Heavy Visual Components
-const RetroGrid = dynamic(() => import("@/components/magicui/retro-grid"), { ssr: false });
+const RetroGrid = dynamic(() => import("@/components/magicui/retro-grid"));
 const HeroSection = dynamic(() => import("@/components/Landing/HeroSection").then(mod => mod.HeroSection), {
   loading: () => <div className="h-[800px] w-full bg-emerald-950 animate-pulse" />
 });

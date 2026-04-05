@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 import { ProgressRing } from "@/components/Dashboard/ProgressRing";
 import {
     Calendar,
@@ -25,7 +26,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/language-context";
 import { ContactAdminModal } from "@/components/Dashboard/ContactAdminModal";
-import { Id } from "@/convex/_generated/dataModel";
+
 
 export default function ParentDashboard() {
     const { t, locale, dir } = useLanguage();
@@ -36,16 +37,17 @@ export default function ParentDashboard() {
     const user = useQuery(api.users.currentUser);
 
     // Automatically select first child if none selected
-    if (children && children.length > 0 && !selectedChildId) {
-        setSelectedChildId(children[0]._id);
-    }
+    useEffect(() => {
+        if (children && children.length > 0 && !selectedChildId) {
+            setSelectedChildId(children[0]._id);
+        }
+    }, [children, selectedChildId]);
 
-    // @ts-ignore
     const data = useQuery(api.parent.getChildDashboardData,
-        selectedChildId ? { studentId: selectedChildId as any } : "skip"
+        selectedChildId ? { studentId: selectedChildId as Id<"users"> } : "skip"
     );
 
-    const selectedChild = children?.find((c: any) => c._id === selectedChildId);
+    const selectedChild = children?.find((c: { _id: Id<"users"> }) => c._id === selectedChildId);
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -113,7 +115,7 @@ export default function ParentDashboard() {
                         {/* Child Selector in Hero */}
                         {children && children.length > 0 && (
                             <div className="flex bg-white/10 backdrop-blur-md rounded-2xl p-1.5 border border-white/20">
-                                {(children as any[]).map((child) => (
+                                {(children as { _id: Id<"users">; name: string }[]).map((child) => (
                                     <button
                                         key={child._id}
                                         onClick={() => setSelectedChildId(child._id)}

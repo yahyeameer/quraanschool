@@ -4,6 +4,8 @@ import { query, mutation } from "./_generated/server";
 export const list = query({
     args: {},
     handler: async (ctx) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) throw new Error("Unauthorized");
         return await ctx.db.query("classes").collect();
     },
 });

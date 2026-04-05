@@ -29,6 +29,8 @@ export const listExpenses = query({
         month: v.optional(v.string()), // Format: YYYY-MM
     },
     handler: async (ctx, args) => {
+        const { hasRole, user } = await hasAnyRole(ctx, ["admin", "manager", "accountant"]);
+        if (!hasRole || !user) throw new Error("Unauthorized");
         let q = ctx.db.query("expenses");
 
         // Simple filter in memory for now if month provided, 
@@ -46,18 +48,22 @@ export const listExpenses = query({
 export const deleteExpense = mutation({
     args: { id: v.id("expenses") },
     handler: async (ctx, args) => {
-        const user = await ctx.auth.getUserIdentity();
-        if (!user) throw new Error("Unauthorized");
-        // Add role check
+        const { hasRole, user } = await hasAnyRole(ctx, ["admin", "manager", "accountant"]);
+        if (!hasRole || !user) throw new Error("Unauthorized");
+        
         await ctx.db.delete(args.id);
     },
 });
 
 export const getFinancialSummary = query({
     handler: async (ctx) => {
+        const { hasRole, user } = await hasAnyRole(ctx, ["admin", "manager", "accountant"]);
+        if (!hasRole || !user) throw new Error("Unauthorized");
+
         // This is expensive for large data, but fine for MVP
-        const expenses = await ctx.db.query("expenses").collect();
-        const payments = await ctx.db.query("payments").collect();
+        // Add take(100) as per limits fix to prevent timeout
+        const expenses = await ctx.db.query("expenses").take(100);
+        const payments = await ctx.db.query("payments").take(100);
 
         const totalExpenses = expenses.reduce((acc, curr) => acc + curr.amount, 0);
         const totalRevenue = payments.reduce((acc, curr) => acc + curr.amount, 0);

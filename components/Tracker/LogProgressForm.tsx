@@ -95,7 +95,7 @@ export function LogProgressForm({ onSuccess }: { onSuccess?: () => void }) {
                             min={1}
                             className="w-full h-12 rounded-xl bg-accent/30 border-transparent focus:border-emerald-500 focus:bg-background transition-all px-4 font-bold text-lg"
                             value={formData.ayahStart}
-                            onChange={e => setFormData({ ...formData, ayahStart: parseInt(e.target.value) })}
+                            onChange={e => setFormData({ ...formData, ayahStart: parseInt(e.target.value) || 1 })}
                         />
                     </div>
                     <div className="flex-1 space-y-2">
@@ -105,7 +105,7 @@ export function LogProgressForm({ onSuccess }: { onSuccess?: () => void }) {
                             min={1}
                             className="w-full h-12 rounded-xl bg-accent/30 border-transparent focus:border-emerald-500 focus:bg-background transition-all px-4 font-bold text-lg"
                             value={formData.ayahEnd}
-                            onChange={e => setFormData({ ...formData, ayahEnd: parseInt(e.target.value) })}
+                            onChange={e => setFormData({ ...formData, ayahEnd: parseInt(e.target.value) || 1 })}
                         />
                     </div>
                 </div>
