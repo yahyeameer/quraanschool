@@ -360,4 +360,12 @@ export default defineSchema({
     })),
     topics: v.array(v.string()), // Key topics covered
   }).index("by_subject", ["subjectId"]),
+
+  // Global settings for the organization/school
+  organization_settings: defineTable({
+    name: v.string(), // School Name
+    about: v.string(), // About the School
+    logoUrl: v.optional(v.string()), // Logo URL
+    updatedAt: v.optional(v.string()),
+  }),
 });

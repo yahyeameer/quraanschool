@@ -38,13 +38,14 @@ import { ExportButtons } from "@/components/Reporting/ExportButtons";
 
 export default function ManagerReportsPage() {
     const data = useQuery(api.reports.getSummary);
+    const settings = useQuery(api.settings.get);
     const chartData = data || [];
 
     const handlePrint = () => {
         window.print();
     };
 
-    if (data === undefined) {
+    if (data === undefined || settings === undefined) {
         return (
             <div className="flex h-screen items-center justify-center bg-[#030712]">
                 <div className="flex flex-col items-center gap-4">
@@ -59,8 +60,28 @@ export default function ManagerReportsPage() {
         <RoleGuard requiredRole="manager">
             <div className="min-h-screen bg-[#030712] text-white p-4 md:p-8 space-y-10 relative overflow-hidden print:bg-white print:text-black">
                 {/* Visual Atmosphere */}
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[140px] -z-10" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/5 rounded-full blur-[120px] -z-10" />
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[140px] -z-10 print:hidden" />
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/5 rounded-full blur-[120px] -z-10 print:hidden" />
+
+                {/* Print Context Header */}
+                {settings && (
+                    <div className="hidden print:flex flex-col items-center justify-center text-center pb-8 border-b-2 border-dashed border-gray-300">
+                        {settings.logoUrl && (
+                            <img src={settings.logoUrl} alt="School Logo" className="h-24 w-auto object-contain mb-4 filter grayscale-0" />
+                        )}
+                        <h1 className="text-4xl font-extrabold font-amiri tracking-widest text-black">
+                            {settings.name || "Default Organization"}
+                        </h1>
+                        {settings.about && (
+                            <p className="text-sm mt-3 max-w-2xl text-center italic text-gray-700">
+                                {settings.about}
+                            </p>
+                        )}
+                        <p className="text-xs text-gray-400 mt-4 uppercase tracking-widest">
+                            Academic & Institutional Report
+                        </p>
+                    </div>
+                )}
 
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10 print:hidden">

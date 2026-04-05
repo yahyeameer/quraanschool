@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar } from "./Navbar";
 import { Sidebar } from "./Sidebar";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,30 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setSidebarOpen] = useState(true); // Default open for desktop
     const pathname = usePathname();
     const { locale } = useLanguage();
+
+    // Auto-close sidebar on mobile, open on desktop
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 1024) {
+                setSidebarOpen(false);
+            } else {
+                setSidebarOpen(true);
+            }
+        };
+        
+        // Initial check
+        handleResize();
+        
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // Close sidebar on mobile when navigating
+    useEffect(() => {
+        if (window.innerWidth < 1024) {
+            setSidebarOpen(false);
+        }
+    }, [pathname]);
 
     // Skip dashboard layout for the landing page or onboarding
     const isLandingPage = pathname === "/";
