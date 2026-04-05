@@ -93,8 +93,8 @@ export function AttendanceMarker() {
 
     return (
         <>
-            <Card className="overflow-hidden border-none bg-background/50 backdrop-blur-xl shadow-2xl ring-1 ring-white/10">
-                <CardHeader className="border-b border-white/5 bg-gradient-to-r from-emerald-500/10 to-transparent">
+            <Card className="overflow-hidden border-none bg-background/50 backdrop-blur-xl shadow-2xl ring-1 ring-border">
+                <CardHeader className="border-b border-border/50 bg-gradient-to-r from-emerald-500/10 to-transparent">
                     <CardTitle className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
@@ -110,11 +110,11 @@ export function AttendanceMarker() {
                             <select
                                 value={selectedClassId}
                                 onChange={(e) => setSelectedClassId(e.target.value)}
-                                className="appearance-none text-sm font-medium border-white/10 rounded-full px-6 py-2 bg-black/40 text-emerald-100 hover:bg-black/60 transition-all cursor-pointer ring-1 ring-emerald-500/20 focus:ring-emerald-500/50 outline-none pr-10"
+                                className="appearance-none text-sm font-medium border border-border rounded-full px-6 py-2 bg-accent/20 text-foreground hover:bg-accent/40 transition-all cursor-pointer ring-1 ring-emerald-500/20 focus:ring-emerald-500/50 outline-none pr-10"
                             >
-                                <option value="" className="bg-zinc-900">{t.teacher.attendance.selectClass}</option>
+                                <option value="" className="bg-background">{t.teacher.attendance.selectClass}</option>
                                 {classes.map(c => (
-                                    <option key={c._id} value={c._id} className="bg-zinc-900">{c.name}</option>
+                                    <option key={c._id} value={c._id} className="bg-background">{c.name}</option>
                                 ))}
                             </select>
                             <ChevronRight className={cn(
@@ -191,10 +191,10 @@ export function AttendanceMarker() {
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: idx * 0.05 }}
                                             className={cn(
-                                                "group flex flex-col gap-2 p-4 rounded-2xl border bg-white/5 transition-all duration-300 relative overflow-hidden",
+                                                "group flex flex-col gap-2 p-4 rounded-2xl border transition-all duration-300 relative overflow-hidden",
                                                 attendanceStates[student._id]
                                                     ? "border-emerald-500/30 bg-emerald-500/5"
-                                                    : "border-white/5 hover:border-emerald-500/20 hover:bg-white/10"
+                                                    : "border-border bg-accent/10 hover:border-emerald-500/20 hover:bg-accent/20"
                                             )}
                                         >
                                             <div className="flex items-center justify-between">
@@ -202,7 +202,7 @@ export function AttendanceMarker() {
                                                     {/* Avatar — clickable for Quick Look */}
                                                     <button
                                                         onClick={() => setQuickLookStudent({ id: student._id, name: student.name })}
-                                                        className="h-10 w-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-white/10 to-transparent border border-white/10 text-emerald-100 font-bold group-hover:scale-110 transition-transform hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-300"
+                                                        className="h-10 w-10 flex items-center justify-center rounded-xl bg-accent/20 border border-border text-foreground font-bold group-hover:scale-110 transition-transform hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-300"
                                                         title="View student profile"
                                                     >
                                                         {student.name.charAt(0)}
@@ -273,7 +273,7 @@ export function AttendanceMarker() {
                                                                 "flex items-center gap-2 text-xs font-bold py-1.5 px-3 rounded-full border transition-all",
                                                                 notifyParent[student._id]
                                                                     ? "bg-blue-500/10 border-blue-500/30 text-blue-400"
-                                                                    : "bg-white/5 border-white/10 text-white/30 hover:text-white/60"
+                                                                    : "bg-accent/20 border-border text-muted-foreground/40 hover:text-muted-foreground/60"
                                                             )}
                                                         >
                                                             <BellRing className="h-3 w-3" />

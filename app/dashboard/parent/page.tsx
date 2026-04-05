@@ -123,12 +123,9 @@ function SessionCountdown({ targetTime }: { targetTime: string }) {
     const m = Math.floor(secs / 60);
     const s = secs % 60;
     return (
-        <span className="font-mono tabular-nums text-violet-200 font-bold">
+        <span className="font-mono tabular-nums text-primary font-bold">
             {m.toString().padStart(2, "0")}:{s.toString().padStart(2, "0")}
         </span>
-    );
-}
-
     );
 }
 
@@ -144,25 +141,32 @@ function ProgressTrendChart({ data }: { data: any[] }) {
         <div className="h-[200px] w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border/30" vertical={false} />
                     <XAxis 
                         dataKey="date" 
-                        stroke="rgba(255,255,255,0.3)" 
+                        stroke="currentColor" 
+                        className="text-muted-foreground"
                         fontSize={10} 
                         tickLine={false}
                         axisLine={false}
                     />
                     <YAxis hide domain={[0, 5]} />
                     <Tooltip 
-                        contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', fontSize: '12px' }}
-                        itemStyle={{ color: '#8b5cf6' }}
+                        contentStyle={{ 
+                            backgroundColor: 'oklch(var(--background))', 
+                            border: '1px solid oklch(var(--border))', 
+                            borderRadius: '12px', 
+                            fontSize: '12px',
+                            color: 'oklch(var(--foreground))'
+                        }}
+                        itemStyle={{ color: 'oklch(var(--primary))' }}
                     />
                     <Line 
                         type="monotone" 
                         dataKey="rating" 
-                        stroke="#8b5cf6" 
+                        stroke="oklch(var(--primary))" 
                         strokeWidth={3} 
-                        dot={{ fill: '#8b5cf6', strokeWidth: 2, r: 4 }}
+                        dot={{ fill: 'oklch(var(--primary))', strokeWidth: 2, r: 4 }}
                         activeDot={{ r: 6, strokeWidth: 0 }}
                     />
                 </LineChart>
@@ -335,34 +339,34 @@ export default function ParentDashboard() {
                                         className={cn(
                                             "rounded-[24px] border p-5 flex items-center justify-between gap-4 overflow-hidden relative",
                                             hasLiveClass
-                                                ? "bg-red-950/40 border-red-500/30"
-                                                : "bg-violet-950/40 border-violet-500/30"
+                                                ? "bg-red-500/10 border-red-500/30"
+                                                : "bg-primary/10 border-primary/30"
                                         )}
                                     >
-                                        <div className="absolute inset-0 bg-gradient-to-r from-violet-600/10 to-transparent pointer-events-none" />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent pointer-events-none" />
                                         <div className="relative z-10 flex items-center gap-4">
                                             <div className={cn(
                                                 "h-10 w-10 rounded-xl flex items-center justify-center",
-                                                hasLiveClass ? "bg-red-500/20" : "bg-violet-500/20"
+                                                hasLiveClass ? "bg-red-500/20" : "bg-primary/20"
                                             )}>
                                                 {hasLiveClass
                                                     ? <span className="relative flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" /><span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" /></span>
-                                                    : <Timer className="h-5 w-5 text-violet-400" />
+                                                    : <Timer className="h-5 w-5 text-primary" />
                                                 }
                                             </div>
                                             <div>
-                                                <p className="text-xs font-black uppercase tracking-widest text-white/50">
+                                                <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">
                                                     {hasLiveClass ? "🔴 Live Session" : `⏳ ${selectedChild?.name?.split(" ")[0]}'s Next Session`}
                                                 </p>
-                                                <p className="font-bold text-white">{(data.currentClass as any).name}</p>
+                                                <p className="font-bold text-foreground">{(data.currentClass as any).name}</p>
                                             </div>
                                         </div>
                                         <div className="relative z-10 flex items-center gap-3">
                                             {hasUpcomingClass && todaySchedule?.time && (
-                                                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10">
-                                                    <Clock className="h-4 w-4 text-violet-300" />
+                                                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-accent/20 border border-border/50">
+                                                    <Clock className="h-4 w-4 text-primary/70" />
                                                     <SessionCountdown targetTime={todaySchedule.time} />
-                                                    <span className="text-xs text-white/30">left</span>
+                                                    <span className="text-xs text-muted-foreground/40">left</span>
                                                 </div>
                                             )}
                                             <Link href="/halaqa">
@@ -370,7 +374,7 @@ export default function ParentDashboard() {
                                                     "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all hover:scale-105",
                                                     hasLiveClass
                                                         ? "bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)]"
-                                                        : "bg-violet-600 shadow-[0_0_20px_rgba(139,92,246,0.4)]"
+                                                        : "bg-primary shadow-[0_0_20px_oklch(var(--primary)/0.4)]"
                                                 )}>
                                                     <Zap className="h-4 w-4" />
                                                     {hasLiveClass ? "Join Live" : "Prepare"}
@@ -418,9 +422,9 @@ export default function ParentDashboard() {
 
                             {/* Achievement Badges */}
                             {badges.length > 0 && (
-                                <motion.div variants={item} className="glass-card rounded-[32px] p-6 border border-white/10 bg-slate-900/40">
-                                    <h3 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                        <Trophy className="h-4 w-4 text-amber-400" />
+                                <motion.div variants={item} className="glass-card rounded-[32px] p-6">
+                                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <Trophy className="h-4 w-4 text-amber-500" />
                                         {locale === 'ar' ? 'الإنجازات والأوسمة' : 'Achievement Badges'}
                                     </h3>
                                     <div className="flex flex-wrap gap-3">
@@ -433,7 +437,7 @@ export default function ParentDashboard() {
                                                     "flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold transition-all",
                                                     badge.earned
                                                         ? badge.color
-                                                        : "bg-white/5 border-white/10 text-white/20 grayscale opacity-40"
+                                                        : "bg-accent/20 border-border/50 text-muted-foreground/40 grayscale opacity-40"
                                                 )}
                                             >
                                                 {badge.icon}
@@ -451,14 +455,14 @@ export default function ParentDashboard() {
 
                                     {/* Class Info Banner */}
                                     {data.currentClass && (
-                                        <motion.div variants={item} className="bg-gradient-to-r from-violet-600/10 to-indigo-600/10 border border-violet-500/20 rounded-2xl p-6 flex items-center justify-between">
+                                        <motion.div variants={item} className="bg-gradient-to-r from-primary/10 to-indigo-600/10 border border-primary/20 rounded-2xl p-6 flex items-center justify-between">
                                             <div>
-                                                <h3 className="font-bold text-lg text-violet-300">Current Class</h3>
-                                                <p className="text-2xl font-bold text-white">{(data.currentClass as any).name}</p>
-                                                <p className="text-sm text-violet-200/60">{(data.currentClass as any).category} • {(data.currentClass as any).subject || 'General'}</p>
+                                                <h3 className="font-bold text-sm text-primary uppercase tracking-wider mb-1">Current Class</h3>
+                                                <p className="text-2xl font-bold text-foreground">{(data.currentClass as any).name}</p>
+                                                <p className="text-sm text-muted-foreground">{(data.currentClass as any).category} • {(data.currentClass as any).subject || 'General'}</p>
                                             </div>
-                                            <div className="h-12 w-12 rounded-full bg-violet-500/20 flex items-center justify-center">
-                                                <Book className="h-6 w-6 text-violet-300" />
+                                            <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
+                                                <Book className="h-6 w-6 text-primary" />
                                             </div>
                                         </motion.div>
                                     )}
@@ -475,21 +479,21 @@ export default function ParentDashboard() {
                                                 {data.exams.map((exam: any, i: number) => {
                                                     const pct = Math.round((exam.marksObtained / exam.totalMarks) * 100);
                                                     return (
-                                                        <div key={i} className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                                                        <div key={i} className="p-4 rounded-2xl bg-accent/20 border border-border/50 hover:bg-accent/40 transition-colors">
                                                             <div className="flex justify-between items-start mb-2">
-                                                                <div>
-                                                                    <h4 className="font-bold text-white">{exam.examTitle}</h4>
-                                                                    <p className="text-xs text-white/50">{new Date(exam.date).toLocaleDateString()}</p>
-                                                                </div>
-                                                                <div className="text-right">
+                                                                 <div>
+                                                                    <h4 className="font-bold text-foreground">{exam.examTitle}</h4>
+                                                                    <p className="text-xs text-muted-foreground">{new Date(exam.date).toLocaleDateString()}</p>
+                                                                 </div>
+                                                                 <div className="text-right">
                                                                     <span className={cn(
                                                                         "text-lg font-bold",
-                                                                        pct >= 80 ? "text-emerald-400" : pct >= 60 ? "text-amber-400" : "text-red-400"
+                                                                        pct >= 80 ? "text-emerald-500" : pct >= 60 ? "text-amber-500" : "text-red-500"
                                                                     )}>{pct}%</span>
-                                                                    <p className="text-[10px] text-white/40">{exam.marksObtained}/{exam.totalMarks}</p>
-                                                                </div>
+                                                                    <p className="text-[10px] text-muted-foreground/60">{exam.marksObtained}/{exam.totalMarks}</p>
+                                                                 </div>
                                                             </div>
-                                                            <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden mt-2">
+                                                            <div className="h-2 w-full bg-muted/30 rounded-full overflow-hidden mt-2">
                                                                 <div
                                                                     className={cn("h-full rounded-full", pct >= 80 ? "bg-emerald-500" : pct >= 60 ? "bg-amber-500" : "bg-red-500")}
                                                                     style={{ width: `${pct}%` }}
@@ -531,9 +535,9 @@ export default function ParentDashboard() {
 
                                                         {/* Teacher feedback highlight */}
                                                         {log.notes && (
-                                                            <div className="mt-3 p-3 rounded-xl bg-violet-500/5 border border-violet-500/20 flex items-start gap-2">
-                                                                <MessageSquare className="h-3.5 w-3.5 text-violet-400 flex-shrink-0 mt-0.5" />
-                                                                <p className="text-xs text-violet-200/80 italic">{log.notes}</p>
+                                                            <div className="mt-3 p-3 rounded-xl bg-primary/5 border border-primary/20 flex items-start gap-2">
+                                                                <MessageSquare className="h-3.5 w-3.5 text-primary flex-shrink-0 mt-0.5" />
+                                                                <p className="text-xs text-foreground/80 italic">{log.notes}</p>
                                                             </div>
                                                         )}
 
@@ -592,21 +596,21 @@ export default function ParentDashboard() {
                                         return (
                                             <motion.div
                                                 variants={item}
-                                                className="glass-card rounded-[32px] p-6 bg-gradient-to-br from-amber-900/40 to-orange-900/20 border border-amber-500/20"
+                                                className="glass-card rounded-[32px] p-6 bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/20"
                                             >
                                                 <div className="flex items-center gap-2 mb-3">
-                                                    <Flame className="h-5 w-5 text-amber-400" />
-                                                    <span className="text-xs font-black text-amber-400 uppercase tracking-widest">Teacher Praise</span>
+                                                    <Flame className="h-5 w-5 text-amber-500" />
+                                                    <span className="text-xs font-black text-amber-500 uppercase tracking-widest">Teacher Praise</span>
                                                 </div>
                                                 <div className="flex gap-0.5 mb-3">
                                                     {[1, 2, 3, 4, 5].map(s => (
-                                                        <Star key={s} className={cn("h-4 w-4", s <= (best.rating ?? 0) ? "fill-amber-400 text-amber-400" : "text-white/10")} />
+                                                        <Star key={s} className={cn("h-4 w-4", s <= (best.rating ?? 0) ? "fill-amber-500 text-amber-500" : "text-muted/30")} />
                                                     ))}
                                                 </div>
                                                 {best.notes && (
-                                                    <p className="text-sm text-amber-100/80 italic leading-relaxed">"{best.notes}"</p>
+                                                    <p className="text-sm text-foreground italic leading-relaxed">"{best.notes}"</p>
                                                 )}
-                                                <p className="text-[10px] text-amber-500/50 mt-3 uppercase tracking-wider font-bold">
+                                                <p className="text-[10px] text-amber-600/60 mt-3 uppercase tracking-wider font-bold">
                                                     {best.surahName || best.topic || "Latest Session"} • {best.date}
                                                 </p>
                                             </motion.div>

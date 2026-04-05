@@ -76,7 +76,7 @@ export function Navbar({
                         afterSignOutUrl="/"
                         appearance={{
                             elements: {
-                                avatarBox: "h-10 w-10 ring-2 ring-white/20 hover:ring-primary/50 transition-all rounded-xl",
+                                avatarBox: "h-10 w-10 ring-2 ring-border/50 hover:ring-primary/50 transition-all rounded-xl",
                                 userButtonPopoverCard: "glass-card border-none shadow-2xl"
                             }
                         }}

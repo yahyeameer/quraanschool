@@ -118,9 +118,9 @@ export default function TeacherDashboard() {
                 className={cn("space-y-6 pb-20 transition-all duration-700", zenMode ? "opacity-80 grayscale-[0.3]" : "")}
             >
                 {/* Hero Section */}
-                <motion.div variants={item} className="relative rounded-[32px] overflow-hidden p-8 text-white min-h-[240px] flex flex-col justify-center border border-white/10 shadow-2xl group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-900 via-slate-900 to-emerald-950" />
-                    <div className="absolute inset-0 bg-[url('/noise.png')] opacity-30 mix-blend-overlay" />
+                <motion.div variants={item} className="relative rounded-[32px] overflow-hidden p-8 text-white min-h-[240px] flex flex-col justify-center border border-white/10 shadow-2xl group dark:border-white/5">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-emerald-800 to-emerald-950 dark:from-emerald-900 dark:via-slate-900 dark:to-emerald-950" />
+                    <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay" />
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 animate-pulse-slow" />
                     <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-500/10 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2" />
 
@@ -179,8 +179,8 @@ export default function TeacherDashboard() {
                             className={cn(
                                 "relative rounded-[24px] overflow-hidden border p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
                                 liveOrNextClass.isLive
-                                    ? "bg-red-950/40 border-red-500/30"
-                                    : "bg-emerald-950/40 border-emerald-500/30"
+                                    ? "bg-red-500/10 border-red-500/30 dark:bg-red-950/40"
+                                    : "bg-emerald-500/10 border-emerald-500/30 dark:bg-emerald-950/40"
                             )}
                         >
                             <div className={cn(
@@ -197,28 +197,28 @@ export default function TeacherDashboard() {
                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
                                             <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
                                         </span>
-                                        <span className="text-xs font-black text-red-400 uppercase tracking-[0.15em]">Live Now</span>
+                                        <span className="text-xs font-black text-red-500 dark:text-red-400 uppercase tracking-[0.15em]">Live Now</span>
                                     </div>
                                 ) : (
                                     <div className="flex items-center gap-2">
-                                        <Timer className="h-4 w-4 text-emerald-400" />
-                                        <span className="text-xs font-black text-emerald-400 uppercase tracking-[0.15em]">Starting Soon</span>
+                                        <Timer className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                                        <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.15em]">Starting Soon</span>
                                     </div>
                                 )}
                                 <div>
-                                    <h3 className="font-bold text-white text-lg">{liveOrNextClass.name}</h3>
-                                    <p className="text-sm text-white/50">{liveOrNextClass.category} • {(liveOrNextClass as any).subject || 'General'}</p>
+                                    <h3 className="font-bold text-foreground text-lg">{liveOrNextClass.name}</h3>
+                                    <p className="text-sm text-foreground/50">{liveOrNextClass.category} • {(liveOrNextClass as any).subject || 'General'}</p>
                                 </div>
                             </div>
 
                             <div className="relative z-10 flex items-center gap-3">
                                 {liveOrNextClass.isUpcoming && liveOrNextClass.mins !== null && (
-                                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
-                                        <Clock className="h-4 w-4 text-emerald-300" />
-                                        <div className="text-sm font-bold">
+                                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent/20 border border-border/50">
+                                        <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
+                                        <div className="text-sm font-bold text-foreground">
                                             <LiveCountdown minutes={liveOrNextClass.mins} />
                                         </div>
-                                        <span className="text-xs text-white/40">remaining</span>
+                                        <span className="text-xs text-foreground/40">remaining</span>
                                     </div>
                                 )}
                                 <Link href="/halaqa">
@@ -286,7 +286,7 @@ export default function TeacherDashboard() {
                 )}
 
                 {/* Bulk Progress Logbook Section */}
-                <motion.div variants={item} className="glass-card rounded-[32px] p-8 border border-white/10 bg-slate-900/40 backdrop-blur-xl">
+                <motion.div variants={item} className="glass-card rounded-[32px] p-8">
                     <BulkProgressLogbook />
                 </motion.div>
 
@@ -295,7 +295,7 @@ export default function TeacherDashboard() {
                     <div className="lg:col-span-8 space-y-6">
                         {todaysClasses.length > 0 ? (
                             <motion.div variants={item}>
-                                <div className="glass-card rounded-[32px] p-8 border border-white/10 bg-slate-900/40 backdrop-blur-xl relative overflow-hidden">
+                                <div className="glass-card rounded-[32px] p-8 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
                                     <div className="flex items-center justify-between mb-8 relative z-10">
@@ -318,7 +318,7 @@ export default function TeacherDashboard() {
                                                             ? "bg-red-500/10 border-red-500/30 ring-1 ring-red-500/20"
                                                             : cls.isUpcoming
                                                                 ? "bg-emerald-500/10 border-emerald-500/30 ring-1 ring-emerald-500/20"
-                                                                : "bg-white/5 border-white/10 hover:bg-white/10"
+                                                                : "bg-accent/20 border-border hover:bg-accent/40"
                                                     )}>
                                                         <div className="flex justify-between items-start mb-4">
                                                             <div className={cn(
@@ -327,16 +327,16 @@ export default function TeacherDashboard() {
                                                                     ? "bg-red-500/20 text-red-300 border-red-500/20"
                                                                     : cls.isUpcoming
                                                                         ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/20"
-                                                                        : "bg-white/10 text-white/60 border-white/10"
+                                                                        : "bg-background text-foreground/60 border-border"
                                                             )}>
                                                                 {cls.isLive ? "🔴 Live" : cls.isUpcoming ? `⏳ ${cls.mins}m` : (cls.scheduleToday?.time || 'Scheduled')}
                                                             </div>
-                                                            <div className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 border border-white/5">
+                                                            <div className="h-8 w-8 rounded-full bg-background flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 border border-border">
                                                                 <ChevronRight className={cn("h-4 w-4", dir === 'rtl' && "rotate-180")} />
                                                             </div>
                                                         </div>
-                                                        <h4 className="font-bold text-xl mb-1 text-white group-hover:text-emerald-300 transition-colors">{cls.name}</h4>
-                                                        <p className="text-sm text-white/50">{cls.category} • {(cls as any).subject || 'General'}</p>
+                                                        <h4 className="font-bold text-xl mb-1 text-foreground group-hover:text-emerald-500 transition-colors">{cls.name}</h4>
+                                                        <p className="text-sm text-foreground/50">{cls.category} • {(cls as any).subject || 'General'}</p>
                                                     </div>
                                                 </TiltCard>
                                             );
@@ -345,27 +345,27 @@ export default function TeacherDashboard() {
                                 </div>
                             </motion.div>
                         ) : (
-                            <motion.div variants={item} className="glass-card rounded-[32px] p-8 text-center flex flex-col items-center justify-center min-h-[250px] border border-white/5 bg-slate-900/40">
+                            <motion.div variants={item} className="glass-card rounded-[32px] p-8 text-center flex flex-col items-center justify-center min-h-[250px]">
                                 <div className="h-20 w-20 rounded-full bg-emerald-500/5 flex items-center justify-center mb-6 ring-1 ring-emerald-500/10 animate-pulse-slow">
                                     <Calendar className="h-10 w-10 text-emerald-500/50" />
                                 </div>
-                                <h3 className="font-bold text-xl text-white/80">No classes scheduled for today</h3>
-                                <p className="text-sm text-white/40 max-w-xs mt-2 leading-relaxed">Enjoy your free time or prepare for upcoming sessions using the tools panel.</p>
+                                <h3 className="font-bold text-xl text-foreground">No classes scheduled for today</h3>
+                                <p className="text-sm text-muted-foreground max-w-xs mt-2 leading-relaxed">Enjoy your free time or prepare for upcoming sessions using the tools panel.</p>
                             </motion.div>
                         )}
 
                         {/* Tools Row */}
                         <div className="grid gap-6 md:grid-cols-2">
                             <motion.div variants={item} className="h-full">
-                                <div className="glass-card rounded-[32px] p-8 h-full flex flex-col justify-center border border-white/10 bg-slate-900/40">
-                                    <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-6 border-b border-white/5 pb-2">Quick Attendance</h3>
+                                <div className="glass-card rounded-[32px] p-8 h-full flex flex-col justify-center">
+                                    <h3 className="text-xs font-bold text-foreground/40 uppercase tracking-widest mb-6 border-b border-border/50 pb-2">Quick Attendance</h3>
                                     <AttendanceMarker />
                                 </div>
                             </motion.div>
 
                             <motion.div variants={item} className="h-full">
-                                <div className="glass-card rounded-[32px] p-8 h-full flex flex-col justify-center border border-white/10 bg-slate-900/40">
-                                    <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-6 border-b border-white/5 pb-2">Progress Logbook</h3>
+                                <div className="glass-card rounded-[32px] p-8 h-full flex flex-col justify-center">
+                                    <h3 className="text-xs font-bold text-foreground/40 uppercase tracking-widest mb-6 border-b border-border/50 pb-2">Progress Logbook</h3>
                                     <ProgressLogbook />
                                 </div>
                             </motion.div>
@@ -374,10 +374,10 @@ export default function TeacherDashboard() {
 
                     {/* Tools Sidebar */}
                     <div className="lg:col-span-4 space-y-6">
-                        <motion.div variants={item} className="glass-card rounded-[32px] p-8 sticky top-24 border border-white/10 bg-slate-900/40 backdrop-blur-xl">
-                            <h3 className="text-xl font-bold mb-8 flex items-center gap-3 text-white">
+                        <motion.div variants={item} className="glass-card rounded-[32px] p-8 sticky top-24">
+                            <h3 className="text-xl font-bold mb-8 flex items-center gap-3 text-foreground">
                                 <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                                    <Sparkles className="h-5 w-5 text-amber-400" />
+                                    <Sparkles className="h-5 w-5 text-amber-500" />
                                 </div>
                                 {locale === 'ar' ? 'أدوات' : 'Classroom Toolkit'}
                             </h3>
@@ -412,7 +412,7 @@ export default function TeacherDashboard() {
                                 />
                             </div>
 
-                            <div id="assignments" className="mt-10 pt-8 border-t border-white/5">
+                            <div id="assignments" className="mt-10 pt-8 border-t border-border/50">
                                 <AssignmentManager />
                             </div>
                         </motion.div>
@@ -427,8 +427,8 @@ function TeacherMetric({ title, value, icon: Icon, description, color, highlight
     return (
         <TiltCard tiltIntensity={8} className="h-full">
             <div className={cn(
-                "glass-card p-6 rounded-[24px] relative overflow-hidden group h-full border bg-slate-900/40 backdrop-blur-md transition-all hover:bg-slate-900/60",
-                highlight && "ring-1 ring-emerald-500/50 bg-emerald-950/30",
+                "glass-card p-6 rounded-[24px] relative overflow-hidden group h-full transition-all",
+                highlight && "ring-1 ring-emerald-500/50 bg-emerald-500/5",
                 border
             )}>
                 <div className="flex justify-between items-start mb-4">
@@ -443,11 +443,11 @@ function TeacherMetric({ title, value, icon: Icon, description, color, highlight
                 </div>
 
                 <div className="relative z-10">
-                    <div className="text-4xl font-bold font-amiri tracking-tight mb-1 group-hover:scale-105 transition-transform origin-left text-white drop-shadow-sm">
+                    <div className="text-4xl font-bold font-amiri tracking-tight mb-1 group-hover:scale-105 transition-transform origin-left text-foreground drop-shadow-sm">
                         {value}
                     </div>
-                    <p className="text-xs font-medium text-white/50 uppercase tracking-wider">{title}</p>
-                    <p className="text-[10px] text-white/30 mt-2 font-mono border-t border-white/5 pt-2 inline-block w-full">{description}</p>
+                    <p className="text-xs font-medium text-foreground/50 uppercase tracking-wider">{title}</p>
+                    <p className="text-[10px] text-foreground/30 mt-2 font-mono border-t border-border pt-2 inline-block w-full">{description}</p>
                 </div>
 
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -460,16 +460,16 @@ function ToolLink({ icon: Icon, title, subtitle, color, bg, border, href, onClic
     const Content = (
         <div
             onClick={onClick}
-            className="flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 transition-all cursor-pointer group border border-transparent hover:border-white/5 active:scale-[0.98]"
+            className="flex items-center gap-4 p-4 rounded-2xl hover:bg-accent/50 transition-all cursor-pointer group border border-transparent hover:border-border active:scale-[0.98]"
         >
             <div className={cn("h-12 w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shadow-lg border", bg, color, border)}>
                 <Icon className="h-5 w-5" />
             </div>
             <div className="flex-1">
-                <h4 className="font-bold text-sm text-white group-hover:text-emerald-300 transition-colors">{title}</h4>
-                <p className="text-xs text-white/40 font-medium">{subtitle}</p>
+                <h4 className="font-bold text-sm text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors">{title}</h4>
+                <p className="text-xs text-foreground/40 font-medium">{subtitle}</p>
             </div>
-            <ChevronRight className="h-4 w-4 text-white/20 group-hover:text-white transition-colors" />
+            <ChevronRight className="h-4 w-4 text-foreground/20 group-hover:text-foreground transition-colors" />
         </div>
     );
 

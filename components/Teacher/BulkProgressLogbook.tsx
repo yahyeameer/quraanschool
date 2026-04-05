@@ -115,26 +115,26 @@ export function BulkProgressLogbook() {
     return (
         <div className="space-y-6">
             {/* Header Controls */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/5 border border-amber-500/30">
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                        <ScrollText className="h-5 w-5 text-amber-400" />
+                        <ScrollText className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                     </div>
                     <div>
-                        <h3 className="font-bold text-white">{locale === 'ar' ? 'تسجيل جماعي' : 'Bulk Progress Log'}</h3>
-                        <p className="text-xs text-white/40">Log progress for all students at once</p>
+                        <h3 className="font-bold text-foreground">{locale === 'ar' ? 'تسجيل جماعي' : 'Bulk Progress Log'}</h3>
+                        <p className="text-xs text-muted-foreground">{locale === 'ar' ? 'سجل تقدم جميع الطلاب في وقت واحد' : 'Log progress for all students at once'}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
                     {/* Subject type toggle */}
-                    <div className="flex rounded-xl overflow-hidden border border-white/10 bg-black/30">
+                    <div className="flex rounded-xl overflow-hidden border border-border/50 bg-accent/30">
                         {(['quran', 'general'] as const).map(s => (
                             <button key={s} onClick={() => setSubject(s)}
                                 className={cn(
                                     "px-3 py-1.5 text-xs font-bold transition-all capitalize",
-                                    subject === s ? "bg-amber-500 text-white" : "text-white/40 hover:text-white/70"
+                                    subject === s ? "bg-amber-500 text-white" : "text-muted-foreground/60 hover:text-foreground"
                                 )}>
-                                {s === 'quran' ? 'Quran / Recitation' : 'Subject / Academic'}
+                                {s === 'quran' ? 'Quran' : 'Subject'}
                             </button>
                         ))}
                     </div>
@@ -143,14 +143,14 @@ export function BulkProgressLogbook() {
                         <select
                             value={selectedClassId}
                             onChange={(e) => handleClassChange(e.target.value)}
-                            className="appearance-none text-sm font-medium rounded-xl px-4 py-2 pr-8 bg-black/40 text-amber-100 ring-1 ring-amber-500/20 focus:ring-amber-500/50 outline-none cursor-pointer"
+                            className="appearance-none text-sm font-medium rounded-xl px-4 py-2 pr-8 bg-accent/40 text-foreground ring-1 ring-amber-500/20 focus:ring-amber-500/50 outline-none cursor-pointer"
                         >
-                            <option value="">Select Class</option>
+                            <option value="" className="bg-background">Select Class</option>
                             {classes?.map(c => (
-                                <option key={c._id} value={c._id} className="bg-zinc-900">{c.name}</option>
+                                <option key={c._id} value={c._id} className="bg-background">{c.name}</option>
                             ))}
                         </select>
-                        <ChevronRight className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-400 pointer-events-none" />
+                        <ChevronRight className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-500 pointer-events-none" />
                     </div>
                 </div>
             </div>
@@ -158,9 +158,9 @@ export function BulkProgressLogbook() {
             <AnimatePresence mode="wait">
                 {!selectedClassId ? (
                     <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex flex-col items-center justify-center py-16 text-center space-y-4 rounded-2xl border border-dashed border-white/10">
-                        <Users className="h-12 w-12 text-white/10" />
-                        <p className="text-white/30 text-sm">Select a class to load the student roster</p>
+                        className="flex flex-col items-center justify-center py-16 text-center space-y-4 rounded-[32px] border border-dashed border-border/50 bg-accent/10">
+                        <Users className="h-12 w-12 text-muted-foreground/20" />
+                        <p className="text-muted-foreground/60 text-sm">Select a class to load the student roster</p>
                     </motion.div>
                 ) : classDetails === undefined ? (
                     <motion.div key="loading" className="flex items-center justify-center py-16">
@@ -175,7 +175,7 @@ export function BulkProgressLogbook() {
                     <motion.div key="table" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
                         {/* Column Headers */}
                         <div className={cn(
-                            "hidden sm:grid gap-3 px-4 py-2 rounded-xl bg-white/5 text-[10px] font-black text-white/30 uppercase tracking-widest",
+                            "hidden sm:grid gap-3 px-4 py-2 rounded-xl bg-accent/20 text-[10px] font-black text-muted-foreground uppercase tracking-widest",
                             subject === 'quran'
                                 ? "grid-cols-[2fr_1fr_1fr_1fr_0.7fr_1fr]"
                                 : "grid-cols-[2fr_2fr_1fr_0.7fr_1fr]"
@@ -207,7 +207,7 @@ export function BulkProgressLogbook() {
                                             ? "bg-emerald-500/5 border-emerald-500/20 opacity-60"
                                             : rows[student._id]
                                                 ? "bg-amber-500/5 border-amber-500/20"
-                                                : "bg-white/3 border-white/5 hover:border-white/10"
+                                                : "bg-card border-border hover:border-primary/30"
                                     )}
                                 >
                                     {isDone && (
@@ -221,12 +221,12 @@ export function BulkProgressLogbook() {
                                     <div className={cn("flex flex-col sm:flex-row gap-3 items-start sm:items-center", isDone && "opacity-30")}>
                                         {/* Student Name */}
                                         <div className="flex items-center gap-3 sm:w-[200px] flex-shrink-0">
-                                            <div className="h-9 w-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/60 font-bold text-sm flex-shrink-0">
+                                            <div className="h-9 w-9 rounded-xl bg-accent/20 border border-border/50 flex items-center justify-center text-muted-foreground font-bold text-sm flex-shrink-0">
                                                 {student.name.charAt(0)}
                                             </div>
                                             <div>
-                                                <p className="font-bold text-sm text-white leading-tight">{student.name}</p>
-                                                <p className="text-[10px] text-white/30">Student</p>
+                                                <p className="font-bold text-sm text-foreground leading-tight">{student.name}</p>
+                                                <p className="text-[10px] text-muted-foreground/60">{locale === 'ar' ? 'طالب' : 'Student'}</p>
                                             </div>
                                         </div>
 
@@ -239,21 +239,21 @@ export function BulkProgressLogbook() {
                                                         value={row.surahName}
                                                         onChange={e => updateRow(student._id, { surahName: e.target.value })}
                                                         disabled={isDone}
-                                                        className="flex-1 min-w-[100px] rounded-xl px-3 py-2 text-sm bg-black/30 ring-1 ring-white/10 focus:ring-amber-500/50 outline-none text-white placeholder:text-white/20"
+                                                        className="flex-1 min-w-[100px] rounded-xl px-3 py-2 text-sm bg-background ring-1 ring-border focus:ring-amber-500/50 outline-none text-foreground placeholder:text-muted-foreground/30"
                                                     />
                                                     <input
                                                         type="number" placeholder="From"
                                                         value={row.ayahStart}
                                                         onChange={e => updateRow(student._id, { ayahStart: e.target.value })}
                                                         disabled={isDone}
-                                                        className="w-16 rounded-xl px-3 py-2 text-sm bg-black/30 ring-1 ring-white/10 focus:ring-amber-500/50 outline-none text-white text-center placeholder:text-white/20"
+                                                        className="w-16 rounded-xl px-3 py-2 text-sm bg-background ring-1 ring-border focus:ring-amber-500/50 outline-none text-foreground text-center placeholder:text-muted-foreground/30"
                                                     />
                                                     <input
                                                         type="number" placeholder="To"
                                                         value={row.ayahEnd}
                                                         onChange={e => updateRow(student._id, { ayahEnd: e.target.value })}
                                                         disabled={isDone}
-                                                        className="w-16 rounded-xl px-3 py-2 text-sm bg-black/30 ring-1 ring-white/10 focus:ring-amber-500/50 outline-none text-white text-center placeholder:text-white/20"
+                                                        className="w-16 rounded-xl px-3 py-2 text-sm bg-background ring-1 ring-border focus:ring-amber-500/50 outline-none text-foreground text-center placeholder:text-muted-foreground/30"
                                                     />
                                                 </>
                                             ) : (
@@ -263,33 +263,33 @@ export function BulkProgressLogbook() {
                                                         value={row.topic}
                                                         onChange={e => updateRow(student._id, { topic: e.target.value })}
                                                         disabled={isDone}
-                                                        className="flex-1 min-w-[120px] rounded-xl px-3 py-2 text-sm bg-black/30 ring-1 ring-white/10 focus:ring-amber-500/50 outline-none text-white placeholder:text-white/20"
+                                                        className="flex-1 min-w-[120px] rounded-xl px-3 py-2 text-sm bg-background ring-1 ring-border focus:ring-amber-500/50 outline-none text-foreground placeholder:text-muted-foreground/30"
                                                     />
                                                     <input
                                                         type="number" placeholder="Score %"
                                                         value={row.score}
                                                         onChange={e => updateRow(student._id, { score: e.target.value })}
                                                         disabled={isDone}
-                                                        className="w-20 rounded-xl px-3 py-2 text-sm bg-black/30 ring-1 ring-white/10 focus:ring-amber-500/50 outline-none text-white text-center placeholder:text-white/20"
+                                                        className="w-20 rounded-xl px-3 py-2 text-sm bg-background ring-1 ring-border focus:ring-amber-500/50 outline-none text-foreground text-center placeholder:text-muted-foreground/30"
                                                     />
                                                 </>
                                             )}
-
+ 
                                             {/* Star Rating */}
-                                            <div className="flex items-center gap-0.5 px-2 rounded-xl bg-black/20 ring-1 ring-white/5">
+                                            <div className="flex items-center gap-0.5 px-2 rounded-xl bg-accent/40 ring-1 ring-border/50">
                                                 {[1, 2, 3, 4, 5].map(n => (
                                                     <button key={n} type="button"
                                                         onClick={() => !isDone && updateRow(student._id, { rating: n })}
                                                         disabled={isDone}
-                                                        className={cn("transition-all hover:scale-110", n <= row.rating ? "text-amber-500" : "text-white/10")}
+                                                        className={cn("transition-all hover:scale-110", n <= row.rating ? "text-amber-500" : "text-muted-foreground/20")}
                                                     >
                                                         <Star className={cn("h-4 w-4", n <= row.rating ? "fill-current" : "")} />
                                                     </button>
                                                 ))}
                                             </div>
-
+ 
                                             {/* Status */}
-                                            <div className="flex rounded-xl overflow-hidden ring-1 ring-white/10 bg-black/20">
+                                            <div className="flex rounded-xl overflow-hidden ring-1 ring-border/50 bg-accent/40">
                                                 {([
                                                     { v: "Passed" as Status, icon: CheckCircle, color: "hover:bg-emerald-500/20 hover:text-emerald-400", active: "bg-emerald-500/20 text-emerald-400" },
                                                     { v: "Needs Review" as Status, icon: Clock, color: "hover:bg-amber-500/20 hover:text-amber-400", active: "bg-amber-500/20 text-amber-400" },
@@ -300,7 +300,7 @@ export function BulkProgressLogbook() {
                                                         disabled={isDone}
                                                         title={sv}
                                                         className={cn(
-                                                            "h-9 w-9 flex items-center justify-center transition-all text-white/20",
+                                                            "h-9 w-9 flex items-center justify-center transition-all text-muted-foreground/30",
                                                             row.status === sv ? active : color
                                                         )}>
                                                         <Icon className="h-4 w-4" />
@@ -314,7 +314,7 @@ export function BulkProgressLogbook() {
                                                 value={row.notes}
                                                 onChange={e => updateRow(student._id, { notes: e.target.value })}
                                                 disabled={isDone}
-                                                className="flex-1 min-w-[140px] rounded-xl px-3 py-2 text-xs bg-black/20 ring-1 ring-white/5 focus:ring-amber-500/30 outline-none text-white/60 placeholder:text-white/15"
+                                                className="flex-1 min-w-[140px] rounded-xl px-3 py-2 text-xs bg-accent/10 ring-1 ring-border focus:ring-amber-500/30 outline-none text-foreground/80 placeholder:text-muted-foreground/20"
                                             />
                                         </div>
                                     </div>
@@ -328,14 +328,14 @@ export function BulkProgressLogbook() {
                             animate={{ opacity: 1 }}
                             className="sticky bottom-4 pt-4 z-10"
                         >
-                            <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-amber-500/20 shadow-2xl">
+                            <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-background/80 dark:bg-slate-900/90 backdrop-blur-xl border border-primary/20 shadow-2xl">
                                 <div className="flex items-center gap-3">
-                                    <div className="h-9 w-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                                        <BookOpen className="h-4 w-4 text-amber-400" />
+                                    <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                                        <BookOpen className="h-4 w-4 text-primary" />
                                     </div>
                                     <div>
-                                        <p className="text-xs font-black text-white">{filledCount} of {students.length} students</p>
-                                        <p className="text-[10px] text-white/30">entries ready to submit</p>
+                                        <p className="text-xs font-black text-foreground">{filledCount} of {students.length} students</p>
+                                        <p className="text-[10px] text-muted-foreground/60">{locale === 'ar' ? 'سجلات جاهزة للإرسال' : 'entries ready to submit'}</p>
                                     </div>
                                 </div>
                                 <Button

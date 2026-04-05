@@ -137,7 +137,7 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                 <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
 
                 {/* Header */}
-                <div className="px-6 py-6 border-b border-white/10 relative z-10">
+                <div className="px-6 py-6 border-b border-border/50 relative z-10">
                     <Link href="/" className="flex items-center gap-3 group">
                         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
                             <span className="text-white font-amiri font-bold text-2xl">خ</span>
@@ -172,7 +172,7 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                                 {isActive && (
                                     <motion.div
                                         layoutId="sidebar-active"
-                                        className="absolute inset-0 bg-white/50 dark:bg-white/5 rounded-xl border border-white/20 shadow-sm backdrop-blur-sm"
+                                        className="absolute inset-0 bg-primary/5 dark:bg-white/5 rounded-xl border border-primary/20 dark:border-white/10 shadow-sm backdrop-blur-sm"
                                         initial={false}
                                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                     />
@@ -180,7 +180,7 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
 
                                 <div className={cn(
                                     "relative z-10 flex items-center justify-center h-8 w-8 rounded-lg transition-colors",
-                                    isActive ? "bg-white/80 dark:bg-black/20 shadow-sm" : "bg-transparent group-hover:bg-white/40 dark:group-hover:bg-white/10"
+                                    isActive ? "bg-background/80 dark:bg-black/20 shadow-sm" : "bg-transparent group-hover:bg-background/40 dark:group-hover:bg-white/10"
                                 )}>
                                     <route.icon className={cn("h-4 w-4", route.color)} />
                                 </div>
@@ -207,8 +207,8 @@ export function Sidebar({ isOpen }: { isOpen: boolean }) {
                 </div>
 
                 {/* Footer */}
-                <div className="p-4 border-t border-white/10 relative z-10 bg-gradient-to-t from-background/50 to-transparent">
-                    <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                <div className="p-4 border-t border-border/50 relative z-10 bg-gradient-to-t from-background/50 to-transparent">
+                    <div className="p-4 rounded-2xl bg-accent/10 border border-border/50 backdrop-blur-md">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-xs font-medium text-muted-foreground">System</span>
                             <LanguageSwitcher />

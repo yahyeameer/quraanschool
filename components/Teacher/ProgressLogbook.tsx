@@ -63,8 +63,8 @@ export function ProgressLogbook() {
     };
 
     return (
-        <Card className="border-none bg-background/50 backdrop-blur-xl shadow-2xl ring-1 ring-white/10 overflow-hidden">
-            <CardHeader className="border-b border-white/5 bg-gradient-to-r from-amber-500/10 to-transparent">
+        <Card className="border-none bg-background/50 backdrop-blur-xl shadow-2xl ring-1 ring-border overflow-hidden">
+            <CardHeader className="border-b border-border/50 bg-gradient-to-r from-amber-500/10 to-transparent">
                 <CardTitle className="flex items-center gap-3">
                     <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
                         <ScrollText className="h-6 w-6" />
@@ -84,10 +84,10 @@ export function ProgressLogbook() {
                         <select
                             value={selectedClassId}
                             onChange={(e) => setSelectedClassId(e.target.value)}
-                            className="w-full rounded-2xl border-white/10 p-3 text-sm bg-black/40 text-white focus:ring-amber-500/50 outline-none ring-1 ring-white/5"
+                            className="w-full rounded-2xl border border-border p-3 text-sm bg-accent/20 text-foreground focus:ring-amber-500/50 outline-none ring-1 ring-border/50"
                         >
-                            <option value="">{t.teacher.attendance.selectClass}</option>
-                            {classes?.map(c => <option key={c._id} value={c._id} className="bg-zinc-900">{c.name}</option>)}
+                            <option value="" className="bg-background">{t.teacher.attendance.selectClass}</option>
+                            {classes?.map(c => <option key={c._id} value={c._id} className="bg-background">{c.name}</option>)}
                         </select>
                     </div>
                     <div className="space-y-1.5">
@@ -95,11 +95,11 @@ export function ProgressLogbook() {
                         <select
                             value={selectedStudentId}
                             onChange={(e) => setSelectedStudentId(e.target.value)}
-                            className="w-full rounded-2xl border-white/10 p-3 text-sm bg-black/40 text-white focus:ring-amber-500/50 outline-none ring-1 ring-white/5 disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="w-full rounded-2xl border border-border p-3 text-sm bg-accent/20 text-foreground focus:ring-amber-500/50 outline-none ring-1 ring-border/50 disabled:opacity-30 disabled:cursor-not-allowed"
                             disabled={!selectedClassId}
                         >
-                            <option value="">{t.teacher.logbook.student}</option>
-                            {students?.map((s: any) => <option key={s._id} value={s._id} className="bg-zinc-900">{s.name}</option>)}
+                            <option value="" className="bg-background">{t.teacher.logbook.student}</option>
+                            {students?.map((s: any) => <option key={s._id} value={s._id} className="bg-background">{s.name}</option>)}
                         </select>
                     </div>
                 </div>
@@ -157,14 +157,14 @@ export function ProgressLogbook() {
                                                 <input
                                                     value={form.surahName}
                                                     onChange={(e) => setForm({ ...form, surahName: e.target.value })}
-                                                    className="w-full rounded-xl border-white/10 p-3 text-sm bg-background focus:ring-amber-500/50 outline-none ring-1 ring-white/5"
+                                                    className="w-full rounded-xl border border-border p-3 text-sm bg-accent/20 text-foreground focus:ring-amber-500/50 outline-none ring-1 ring-border/50"
                                                     placeholder="e.g. Al-Baqarah"
                                                     required
                                                 />
                                             </div>
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-bold text-muted-foreground uppercase ml-1">Overall Impression</label>
-                                                <div className="flex items-center justify-between h-11 px-4 rounded-xl border border-white/10 bg-background ring-1 ring-white/5">
+                                                <div className="flex items-center justify-between h-11 px-4 rounded-xl border border-border bg-accent/20 ring-1 ring-border/50">
                                                     {[1, 2, 3, 4, 5].map(num => (
                                                         <motion.button
                                                             key={num}
@@ -273,7 +273,7 @@ export function ProgressLogbook() {
                                 <textarea
                                     value={form.notes}
                                     onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                                    className="w-full rounded-2xl border-white/10 p-4 text-sm bg-black/20 focus:ring-amber-500/50 outline-none ring-1 ring-white/5 resize-none h-28"
+                                    className="w-full rounded-2xl border border-border p-4 text-sm bg-accent/20 text-foreground focus:ring-amber-500/50 outline-none ring-1 ring-border/50 resize-none h-28"
                                     placeholder="Add constructive feedback or specific focus areas for next time..."
                                 />
                             </div>
