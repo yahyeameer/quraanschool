@@ -5,9 +5,11 @@ import { api } from "@/convex/_generated/api";
 import { AttendanceMarker } from "@/components/Teacher/AttendanceMarker";
 import { ProgressLogbook } from "@/components/Teacher/ProgressLogbook";
 import { AssignmentManager } from "@/components/Teacher/AssignmentManager";
+import { BulkProgressLogbook } from "@/components/Teacher/BulkProgressLogbook";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import { TiltCard } from "@/components/ui/tilt-card";
-import { useState } from "react";
+import { BentoGridSkeleton, HeroSkeleton } from "@/components/ui/skeleton-loaders";
+import { useState, useEffect } from "react";
 import {
     BookOpen,
     Calendar,
@@ -22,12 +24,42 @@ import {
     MessageSquare,
     Search,
     Eye,
-    EyeOff
+    EyeOff,
+    Zap,
+    Radio,
+    Timer
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/language-context";
+
+// Computes how many minutes until a given time string "HH:MM"
+function minutesUntil(timeStr: string): number {
+    if (!timeStr) return Infinity;
+    const [hStr, mStr] = timeStr.split(":");
+    const h = parseInt(hStr ?? "0");
+    const m = parseInt(mStr ?? "0");
+    const now = new Date();
+    const target = new Date();
+    target.setHours(h, m, 0, 0);
+    return Math.round((target.getTime() - now.getTime()) / 60000);
+}
+
+function LiveCountdown({ minutes }: { minutes: number }) {
+    const [secs, setSecs] = useState(minutes * 60);
+    useEffect(() => {
+        const interval = setInterval(() => setSecs(s => Math.max(0, s - 1)), 1000);
+        return () => clearInterval(interval);
+    }, []);
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return (
+        <span className="font-mono tabular-nums text-emerald-200">
+            {m.toString().padStart(2, "0")}:{s.toString().padStart(2, "0")}
+        </span>
+    );
+}
 
 export default function TeacherDashboard() {
     const { t, locale, dir } = useLanguage();
@@ -35,12 +67,22 @@ export default function TeacherDashboard() {
     const user = useQuery(api.users.currentUser);
     const [zenMode, setZenMode] = useState(false);
 
-    // Calculate stats
     const totalClasses = classes?.length ?? 0;
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
     const todaysClasses = classes?.filter(c =>
-        c.schedule?.some(s => s.day.toLowerCase() === today.toLowerCase())
+        c.schedule?.some((s: any) => s.day.toLowerCase() === today.toLowerCase())
     ) ?? [];
+
+    // Classify each class as: live (started & within 45 min), upcoming (within 30 min), or normal
+    const classifiedClasses = todaysClasses.map(cls => {
+        const scheduleToday = cls.schedule?.find((s: any) => s.day.toLowerCase() === today.toLowerCase());
+        const mins = scheduleToday?.time ? minutesUntil(scheduleToday.time) : null;
+        const isLive = mins !== null && mins <= 0 && mins > -45;
+        const isUpcoming = mins !== null && mins > 0 && mins <= 30;
+        return { ...cls, scheduleToday, mins, isLive, isUpcoming };
+    }).sort((a, b) => (a.mins ?? 999) - (b.mins ?? 999));
+
+    const liveOrNextClass = classifiedClasses.find(c => c.isLive || c.isUpcoming);
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -79,8 +121,6 @@ export default function TeacherDashboard() {
                 <motion.div variants={item} className="relative rounded-[32px] overflow-hidden p-8 text-white min-h-[240px] flex flex-col justify-center border border-white/10 shadow-2xl group">
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-900 via-slate-900 to-emerald-950" />
                     <div className="absolute inset-0 bg-[url('/noise.png')] opacity-30 mix-blend-overlay" />
-
-                    {/* Animated Ethereal Orbs */}
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 animate-pulse-slow" />
                     <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-500/10 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2" />
 
@@ -104,8 +144,8 @@ export default function TeacherDashboard() {
                             </h1>
                             <p className="text-emerald-100/70 text-lg max-w-xl font-light">
                                 {locale === 'ar'
-                                    ? `لديك ${todaysClasses.length} حلقات مجدولة اليوم. بارك الله في جهودك.`
-                                    : `You have ${todaysClasses.length} classes scheduled for today. May Allah bless your efforts.`
+                                    ? `لديك ${todaysClasses.length} فصول مجدولة اليوم.`
+                                    : `You have ${todaysClasses.length} class${todaysClasses.length !== 1 ? "es" : ""} scheduled for today.`
                                 }
                             </p>
                         </div>
@@ -127,13 +167,88 @@ export default function TeacherDashboard() {
                     </div>
                 </motion.div>
 
-                {/* KPI Bento Grid with Holographic Effect */}
+                {/* 🔴 LIVE / UPCOMING SESSION ALERT */}
+                <AnimatePresence>
+                    {liveOrNextClass && (
+                        <motion.div
+                            key="live-alert"
+                            initial={{ opacity: 0, y: -10, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+                            variants={item}
+                            className={cn(
+                                "relative rounded-[24px] overflow-hidden border p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4",
+                                liveOrNextClass.isLive
+                                    ? "bg-red-950/40 border-red-500/30"
+                                    : "bg-emerald-950/40 border-emerald-500/30"
+                            )}
+                        >
+                            <div className={cn(
+                                "absolute inset-0 opacity-20",
+                                liveOrNextClass.isLive
+                                    ? "bg-gradient-to-r from-red-600/20 to-transparent"
+                                    : "bg-gradient-to-r from-emerald-600/20 to-transparent"
+                            )} />
+
+                            <div className="relative z-10 flex items-center gap-4">
+                                {liveOrNextClass.isLive ? (
+                                    <div className="flex items-center gap-2">
+                                        <span className="relative flex h-3 w-3">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                                            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500" />
+                                        </span>
+                                        <span className="text-xs font-black text-red-400 uppercase tracking-[0.15em]">Live Now</span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <Timer className="h-4 w-4 text-emerald-400" />
+                                        <span className="text-xs font-black text-emerald-400 uppercase tracking-[0.15em]">Starting Soon</span>
+                                    </div>
+                                )}
+                                <div>
+                                    <h3 className="font-bold text-white text-lg">{liveOrNextClass.name}</h3>
+                                    <p className="text-sm text-white/50">{liveOrNextClass.category} • {(liveOrNextClass as any).subject || 'General'}</p>
+                                </div>
+                            </div>
+
+                            <div className="relative z-10 flex items-center gap-3">
+                                {liveOrNextClass.isUpcoming && liveOrNextClass.mins !== null && (
+                                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
+                                        <Clock className="h-4 w-4 text-emerald-300" />
+                                        <div className="text-sm font-bold">
+                                            <LiveCountdown minutes={liveOrNextClass.mins} />
+                                        </div>
+                                        <span className="text-xs text-white/40">remaining</span>
+                                    </div>
+                                )}
+                                <Link href="/halaqa">
+                                    <button className={cn(
+                                        "flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all hover:scale-105 active:scale-95",
+                                        liveOrNextClass.isLive
+                                            ? "bg-red-500 hover:bg-red-400 text-white shadow-[0_0_20px_rgba(239,68,68,0.4)]"
+                                            : "bg-emerald-500 hover:bg-emerald-400 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+                                    )}>
+                                        {liveOrNextClass.isLive
+                                            ? <><Radio className="h-4 w-4 animate-pulse" /> Rejoin Session</>
+                                            : <><Zap className="h-4 w-4" /> Start Session</>
+                                        }
+                                    </button>
+                                </Link>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* KPI Bento Grid */}
+                {!classes ? (
+                    <BentoGridSkeleton cols={4} />
+                ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <TeacherMetric
                         title={locale === 'ar' ? 'فصولي' : 'My Classes'}
                         value={classes ? totalClasses.toString() : <Loader2 className="h-6 w-6 animate-spin" />}
                         icon={BookOpen}
-                        description={locale === 'ar' ? 'الحلقات النشطة' : 'Active classes'}
+                        description={locale === 'ar' ? 'الفصول النشطة' : 'Active classes'}
                         color="text-violet-400"
                         bg="bg-violet-500/10"
                         border="border-violet-500/20"
@@ -149,7 +264,7 @@ export default function TeacherDashboard() {
                         highlight={todaysClasses.length > 0}
                     />
                     <TeacherMetric
-                        title={locale === 'ar' ? 'نسبة الحضور' : 'Attendance'}
+                        title={locale === 'ar' ? 'نسبة الحضور' : 'Avg Attendance'}
                         value="94%"
                         icon={CheckCircle}
                         description="+2% this week"
@@ -168,6 +283,12 @@ export default function TeacherDashboard() {
                         border="border-sky-500/20"
                     />
                 </div>
+                )}
+
+                {/* Bulk Progress Logbook Section */}
+                <motion.div variants={item} className="glass-card rounded-[32px] p-8 border border-white/10 bg-slate-900/40 backdrop-blur-xl">
+                    <BulkProgressLogbook />
+                </motion.div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* Schedule Column */}
@@ -188,21 +309,34 @@ export default function TeacherDashboard() {
                                     </div>
 
                                     <div className="grid gap-4 sm:grid-cols-2 relative z-10">
-                                        {todaysClasses.map((cls, idx) => {
-                                            const scheduleToday = cls.schedule?.find(s => s.day.toLowerCase() === today.toLowerCase());
+                                        {classifiedClasses.map((cls, idx) => {
                                             return (
                                                 <TiltCard key={cls._id} tiltIntensity={5}>
-                                                    <div className="group relative p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-emerald-500/30 transition-all cursor-pointer h-full">
+                                                    <div className={cn(
+                                                        "group relative p-6 rounded-2xl border hover:border-emerald-500/30 transition-all cursor-pointer h-full",
+                                                        cls.isLive
+                                                            ? "bg-red-500/10 border-red-500/30 ring-1 ring-red-500/20"
+                                                            : cls.isUpcoming
+                                                                ? "bg-emerald-500/10 border-emerald-500/30 ring-1 ring-emerald-500/20"
+                                                                : "bg-white/5 border-white/10 hover:bg-white/10"
+                                                    )}>
                                                         <div className="flex justify-between items-start mb-4">
-                                                            <div className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
-                                                                {scheduleToday?.time || 'Scheduled'}
+                                                            <div className={cn(
+                                                                "px-3 py-1.5 rounded-lg text-xs font-bold border",
+                                                                cls.isLive
+                                                                    ? "bg-red-500/20 text-red-300 border-red-500/20"
+                                                                    : cls.isUpcoming
+                                                                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/20"
+                                                                        : "bg-white/10 text-white/60 border-white/10"
+                                                            )}>
+                                                                {cls.isLive ? "🔴 Live" : cls.isUpcoming ? `⏳ ${cls.mins}m` : (cls.scheduleToday?.time || 'Scheduled')}
                                                             </div>
                                                             <div className="h-8 w-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 border border-white/5">
                                                                 <ChevronRight className={cn("h-4 w-4", dir === 'rtl' && "rotate-180")} />
                                                             </div>
                                                         </div>
                                                         <h4 className="font-bold text-xl mb-1 text-white group-hover:text-emerald-300 transition-colors">{cls.name}</h4>
-                                                        <p className="text-sm text-white/50">{cls.category} • {cls.subject || 'Quran'}</p>
+                                                        <p className="text-sm text-white/50">{cls.category} • {(cls as any).subject || 'General'}</p>
                                                     </div>
                                                 </TiltCard>
                                             );
@@ -220,7 +354,7 @@ export default function TeacherDashboard() {
                             </motion.div>
                         )}
 
-                        {/* Recent Activity or Tools */}
+                        {/* Tools Row */}
                         <div className="grid gap-6 md:grid-cols-2">
                             <motion.div variants={item} className="h-full">
                                 <div className="glass-card rounded-[32px] p-8 h-full flex flex-col justify-center border border-white/10 bg-slate-900/40">
@@ -231,14 +365,14 @@ export default function TeacherDashboard() {
 
                             <motion.div variants={item} className="h-full">
                                 <div className="glass-card rounded-[32px] p-8 h-full flex flex-col justify-center border border-white/10 bg-slate-900/40">
-                                    <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-6 border-b border-white/5 pb-2">Logbook</h3>
+                                    <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest mb-6 border-b border-white/5 pb-2">Progress Logbook</h3>
                                     <ProgressLogbook />
                                 </div>
                             </motion.div>
                         </div>
                     </div>
 
-                    {/* Tools Column */}
+                    {/* Tools Sidebar */}
                     <div className="lg:col-span-4 space-y-6">
                         <motion.div variants={item} className="glass-card rounded-[32px] p-8 sticky top-24 border border-white/10 bg-slate-900/40 backdrop-blur-xl">
                             <h3 className="text-xl font-bold mb-8 flex items-center gap-3 text-white">
@@ -316,8 +450,7 @@ function TeacherMetric({ title, value, icon: Icon, description, color, highlight
                     <p className="text-[10px] text-white/30 mt-2 font-mono border-t border-white/5 pt-2 inline-block w-full">{description}</p>
                 </div>
 
-                {/* Holographic Shine */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{ backgroundSize: '200% 200%' }} />
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             </div>
         </TiltCard>
     );
